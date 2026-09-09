@@ -4,7 +4,7 @@
 // same-origin asset fetches, so the ES modules are concatenated in dependency
 // order and the stylesheet is inlined. Nothing is minified — the published
 // source stays readable.
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { join, dirname } from 'node:path';
 
@@ -17,6 +17,7 @@ const MODULES = [
   'src/core/nutrition.js',
   'src/core/store.js',
   'src/core/sync.js',
+  'src/core/calendar.js',
   'src/ui/dom.js',
   'src/ui/app.js',
 ];
@@ -35,7 +36,26 @@ export function flatten(source) {
     .trim();
 }
 
+/**
+ * Every module under src/ must be listed in MODULES. Forgetting one produces a
+ * bundle that is missing a feature but still builds, so fail the build instead.
+ */
+export async function assertAllModulesBundled() {
+  const found = [];
+  for (const dir of ['src/core', 'src/ui']) {
+    for (const name of await readdir(join(ROOT, dir))) {
+      if (name.endsWith('.js')) found.push(`${dir}/${name}`);
+    }
+  }
+  const missing = found.filter((f) => !MODULES.includes(f));
+  if (missing.length) {
+    throw new Error(`Not in the bundle (add to MODULES in scripts/bundle.js): ${missing.join(', ')}`);
+  }
+  return found;
+}
+
 export async function bundle() {
+  await assertAllModulesBundled();
   const css = await readFile(join(ROOT, 'src/ui/styles.css'), 'utf8');
   const html = await readFile(join(ROOT, 'index.html'), 'utf8');
 

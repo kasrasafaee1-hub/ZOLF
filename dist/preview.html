@@ -13,21 +13,38 @@
 <body>
 <title>ZOLF Lift</title>
 <style>
+/* ZOLF Lift — a temple at night.
+   Deliberately single-world: gilt on deep aegean dark, the way figures were
+   drawn on black-figure pottery. Every colour is painted explicitly so the
+   page holds on either host ground. */
+
 :root {
-  --bg: #0d0f13;
-  --surface: #161a21;
-  --surface-2: #1e242e;
-  --line: #2a3240;
-  --text: #e8ecf2;
-  --muted: #8e9aad;
-  --accent: #e6543a;
-  --accent-soft: #e6543a22;
-  --good: #3ecf8e;
-  --warn: #f0b429;
-  --bad: #ef5a5a;
-  --radius: 14px;
-  --tabbar-h: 62px;
   color-scheme: dark;
+
+  --bg: #0e1116;          /* aegean night, blue-biased so it is chosen, not black */
+  --surface: #171c24;     /* marble in shadow */
+  --surface-2: #1f2631;
+  --line: #2c3543;        /* cool grey, biased toward the blue of the ground */
+  --line-bright: #3a465a;
+
+  --text: #ece6d9;        /* aged marble, warm against the cold ground */
+  --muted: #8a94a6;
+  --dim: #5d6779;
+
+  --gold: #c9a227;        /* olympian gilt — the one bold thing on the page */
+  --gold-bright: #e3bd45;
+  --gold-soft: rgba(201, 162, 39, 0.14);
+  --aegean: #4e7fa8;      /* secondary, for the calendar and quiet accents */
+
+  --laurel: #5fa777;      /* semantic, kept separate from the accent */
+  --amber: #d9a441;
+  --amphora: #b4483f;
+
+  --display: 'Cinzel', 'Trajan Pro', 'Times New Roman', serif;
+  --body: 'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  --radius: 12px;
+  --tabbar-h: 60px;
 }
 
 * { box-sizing: border-box; }
@@ -36,39 +53,76 @@ html, body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: var(--body);
+  font-size: 15px;
+  line-height: 1.55;
   -webkit-text-size-adjust: 100%;
 }
 
 .app { min-height: 100dvh; display: flex; flex-direction: column; }
 
+/* --- header, with a woven meander for an entablature --- */
 .topbar {
   position: sticky; top: 0; z-index: 20;
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 12px; padding: 12px 16px calc(12px) 16px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px 16px 11px;
   padding-top: max(12px, env(safe-area-inset-top));
-  background: rgba(13,15,19,.92); backdrop-filter: blur(10px);
+  background: rgba(14, 17, 22, 0.94);
+  backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
 }
-.brand { font-weight: 800; letter-spacing: .08em; font-size: 14px; color: var(--accent); }
-.brand span { color: var(--muted); margin-left: 6px; letter-spacing: .04em; }
-.topbar-right { font-size: 13px; color: var(--muted); display: flex; gap: 8px; align-items: center; }
+/* Greek key, drawn as a repeating gradient rather than an image. */
+.topbar::after {
+  content: '';
+  position: absolute; left: 0; right: 0; bottom: -3px; height: 3px;
+  background-image:
+    repeating-linear-gradient(90deg,
+      var(--gold) 0 2px, transparent 2px 6px, var(--gold) 6px 8px, transparent 8px 14px);
+  opacity: 0.5;
+}
+.brand {
+  font-family: var(--display);
+  font-weight: 700; font-size: 15px;
+  letter-spacing: 0.18em;
+  color: var(--gold);
+}
+.brand span { color: var(--muted); margin-left: 7px; letter-spacing: 0.12em; font-weight: 600; }
+.topbar-right { font-size: 12.5px; color: var(--muted); display: flex; gap: 9px; align-items: center; }
 
 .view {
-  flex: 1;
-  padding: 16px 16px calc(var(--tabbar-h) + 90px) 16px;
-  max-width: 720px; width: 100%; margin: 0 auto;
+  flex: 1; width: 100%; max-width: 720px; margin: 0 auto;
+  padding: 20px 16px calc(var(--tabbar-h) + 92px);
 }
 
-h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -.01em; }
-h2 { font-size: 15px; margin: 24px 0 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .09em; font-weight: 700; }
-h3 { font-size: 16px; margin: 0; }
-p  { margin: 0 0 10px; }
-.sub { color: var(--muted); font-size: 13px; margin: 0 0 16px; }
+/* --- type scale --- */
+h1 {
+  font-family: var(--display);
+  font-size: 25px; font-weight: 700; line-height: 1.2;
+  letter-spacing: 0.02em; text-wrap: balance;
+  margin: 0 0 6px; color: var(--text);
+}
+h2 {
+  font-family: var(--display);
+  font-size: 13px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.2em;
+  color: var(--gold); margin: 30px 0 12px;
+}
+h3 { font-size: 16px; font-weight: 600; margin: 0; }
+p { margin: 0 0 10px; }
+.sub { color: var(--muted); font-size: 13.5px; margin: 0 0 18px; }
+.eyebrow {
+  font-family: var(--display);
+  font-size: 10.5px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.22em;
+  color: var(--gold); display: block;
+}
 
+/* --- surfaces: spend borders by role, not on everything --- */
 .card {
-  background: var(--surface); border: 1px solid var(--line);
-  border-radius: var(--radius); padding: 14px; margin-bottom: 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 15px; margin-bottom: 12px;
 }
 .card.tight { padding: 12px; }
 .card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
@@ -85,141 +139,248 @@ button { font: inherit; cursor: pointer; }
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   background: var(--surface-2); color: var(--text);
-  border: 1px solid var(--line); border-radius: 11px;
+  border: 1px solid var(--line-bright); border-radius: 10px;
   padding: 11px 15px; font-weight: 600; min-height: 44px;
+  font-family: var(--body);
 }
 .btn:active { transform: translateY(1px); }
-.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.primary {
+  background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+  border-color: var(--gold); color: #241c05; font-weight: 700;
+  letter-spacing: 0.02em;
+}
 .btn.ghost { background: transparent; }
-.btn.danger { color: var(--bad); border-color: #4a2630; }
+.btn.danger { color: var(--amphora); border-color: #4a2a28; }
 .btn.block { width: 100%; }
-.btn.sm { padding: 7px 11px; min-height: 36px; font-size: 13px; border-radius: 9px; }
+.btn.sm { padding: 7px 11px; min-height: 36px; font-size: 13px; border-radius: 8px; }
 
 .chip {
-  background: var(--surface-2); border: 1px solid var(--line); color: var(--text);
-  border-radius: 999px; padding: 6px 11px; font-size: 13px; font-weight: 600;
+  background: var(--surface-2); border: 1px solid var(--line-bright); color: var(--text);
+  border-radius: 999px; padding: 7px 13px; font-size: 13px; font-weight: 600;
 }
-.chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+.chip.on { background: var(--gold); border-color: var(--gold); color: #241c05; }
 
 input, select, textarea {
-  font: inherit; background: var(--surface-2); color: var(--text);
-  border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; width: 100%;
-  min-height: 44px;
+  font-family: var(--body); font-size: 15px;
+  background: var(--surface-2); color: var(--text);
+  border: 1px solid var(--line-bright); border-radius: 9px;
+  padding: 10px 12px; width: 100%; min-height: 44px;
 }
-input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
-label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; font-weight: 600; letter-spacing: .03em; }
+input:focus-visible, select:focus-visible, textarea:focus-visible,
+button:focus-visible, .tab:focus-visible {
+  outline: 2px solid var(--gold-bright); outline-offset: 2px;
+}
+label {
+  display: block; font-size: 11px; color: var(--muted);
+  margin-bottom: 5px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.09em;
+}
 .field { margin-bottom: 12px; }
 
 /* --- day picker --- */
-.day-card { display: flex; align-items: center; gap: 12px; text-align: left; width: 100%; }
+.day-card { display: flex; align-items: center; gap: 13px; text-align: left; width: 100%; }
 .day-card .n {
-  width: 38px; height: 38px; flex: none; border-radius: 11px;
-  background: var(--accent-soft); color: var(--accent);
-  display: grid; place-items: center; font-weight: 800;
+  width: 42px; height: 42px; flex: none; border-radius: 50%;
+  background: var(--gold-soft); color: var(--gold);
+  border: 1px solid rgba(201, 162, 39, 0.35);
+  display: grid; place-items: center;
+  font-family: var(--display); font-weight: 700; font-size: 15px;
 }
 .day-card .body { flex: 1; min-width: 0; }
-.day-card .body .t { font-weight: 700; }
+.day-card .body .t { font-family: var(--display); font-weight: 600; font-size: 15.5px; }
 .day-card .body .s { color: var(--muted); font-size: 12px; }
 
 /* --- exercise logging --- */
-.ex { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); margin-bottom: 10px; overflow: hidden; }
-.ex-head { display: flex; align-items: center; gap: 10px; padding: 12px 14px; width: 100%; background: none; border: 0; color: inherit; text-align: left; }
-.ex-head .t { flex: 1; min-width: 0; }
-.ex-head .t .n { font-weight: 700; }
-.ex-head .t .m { font-size: 12px; color: var(--muted); }
-.ex-head .count { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
-.ex-body { padding: 0 14px 12px; border-top: 1px solid var(--line); }
-.ex.done .ex-head .count { color: var(--good); }
-
-.hint { background: var(--accent-soft); border-radius: 10px; padding: 9px 11px; font-size: 12.5px; margin: 10px 0; color: #f4b5a6; }
-.prev { font-size: 12px; color: var(--muted); margin: 10px 0 6px; }
-
-.setrow { display: grid; grid-template-columns: 22px 1fr 1fr 46px 42px 30px; gap: 6px; align-items: center; margin-bottom: 7px; }
-.setrow .idx { color: var(--muted); font-size: 12px; text-align: center; font-weight: 700; }
-.setrow input { padding: 8px 4px; text-align: center; min-height: 42px; }
-.setrow .tick {
-  min-height: 42px; border-radius: 10px; border: 1px solid var(--line);
-  background: var(--surface-2); color: var(--muted); font-size: 17px; font-weight: 700;
+.ex {
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--surface); margin-bottom: 10px; overflow: hidden;
 }
-.setrow .tick[aria-pressed="true"] { background: var(--good); border-color: var(--good); color: #06210f; }
-.setrow .kill { min-height: 42px; border-radius: 10px; border: 1px solid var(--line); background: transparent; color: var(--muted); padding: 0; font-size: 15px; }
-.setlabels { display: grid; grid-template-columns: 22px 1fr 1fr 46px 42px 30px; gap: 6px; font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; font-weight: 700; }
+.ex.done { border-left: 3px solid var(--laurel); }
+.ex-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 13px 14px; width: 100%;
+  background: none; border: 0; color: inherit; text-align: left;
+}
+.ex-head .t { flex: 1; min-width: 0; }
+.ex-head .t .n { font-weight: 600; font-size: 15.5px; }
+.ex-head .t .m { font-size: 12px; color: var(--muted); }
+.ex-head .count { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; font-weight: 600; }
+.ex.done .ex-head .count { color: var(--laurel); }
+.ex-body { padding: 0 14px 13px; border-top: 1px solid var(--line); }
+
+.hint {
+  background: var(--gold-soft);
+  border-left: 2px solid var(--gold);
+  border-radius: 0 8px 8px 0;
+  padding: 9px 12px; font-size: 12.5px; margin: 11px 0; color: #e8d5a3;
+}
+.prev { font-size: 12px; color: var(--muted); margin: 11px 0 6px; font-variant-numeric: tabular-nums; }
+
+.setrow, .setlabels {
+  display: grid; grid-template-columns: 22px 1fr 1fr 46px 42px 30px;
+  gap: 6px; align-items: center;
+}
+.setrow { margin-bottom: 7px; }
+.setrow .idx { color: var(--dim); font-size: 12px; text-align: center; font-weight: 700; }
+.setrow input {
+  padding: 8px 4px; text-align: center; min-height: 42px;
+  font-variant-numeric: tabular-nums; font-weight: 600;
+}
+.setrow .tick {
+  min-height: 42px; border-radius: 9px; border: 1px solid var(--line-bright);
+  background: var(--surface-2); color: var(--dim); font-size: 17px; font-weight: 700;
+}
+.setrow .tick[aria-pressed="true"] { background: var(--laurel); border-color: var(--laurel); color: #06210f; }
+.setrow .kill {
+  min-height: 42px; border-radius: 9px; border: 1px solid var(--line);
+  background: transparent; color: var(--dim); padding: 0; font-size: 15px;
+}
+.setlabels {
+  font-size: 10px; color: var(--dim); text-transform: uppercase;
+  letter-spacing: 0.1em; margin-bottom: 6px; font-weight: 700;
+}
 .setlabels span { text-align: center; }
 
-/* --- stats --- */
-.stat { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; }
-.stat .k { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; font-weight: 700; }
-.stat .v { font-size: 21px; font-weight: 800; margin-top: 3px; font-variant-numeric: tabular-nums; }
+/* --- data tiles --- */
+.stat {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 13px;
+}
+.stat .k {
+  font-size: 10.5px; color: var(--muted); text-transform: uppercase;
+  letter-spacing: 0.11em; font-weight: 700;
+}
+.stat .v {
+  font-size: 23px; font-weight: 700; margin-top: 3px;
+  font-variant-numeric: tabular-nums; color: var(--text);
+}
 .stat .u { font-size: 12px; color: var(--muted); font-weight: 600; }
 
-.pill { font-size: 11px; padding: 3px 8px; border-radius: 999px; font-weight: 800; letter-spacing: .04em; }
-.pill.ok { background: rgba(62,207,142,.16); color: var(--good); }
-.pill.low { background: rgba(240,180,41,.16); color: var(--warn); }
-.pill.high { background: rgba(239,90,90,.16); color: var(--bad); }
-.pill.pr { background: var(--accent); color: #fff; }
+.pill { font-size: 10.5px; padding: 3px 9px; border-radius: 999px; font-weight: 700; letter-spacing: 0.07em; }
+.pill.ok { background: rgba(95, 167, 119, 0.16); color: var(--laurel); }
+.pill.low { background: rgba(217, 164, 65, 0.16); color: var(--amber); }
+.pill.high { background: rgba(180, 72, 63, 0.18); color: #d4695f; }
+.pill.pr { background: var(--gold); color: #241c05; }
 
-.bar { height: 8px; background: var(--surface-2); border-radius: 999px; overflow: hidden; margin-top: 7px; }
-.bar > i { display: block; height: 100%; background: var(--good); border-radius: 999px; }
-.bar.low > i { background: var(--warn); }
-.bar.high > i { background: var(--bad); }
+.bar { height: 7px; background: var(--surface-2); border-radius: 999px; overflow: hidden; margin-top: 7px; }
+.bar > i { display: block; height: 100%; background: var(--laurel); border-radius: 999px; }
+.bar.low > i { background: var(--amber); }
+.bar.high > i { background: var(--amphora); }
 
-.banner { border-radius: var(--radius); padding: 12px 14px; margin-bottom: 12px; font-size: 13.5px; border: 1px solid; }
-.banner.ok { background: rgba(62,207,142,.08); border-color: rgba(62,207,142,.3); }
-.banner.warn { background: rgba(240,180,41,.08); border-color: rgba(240,180,41,.32); }
-.banner.stop { background: rgba(239,90,90,.09); border-color: rgba(239,90,90,.34); }
-.banner b { display: block; margin-bottom: 4px; }
+.banner {
+  border-radius: var(--radius); padding: 13px 15px; margin-bottom: 12px;
+  font-size: 13.5px; border: 1px solid;
+}
+.banner.ok { background: rgba(95, 167, 119, 0.08); border-color: rgba(95, 167, 119, 0.32); }
+.banner.warn { background: rgba(217, 164, 65, 0.08); border-color: rgba(217, 164, 65, 0.34); }
+.banner.stop { background: rgba(180, 72, 63, 0.1); border-color: rgba(180, 72, 63, 0.4); }
+.banner b {
+  display: block; margin-bottom: 4px;
+  font-family: var(--display); letter-spacing: 0.04em;
+}
 .banner ul { margin: 4px 0 0; padding-left: 18px; }
 
 .empty { text-align: center; color: var(--muted); padding: 42px 18px; }
-.empty .big { font-size: 34px; margin-bottom: 10px; opacity: .5; }
+.empty .big { font-family: var(--display); font-size: 30px; color: var(--gold); opacity: 0.55; margin-bottom: 10px; letter-spacing: 0.1em; }
 
 table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); }
-th { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .07em; }
+th {
+  color: var(--muted); font-size: 10.5px;
+  text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700;
+}
 td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 
 svg.chart { width: 100%; height: 150px; display: block; overflow: visible; }
 svg.chart .grid-line { stroke: var(--line); stroke-width: 1; }
-svg.chart .line { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
-svg.chart .dot { fill: var(--accent); }
-svg.chart .lbl { fill: var(--muted); font-size: 10px; }
+svg.chart .line { fill: none; stroke: var(--gold); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+svg.chart .dot { fill: var(--gold); }
+svg.chart .lbl { fill: var(--muted); font-size: 10px; font-family: var(--body); }
+
+/* --- calendar --- */
+.cal-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+.cal-title { font-family: var(--display); font-size: 16px; font-weight: 600; letter-spacing: 0.06em; }
+.cal-nav {
+  width: 38px; height: 38px; border-radius: 9px;
+  border: 1px solid var(--line-bright); background: var(--surface-2);
+  color: var(--text); font-size: 16px; line-height: 1; padding: 0;
+}
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+.cal-dow {
+  text-align: center; font-size: 10px; font-weight: 700; color: var(--dim);
+  letter-spacing: 0.08em; padding-bottom: 4px;
+}
+.cal-day {
+  aspect-ratio: 1; display: grid; place-items: center;
+  border-radius: 50%; font-size: 12.5px; font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  border: 1px solid transparent; background: transparent;
+  color: var(--dim); padding: 0; width: 100%;
+}
+.cal-day.empty { visibility: hidden; }
+/* Rest days that have already passed: present, but quiet. */
+.cal-day.rest { color: var(--muted); border-color: var(--line); }
+.cal-day.future { color: var(--dim); opacity: 0.45; }
+/* Trained: gilt, the one loud thing in the grid. */
+.cal-day.trained {
+  background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+  border-color: var(--gold); color: #241c05; font-weight: 700;
+}
+.cal-day.today { box-shadow: 0 0 0 2px var(--aegean); }
+.cal-day.trained.today { box-shadow: 0 0 0 2px var(--aegean); }
+
+.cal-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 14px; font-size: 12px; color: var(--muted); }
+.cal-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.cal-legend i { width: 13px; height: 13px; border-radius: 50%; border: 1px solid var(--line); display: inline-block; }
+.cal-legend i.trained { background: var(--gold); border-color: var(--gold); }
+.cal-legend i.rest { background: transparent; border-color: var(--line-bright); }
+.cal-legend i.today { border-color: var(--aegean); box-shadow: 0 0 0 1.5px var(--aegean); }
 
 /* --- rest timer --- */
 .rest-bar {
-  position: fixed; left: 12px; right: 12px; bottom: calc(var(--tabbar-h) + 10px + env(safe-area-inset-bottom));
+  position: fixed; left: 12px; right: 12px;
+  bottom: calc(var(--tabbar-h) + 10px + env(safe-area-inset-bottom));
   z-index: 30; display: flex; align-items: center; gap: 10px;
-  background: var(--accent); color: #fff; border-radius: 13px; padding: 10px 13px;
-  box-shadow: 0 8px 26px rgba(0,0,0,.45); max-width: 696px; margin: 0 auto;
+  background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+  color: #241c05; border-radius: 12px; padding: 10px 13px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+  max-width: 696px; margin: 0 auto;
 }
-/* An explicit display value beats the UA [hidden] rule, so restore it. */
 .rest-bar[hidden] { display: none; }
-.rest-bar .rest-label { font-size: 12px; font-weight: 700; opacity: .85; letter-spacing: .08em; text-transform: uppercase; }
-.rest-bar .rest-time { font-size: 20px; font-variant-numeric: tabular-nums; margin-left: auto; }
-.rest-bar .chip { background: rgba(255,255,255,.16); border-color: transparent; color: #fff; }
+.rest-bar .rest-label {
+  font-family: var(--display); font-size: 11px; font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.75;
+}
+.rest-bar .rest-time { font-size: 21px; font-variant-numeric: tabular-nums; margin-left: auto; font-weight: 700; }
+.rest-bar .chip { background: rgba(36, 28, 5, 0.16); border-color: transparent; color: #241c05; font-weight: 700; }
 
-/* --- tabbar --- */
+/* --- tabbar: inscriptional, no icons --- */
 .tabbar {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 25;
   display: grid; grid-template-columns: repeat(5, 1fr);
-  background: rgba(13,15,19,.96); backdrop-filter: blur(10px);
+  background: rgba(14, 17, 22, 0.97);
+  backdrop-filter: blur(10px);
   border-top: 1px solid var(--line);
   padding-bottom: env(safe-area-inset-bottom);
 }
 .tab {
-  background: none; border: 0; color: var(--muted);
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  padding: 9px 2px; font-size: 10.5px; font-weight: 700; height: var(--tabbar-h);
-  letter-spacing: .03em;
+  background: none; border: 0; color: var(--dim);
+  display: flex; align-items: center; justify-content: center;
+  height: var(--tabbar-h); padding: 8px 2px;
+  font-family: var(--display); font-size: 10.5px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  border-top: 2px solid transparent;
 }
-.tab .ico { font-size: 16px; line-height: 1; }
-.tab[aria-selected="true"] { color: var(--accent); }
+.tab[aria-selected="true"] { color: var(--gold); border-top-color: var(--gold); }
 
 .toast {
   position: fixed; left: 50%; transform: translateX(-50%);
   bottom: calc(var(--tabbar-h) + 22px + env(safe-area-inset-bottom));
-  background: var(--surface-2); border: 1px solid var(--line); color: var(--text);
-  padding: 11px 17px; border-radius: 999px; z-index: 60; font-size: 13.5px; font-weight: 600;
-  box-shadow: 0 8px 26px rgba(0,0,0,.5); max-width: 90vw; text-align: center;
+  background: var(--surface-2); border: 1px solid var(--gold);
+  color: var(--text); padding: 11px 18px; border-radius: 999px;
+  z-index: 60; font-size: 13.5px; font-weight: 600;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.6);
+  max-width: 90vw; text-align: center;
 }
 
 .muted { color: var(--muted); }
@@ -228,17 +389,22 @@ svg.chart .lbl { fill: var(--muted); font-size: 10px; }
 .mt { margin-top: 14px; }
 .hr { height: 1px; background: var(--line); margin: 16px 0; border: 0; }
 
-.sync { font-size: 12px; line-height: 1; }
-.sync-offline { color: var(--muted); }
-.sync-syncing { color: var(--warn); }
-.sync-synced  { color: var(--good); }
-.sync-error   { color: var(--bad); }
+.sync { font-size: 11px; line-height: 1; }
+.sync-offline { color: var(--dim); }
+.sync-syncing { color: var(--amber); }
+.sync-synced  { color: var(--laurel); }
+.sync-error   { color: var(--amphora); }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+  .btn:active { transform: none; }
+}
 
 </style>
 
 <div id="app" class="app">
   <header class="topbar">
-    <div class="brand">ZOLF<span>Lift</span></div>
+    <div class="brand">ZOLF<span>LIFT</span></div>
     <div id="topbar-right" class="topbar-right"></div>
   </header>
 
@@ -252,11 +418,11 @@ svg.chart .lbl { fill: var(--muted); font-size: 10px; }
   </div>
 
   <nav class="tabbar" role="tablist">
-    <button class="tab" data-tab="today" role="tab"><span class="ico">▲</span>Today</button>
-    <button class="tab" data-tab="history" role="tab"><span class="ico">≡</span>History</button>
-    <button class="tab" data-tab="progress" role="tab"><span class="ico">◤</span>Progress</button>
-    <button class="tab" data-tab="body" role="tab"><span class="ico">◍</span>Body</button>
-    <button class="tab" data-tab="settings" role="tab"><span class="ico">⚙</span>Settings</button>
+    <button class="tab" data-tab="today" role="tab">Today</button>
+    <button class="tab" data-tab="history" role="tab">Log</button>
+    <button class="tab" data-tab="progress" role="tab">Trials</button>
+    <button class="tab" data-tab="body" role="tab">Temple</button>
+    <button class="tab" data-tab="settings" role="tab">Forge</button>
   </nav>
 </div>
 
@@ -297,11 +463,15 @@ const PROGRAMS = {
   'kasra-4day': {
     id: 'kasra-4day',
     name: 'My Split (4 day)',
+    // Each day carries a patron whose domain matches the work: Atlas bears
+    // load, Zeus presses, Herakles pulls, Ares takes the arms.
     note: 'Legs+Core / Back+Tri / Chest+Delts+Bi / Arms+Core',
     days: [
       {
         id: 'legs-core',
         name: 'Legs, Abs & Core',
+        patron: 'Atlas',
+        epithet: 'who bears the weight of the heavens',
         exercises: [
           ex('back-squat', 'Back Squat', 'quads', 4, 5, 8, 'compound'),
           ex('rdl', 'Romanian Deadlift', 'hamstrings', 3, 8, 10, 'compound'),
@@ -317,6 +487,8 @@ const PROGRAMS = {
       {
         id: 'back-triceps',
         name: 'Back & Triceps',
+        patron: 'Herakles',
+        epithet: 'of the twelve labours',
         exercises: [
           ex('weighted-pullup', 'Weighted Pull-Up', 'back', 4, 5, 8, 'compound'),
           ex('barbell-row', 'Barbell Row', 'back', 4, 6, 10, 'compound'),
@@ -332,6 +504,8 @@ const PROGRAMS = {
       {
         id: 'chest-delts-biceps',
         name: 'Chest, Shoulders & Biceps',
+        patron: 'Zeus',
+        epithet: 'who hurls the thunderbolt',
         exercises: [
           ex('bench-press', 'Barbell Bench Press', 'chest', 4, 5, 8, 'compound'),
           ex('incline-db-press', 'Incline Dumbbell Press', 'chest', 3, 8, 12, 'compound'),
@@ -346,6 +520,8 @@ const PROGRAMS = {
       {
         id: 'arms-core',
         name: 'Arms & Abs',
+        patron: 'Ares',
+        epithet: 'lord of war',
         exercises: [
           ex('ez-bar-curl', 'EZ-Bar Curl', 'biceps', 4, 8, 12),
           ex('preacher-curl', 'Preacher Curl', 'biceps', 3, 10, 12),
@@ -369,6 +545,8 @@ const PROGRAMS = {
       {
         id: 'lower-a',
         name: 'Lower A (quad focus)',
+        patron: 'Atlas',
+        epithet: 'who bears the weight of the heavens',
         exercises: [
           ex('back-squat', 'Back Squat', 'quads', 4, 5, 8, 'compound'),
           ex('leg-press', 'Leg Press', 'quads', 3, 10, 15, 'compound'),
@@ -382,6 +560,8 @@ const PROGRAMS = {
       {
         id: 'upper-push',
         name: 'Upper Push',
+        patron: 'Zeus',
+        epithet: 'who hurls the thunderbolt',
         exercises: [
           ex('bench-press', 'Barbell Bench Press', 'chest', 4, 5, 8, 'compound'),
           ex('ohp', 'Standing Overhead Press', 'shoulders', 3, 6, 8, 'compound'),
@@ -395,6 +575,8 @@ const PROGRAMS = {
       {
         id: 'lower-b',
         name: 'Lower B (posterior focus)',
+        patron: 'Poseidon',
+        epithet: 'shaker of the earth',
         exercises: [
           ex('rdl', 'Romanian Deadlift', 'hamstrings', 4, 6, 10, 'compound'),
           ex('hip-thrust', 'Hip Thrust', 'glutes', 3, 8, 12, 'compound'),
@@ -408,6 +590,8 @@ const PROGRAMS = {
       {
         id: 'upper-pull',
         name: 'Upper Pull',
+        patron: 'Herakles',
+        epithet: 'of the twelve labours',
         exercises: [
           ex('weighted-pullup', 'Weighted Pull-Up', 'back', 4, 5, 8, 'compound'),
           ex('barbell-row', 'Barbell Row', 'back', 4, 6, 10, 'compound'),
@@ -1215,6 +1399,146 @@ class Syncer {
   }
 }
 
+// ---------- src/core/calendar.js ----------
+// Month-grid maths for the training calendar. Pure and timezone-free: every
+// date is handled as a 'YYYY-MM-DD' string so a late-evening workout never
+// lands on the wrong day.
+
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
+
+const DAY_INITIALS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+
+const iso = (y, m, d) =>
+  `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+
+const parseIso = (s) => {
+  const [y, m, d] = String(s).split('-').map(Number);
+  return { y, m: m - 1, d };
+};
+
+const daysInMonth = (y, m) => new Date(y, m + 1, 0).getDate();
+
+/** Steps a year/month pair by `delta` months, rolling the year over. */
+function shiftMonth(y, m, delta) {
+  const total = y * 12 + m + delta;
+  return { y: Math.floor(total / 12), m: ((total % 12) + 12) % 12 };
+}
+
+/**
+ * A month laid out as calendar weeks.
+ * Leading and trailing cells are null so each row is exactly seven wide.
+ * @returns {(string|null)[][]}
+ */
+function monthGrid(y, m) {
+  const lead = new Date(y, m, 1).getDay();
+  const total = daysInMonth(y, m);
+  const cells = [...Array(lead).fill(null), ...Array.from({ length: total }, (_, i) => iso(y, m, i + 1))];
+  while (cells.length % 7) cells.push(null);
+  const weeks = [];
+  for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
+  return weeks;
+}
+
+/**
+ * Index of sessions by date. A date can hold more than one session, so the
+ * value is a list — two-a-days should not silently disappear.
+ * @returns {Record<string, object[]>}
+ */
+function sessionsByDate(sessions) {
+  const out = {};
+  for (const s of sessions || []) {
+    if (!s?.date) continue;
+    (out[s.date] ||= []).push(s);
+  }
+  return out;
+}
+
+/** How each day of a month should be drawn. */
+function monthDays(sessions, y, m, todayIso) {
+  const byDate = sessionsByDate(sessions);
+  return monthGrid(y, m).map((week) =>
+    week.map((date) => {
+      if (!date) return null;
+      const trained = byDate[date] || [];
+      return {
+        date,
+        day: parseIso(date).d,
+        trained: trained.length > 0,
+        sessions: trained,
+        dayId: trained[0]?.dayId || null,
+        label: trained.map((s) => s.dayName || s.dayId).join(' + '),
+        isToday: date === todayIso,
+        isFuture: date > todayIso,
+      };
+    })
+  );
+}
+
+/** Counts for the month being viewed. */
+function monthSummary(sessions, y, m, todayIso) {
+  const byDate = sessionsByDate(sessions);
+  const total = daysInMonth(y, m);
+  let trainedDays = 0;
+  let sessionCount = 0;
+  let restDays = 0;
+  for (let d = 1; d <= total; d++) {
+    const date = iso(y, m, d);
+    const hits = byDate[date];
+    if (hits?.length) {
+      trainedDays += 1;
+      sessionCount += hits.length;
+    } else if (date <= todayIso) {
+      restDays += 1;
+    }
+  }
+  return { trainedDays, sessionCount, restDays, daysInMonth: total };
+}
+
+/**
+ * Consecutive calendar weeks, counting back from the week containing
+ * `todayIso`, that hit `target` sessions or more. The current week counts only
+ * once it has already reached the target, so a week still in progress never
+ * breaks a run you are on track to keep.
+ */
+function weeklyStreak(sessions, todayIso, target = 4) {
+  const byDate = sessionsByDate(sessions);
+  const { y, m, d } = parseIso(todayIso);
+  const today = new Date(y, m, d);
+  const weekStart = new Date(today);
+  weekStart.setDate(today.getDate() - today.getDay());
+
+  let streak = 0;
+  for (let back = 0; back < 260; back++) {
+    const start = new Date(weekStart);
+    start.setDate(weekStart.getDate() - back * 7);
+    let count = 0;
+    for (let i = 0; i < 7; i++) {
+      const day = new Date(start);
+      day.setDate(start.getDate() + i);
+      const key = iso(day.getFullYear(), day.getMonth(), day.getDate());
+      if (key > todayIso) continue;
+      count += (byDate[key] || []).length;
+    }
+    if (count >= target) streak += 1;
+    else if (back > 0) break;
+    else if (count < target) continue; // an unfinished current week is not a break
+  }
+  return streak;
+}
+
+/** Whole days since the last session, or null if nothing has been logged. */
+function daysSinceLastSession(sessions, todayIso) {
+  const dates = (sessions || []).map((s) => s.date).filter(Boolean).sort();
+  const last = dates[dates.length - 1];
+  if (!last) return null;
+  const a = parseIso(last);
+  const b = parseIso(todayIso);
+  return Math.round((Date.UTC(b.y, b.m, b.d) - Date.UTC(a.y, a.m, a.d)) / 86400000);
+}
+
 // ---------- src/ui/dom.js ----------
 // Tiny DOM helpers + a dependency-free line chart.
 
@@ -1338,7 +1662,7 @@ function lineChart(points, { height = 150, unit = '' } = {}) {
 
 // ---------- src/ui/app.js ----------
 const store = new Store(window.localStorage);
-const ui = { tab: 'today', openExercise: null, openedFor: null, chartExercise: null, volumeMode: null };
+const ui = { tab: 'today', openExercise: null, openedFor: null, chartExercise: null, volumeMode: null, cal: null };
 let syncer = null;
 
 // Expose for end-to-end tests to seed and inspect state.
@@ -1436,6 +1760,7 @@ function viewDayPicker() {
         [
           el('span', { class: 'n', text: String(i + 1) }),
           el('span', { class: 'body' }, [
+            day.patron ? el('span', { class: 'eyebrow', text: day.patron }) : null,
             el('span', { class: 't', text: day.name }),
             el('br'),
             el('span', {
@@ -1484,8 +1809,15 @@ function viewActiveWorkout() {
   const totalSets = a.entries.reduce((n, e) => n + e.sets.length, 0);
   const doneSets = a.entries.reduce((n, e) => n + e.sets.filter((s) => s.done && Number(s.reps) > 0).length, 0);
 
+  const dayDef = program().days.find((d) => d.id === a.dayId);
+  if (dayDef?.patron) wrap.append(el('span', { class: 'eyebrow', text: `Under ${dayDef.patron}` }));
   wrap.append(el('h1', { text: a.dayName }));
-  wrap.append(el('p', { class: 'sub', text: `${fmtDateLong(a.date)} · ${doneSets}/${totalSets} sets logged` }));
+  wrap.append(
+    el('p', {
+      class: 'sub',
+      text: `${fmtDateLong(a.date)} · ${doneSets}/${totalSets} sets logged`,
+    })
+  );
 
   for (const entry of a.entries) {
     const exercise = idx[entry.exerciseId] || { repRange: entry.targetReps || [8, 12] };
@@ -1532,6 +1864,7 @@ function viewActiveWorkout() {
         rows: 2,
         placeholder: 'Sleep, energy, aches, anything worth remembering…',
         'data-note': '1',
+        'data-focus-key': 'session-note',
         onchange: (e) => store.updateActive((s) => ({ ...s, note: e.target.value })),
       }),
     ])
@@ -1603,6 +1936,7 @@ function exerciseBody(entry, exercise) {
       placeholder: tip.weight != null ? String(tip.weight) : '—',
       value: set.weight ?? '',
       'data-field': 'weight',
+      'data-focus-key': `set:${entry.exerciseId}:${i}:weight`,
       'aria-label': `Set ${i + 1} weight`,
       oninput: (e) => store.setSet(entry.exerciseId, i, { weight: e.target.value }),
     });
@@ -1612,6 +1946,7 @@ function exerciseBody(entry, exercise) {
       placeholder: String(tip.reps),
       value: set.reps ?? '',
       'data-field': 'reps',
+      'data-focus-key': `set:${entry.exerciseId}:${i}:reps`,
       'aria-label': `Set ${i + 1} reps`,
       oninput: (e) => store.setSet(entry.exerciseId, i, { reps: e.target.value }),
     });
@@ -1622,6 +1957,7 @@ function exerciseBody(entry, exercise) {
       placeholder: '–',
       value: set.rpe ?? '',
       'data-field': 'rpe',
+      'data-focus-key': `set:${entry.exerciseId}:${i}:rpe`,
       'aria-label': `Set ${i + 1} RPE`,
       oninput: (e) => store.setSet(entry.exerciseId, i, { rpe: e.target.value }),
     });
@@ -1702,16 +2038,96 @@ function finishWorkout() {
   else toast(`Done. ${sessionHardSets(done)} sets, ${sessionVolume(done).toLocaleString()} lb moved.`);
 }
 
+// --------------------------------------------------------------- calendar
+function viewCalendar() {
+  const todayIso = today();
+  if (!ui.cal) {
+    const { y, m } = parseIso(todayIso);
+    ui.cal = { y, m };
+  }
+  const { y, m } = ui.cal;
+  const sessions = store.state.sessions;
+  const weeks = monthDays(sessions, y, m, todayIso);
+  const summary = monthSummary(sessions, y, m, todayIso);
+  const streak = weeklyStreak(sessions, todayIso, 4);
+  const since = daysSinceLastSession(sessions, todayIso);
+
+  const wrap = el('div');
+  const card = el('div', { class: 'card', 'data-calendar': '1' });
+
+  const step = (delta) => () => {
+    ui.cal = shiftMonth(y, m, delta);
+    render();
+  };
+  card.append(
+    el('div', { class: 'cal-head' }, [
+      el('button', { class: 'cal-nav', type: 'button', 'data-cal': 'prev', 'aria-label': 'Previous month', text: '‹', onclick: step(-1) }),
+      el('div', { class: 'cal-title', 'data-cal-title': '1', text: `${MONTH_NAMES[m]} ${y}` }),
+      el('button', { class: 'cal-nav', type: 'button', 'data-cal': 'next', 'aria-label': 'Next month', text: '›', onclick: step(1) }),
+    ])
+  );
+
+  const grid = el('div', { class: 'cal-grid' });
+  DAY_INITIALS.forEach((d, i) => grid.append(el('div', { class: 'cal-dow', text: d, key: i })));
+  for (const week of weeks) {
+    for (const day of week) {
+      if (!day) {
+        grid.append(el('div', { class: 'cal-day empty', 'aria-hidden': 'true' }));
+        continue;
+      }
+      const classes = ['cal-day'];
+      if (day.trained) classes.push('trained');
+      else if (day.isFuture) classes.push('future');
+      else classes.push('rest');
+      if (day.isToday) classes.push('today');
+
+      const state = day.trained ? day.label : day.isFuture ? 'upcoming' : 'rest day';
+      grid.append(
+        el('div', {
+          class: classes.join(' '),
+          'data-day-cell': day.date,
+          'data-trained': String(day.trained),
+          title: `${day.date} — ${state}`,
+          'aria-label': `${day.date}, ${state}`,
+          text: String(day.day),
+        })
+      );
+    }
+  }
+  card.append(grid);
+
+  card.append(
+    el('div', { class: 'cal-legend' }, [
+      el('span', {}, [el('i', { class: 'trained' }), 'Trained']),
+      el('span', {}, [el('i', { class: 'rest' }), 'Rest']),
+      el('span', {}, [el('i', { class: 'today' }), 'Today']),
+    ])
+  );
+  wrap.append(card);
+
+  wrap.append(
+    el('div', { class: 'grid three', 'data-cal-stats': '1' }, [
+      statCard('This month', summary.sessionCount),
+      statCard('Streak', streak, streak === 1 ? 'wk' : 'wks'),
+      statCard('Days since', since == null ? '–' : since),
+    ])
+  );
+  return wrap;
+}
+
 // ---------------------------------------------------------------- HISTORY tab
 function viewHistory() {
   const wrap = el('div');
-  wrap.append(el('h1', { text: 'History' }));
+  wrap.append(el('h1', { text: 'Training log' }));
+  wrap.append(el('p', { class: 'sub', text: 'Gold marks a day you trained.' }));
+  wrap.append(viewCalendar());
+
   const sessions = [...store.state.sessions].reverse();
   if (!sessions.length) {
-    wrap.append(emptyState('≡', 'No workouts yet', 'Log your first session on the Today tab and it will show up here.'));
+    wrap.append(emptyState('ΟΥΔΕΝ', 'No workouts yet', 'Log your first session on the Today tab and it will appear here.'));
     return wrap;
   }
-  wrap.append(el('p', { class: 'sub', text: `${sessions.length} sessions logged` }));
+  wrap.append(el('h2', { text: `${sessions.length} sessions` }));
 
   for (const s of sessions) {
     const card = el('div', { class: 'card', 'data-session': s.id });
@@ -1770,7 +2186,7 @@ function viewHistory() {
 // --------------------------------------------------------------- PROGRESS tab
 function viewProgress() {
   const wrap = el('div');
-  wrap.append(el('h1', { text: 'Progress' }));
+  wrap.append(el('h1', { text: 'Trials' }));
 
   const idx = exIndex();
   const trained = [...new Set(store.state.sessions.flatMap((s) => s.entries.map((e) => e.exerciseId)))];
@@ -1830,7 +2246,7 @@ function viewProgress() {
   // --- per-exercise strength ---
   wrap.append(el('h2', { text: 'Strength' }));
   if (!trained.length) {
-    wrap.append(emptyState('◤', 'No lifts logged yet', 'Estimated 1RM charts appear once you have logged an exercise at least twice.'));
+    wrap.append(emptyState('ΑΓΩΝ', 'No lifts logged yet', 'Estimated 1RM charts appear once you have logged an exercise at least twice.'));
   } else {
     if (!ui.chartExercise || !trained.includes(ui.chartExercise)) ui.chartExercise = trained[0];
     const select = el('select', {
@@ -1889,7 +2305,8 @@ function viewProgress() {
 function viewBody() {
   const wrap = el('div');
   const s = store.state;
-  wrap.append(el('h1', { text: 'Body & nutrition' }));
+  wrap.append(el('h1', { text: 'The temple' }));
+  wrap.append(el('p', { class: 'sub', text: 'What you are built of, and what to feed it.' }));
 
   const latest = store.latestMetric();
   const latestBw = s.bodyweights[s.bodyweights.length - 1];
@@ -1963,7 +2380,14 @@ function viewBody() {
   // --- bodyweight logging ---
   wrap.append(el('h2', { text: 'Bodyweight' }));
   const bwCard = el('div', { class: 'card' });
-  const bwInput = el('input', { type: 'number', step: '0.1', inputmode: 'decimal', placeholder: 'lb', 'data-input': 'bodyweight' });
+  const bwInput = el('input', {
+    type: 'number',
+    step: '0.1',
+    inputmode: 'decimal',
+    placeholder: 'lb',
+    'data-input': 'bodyweight',
+    'data-focus-key': 'bodyweight',
+  });
   bwCard.append(
     el('div', { class: 'row' }, [
       el('div', { style: 'flex:1' }, [bwInput]),
@@ -2006,7 +2430,14 @@ function viewBody() {
   const inputs = {};
   const grid = el('div', { class: 'grid two' });
   for (const [key, label, ph] of fields) {
-    inputs[key] = el('input', { type: 'number', step: '0.1', inputmode: 'decimal', placeholder: ph, 'data-metric': key });
+    inputs[key] = el('input', {
+      type: 'number',
+      step: '0.1',
+      inputmode: 'decimal',
+      placeholder: ph,
+      'data-metric': key,
+      'data-focus-key': `metric:${key}`,
+    });
     grid.append(el('div', { class: 'field' }, [el('label', { text: label }), inputs[key]]));
   }
   form.append(grid);
@@ -2127,7 +2558,7 @@ async function exportBackup() {
 function viewSettings() {
   const wrap = el('div');
   const s = store.state.settings;
-  wrap.append(el('h1', { text: 'Settings' }));
+  wrap.append(el('h1', { text: 'The forge' }));
 
   wrap.append(el('h2', { text: 'Program' }));
   const progSelect = el('select', {
@@ -2178,6 +2609,7 @@ function viewSettings() {
     step: '0.5',
     value: s.bodyFatCeiling,
     'data-input': 'ceiling',
+    'data-focus-key': 'ceiling',
     onchange: (e) => {
       const v = Number(e.target.value);
       if (Number.isFinite(v) && v > 5 && v < 40) store.setSetting('bodyFatCeiling', v);
@@ -2264,6 +2696,25 @@ function syncStatusNode() {
 }
 
 /**
+ * Patch the status dot in place.
+ *
+ * Sync flips synced -> syncing -> synced after every write, which lands about a
+ * second after each keystroke. Re-rendering the view on that would destroy the
+ * input being typed into, so the dot is updated on its own.
+ */
+function updateSyncDot() {
+  const node = $('[data-sync]');
+  if (!node) return;
+  const status = syncer?.status || 'offline';
+  const { dot, title } = SYNC_LABELS[status] || SYNC_LABELS.offline;
+  node.className = `sync sync-${status}`;
+  node.dataset.sync = status;
+  node.title = title;
+  node.setAttribute('aria-label', title);
+  node.textContent = dot;
+}
+
+/**
  * Mirrors the log into the artifact db when the page is served with that
  * capability. Everything keeps working without it, on localStorage alone.
  */
@@ -2274,7 +2725,7 @@ async function startSync() {
     if (!db) return;
     // Re-render on status changes and on data arriving from another device.
     // Never on local writes: that would recreate the input being typed into.
-    syncer = new Syncer(store, { db, onStatus: () => render(), onRemoteChange: () => render() });
+    syncer = new Syncer(store, { db, onStatus: updateSyncDot, onRemoteChange: () => render() });
     await syncer.start();
     render();
   } catch {
@@ -2285,9 +2736,40 @@ async function startSync() {
 // ------------------------------------------------------------------- renderer
 const VIEWS = { today: viewToday, history: viewHistory, progress: viewProgress, body: viewBody, settings: viewSettings };
 
+/** Remembers which field the user is in, and where their caret is. */
+function captureFocus() {
+  const node = document.activeElement;
+  const key = node?.dataset?.focusKey;
+  if (!key) return null;
+  const caret = {};
+  try {
+    caret.start = node.selectionStart;
+    caret.end = node.selectionEnd;
+  } catch {
+    /* number inputs refuse selection reads in some browsers */
+  }
+  return { key, ...caret };
+}
+
+function restoreFocus(saved) {
+  if (!saved) return;
+  const node = $(`[data-focus-key="${CSS.escape(saved.key)}"]`);
+  if (!node) return;
+  node.focus();
+  if (saved.start != null) {
+    try {
+      node.setSelectionRange(saved.start, saved.end);
+    } catch {
+      /* not a text-selectable input */
+    }
+  }
+}
+
 function render() {
   const view = $('#view');
+  const focus = captureFocus();
   view.replaceChildren(VIEWS[ui.tab]());
+  restoreFocus(focus);
   for (const tab of $$('.tab')) tab.setAttribute('aria-selected', String(tab.dataset.tab === ui.tab));
 
   const right = $('#topbar-right');

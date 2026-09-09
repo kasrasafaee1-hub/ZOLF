@@ -264,3 +264,10 @@ test('every day of every program can be started', () => {
     }
   }
 });
+
+test('every source module is included in the published bundle', async () => {
+  // A module missing from the bundler builds fine and ships broken, so this
+  // guard runs in the unit suite where it fails fast.
+  const { assertAllModulesBundled } = await import('../../scripts/bundle.js');
+  await assertAllModulesBundled();
+});

@@ -34,12 +34,21 @@ export async function launch({ device = 'iPhone 13' } = {}) {
     args: ['--no-sandbox', '--disable-dev-shm-usage'],
   });
   const context = await browser.newContext({ ...devices[device], baseURL: site.url });
+
+  // The published page pulls Cinzel and Barlow from Google Fonts. This
+  // container cannot reach them, and a page-load that waits on the network
+  // makes the suite flaky, so block them: the tests then also prove the
+  // fallback stacks render a usable page.
+  await context.route('**://fonts.googleapis.com/**', (route) => route.abort());
+  await context.route('**://fonts.gstatic.com/**', (route) => route.abort());
+
   const page = await context.newPage();
 
   const errors = [];
   page.on('pageerror', (e) => errors.push(String(e.message)));
   page.on('console', (m) => {
-    if (m.type() === 'error') errors.push(m.text());
+    // Blocked font requests are expected in this container; ignore only those.
+    if (m.type() === 'error' && !/fonts\.(googleapis|gstatic)\.com/.test(m.text())) errors.push(m.text());
   });
 
   return {

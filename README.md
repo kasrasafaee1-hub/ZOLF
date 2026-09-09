@@ -3,6 +3,11 @@
 A workout and body-composition tracker built around one specific plan: a 4-day
 split, a lean bulk from 16.5% body fat, and an InBody scan every few months.
 
+Themed as a temple at night — gilt on deep aegean dark, inscriptional capitals
+(Cinzel) for headings, Barlow for data. Each training day carries a patron
+whose domain matches the work: Atlas bears the load, Zeus presses, Herakles
+pulls, Ares takes the arms.
+
 No accounts, no backend, no network. It is a static page that stores everything
 in the browser on your phone and works offline once opened.
 
@@ -28,7 +33,9 @@ and it tells you to add weight (10 lb on lower-body compounds, 5 lb on
 everything else). Fall under the bottom and it backs the weight off. Otherwise
 it holds the weight and asks for one more rep on your worst set.
 
-**History** — every session, every set, with estimated 1RM per exercise.
+**Log** — a month calendar with trained days in gold and rest days outlined,
+plus sessions this month, current week streak, and days since the last session.
+Under it, every session and set with estimated 1RM per exercise.
 
 **Progress** — weekly hard sets per muscle against hypertrophy landmarks, in two
 views: what your program prescribes, and what you actually completed in the last
@@ -57,10 +64,16 @@ glutes. Both are shipped; the app flags the imbalance rather than hiding it.
 ## Testing
 
 ```bash
-npm test           # unit + end-to-end
-npm run test:unit  # pure logic, no browser
-npm run test:e2e   # drives the real app in Chromium
+npm test             # everything below
+npm run test:unit    # pure logic, no browser
+npm run test:e2e     # drives the real app in Chromium
+npm run test:bundle  # the same suite against the single-file published build
 ```
+
+`tests/e2e/synced-app.test.js` runs the app with a stand-in for the `db`
+capability, which is how it runs when published. That configuration is not the
+default one, and a bug that only appears there — a sync tick stealing focus
+from the field being typed into — is exactly what it exists to catch.
 
 The end-to-end suite drives `playwright-core` from `node:test` rather than using
 Playwright's own runner, which cannot launch a browser in some containers. It
@@ -70,7 +83,8 @@ starts a static server on an ephemeral port, so nothing has to be running first.
 
 ```
 index.html          app shell
-src/core/           pure logic, no DOM — programs, training math, nutrition, storage
+src/core/           pure logic, no DOM — programs, training math, nutrition,
+                    calendar, storage, sync
 src/ui/             rendering and DOM helpers
 scripts/server.js   static server, shared by `npm run serve` and the tests
 public/             manifest, icon, service worker

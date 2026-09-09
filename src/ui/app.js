@@ -16,6 +16,16 @@ import {
 } from '../core/training.js';
 import { Syncer } from '../core/sync.js';
 import {
+  MONTH_NAMES,
+  DAY_INITIALS,
+  monthDays,
+  monthSummary,
+  weeklyStreak,
+  daysSinceLastSession,
+  shiftMonth,
+  parseIso,
+} from '../core/calendar.js';
+import {
   macroTargets,
   weeklyRate,
   bulkCheck,
@@ -25,7 +35,7 @@ import {
 } from '../core/nutrition.js';
 
 const store = new Store(window.localStorage);
-const ui = { tab: 'today', openExercise: null, openedFor: null, chartExercise: null, volumeMode: null };
+const ui = { tab: 'today', openExercise: null, openedFor: null, chartExercise: null, volumeMode: null, cal: null };
 let syncer = null;
 
 // Expose for end-to-end tests to seed and inspect state.
@@ -123,6 +133,7 @@ function viewDayPicker() {
         [
           el('span', { class: 'n', text: String(i + 1) }),
           el('span', { class: 'body' }, [
+            day.patron ? el('span', { class: 'eyebrow', text: day.patron }) : null,
             el('span', { class: 't', text: day.name }),
             el('br'),
             el('span', {
@@ -171,8 +182,15 @@ function viewActiveWorkout() {
   const totalSets = a.entries.reduce((n, e) => n + e.sets.length, 0);
   const doneSets = a.entries.reduce((n, e) => n + e.sets.filter((s) => s.done && Number(s.reps) > 0).length, 0);
 
+  const dayDef = program().days.find((d) => d.id === a.dayId);
+  if (dayDef?.patron) wrap.append(el('span', { class: 'eyebrow', text: `Under ${dayDef.patron}` }));
   wrap.append(el('h1', { text: a.dayName }));
-  wrap.append(el('p', { class: 'sub', text: `${fmtDateLong(a.date)} · ${doneSets}/${totalSets} sets logged` }));
+  wrap.append(
+    el('p', {
+      class: 'sub',
+      text: `${fmtDateLong(a.date)} · ${doneSets}/${totalSets} sets logged`,
+    })
+  );
 
   for (const entry of a.entries) {
     const exercise = idx[entry.exerciseId] || { repRange: entry.targetReps || [8, 12] };
@@ -219,6 +237,7 @@ function viewActiveWorkout() {
         rows: 2,
         placeholder: 'Sleep, energy, aches, anything worth remembering…',
         'data-note': '1',
+        'data-focus-key': 'session-note',
         onchange: (e) => store.updateActive((s) => ({ ...s, note: e.target.value })),
       }),
     ])
@@ -290,6 +309,7 @@ function exerciseBody(entry, exercise) {
       placeholder: tip.weight != null ? String(tip.weight) : '—',
       value: set.weight ?? '',
       'data-field': 'weight',
+      'data-focus-key': `set:${entry.exerciseId}:${i}:weight`,
       'aria-label': `Set ${i + 1} weight`,
       oninput: (e) => store.setSet(entry.exerciseId, i, { weight: e.target.value }),
     });
@@ -299,6 +319,7 @@ function exerciseBody(entry, exercise) {
       placeholder: String(tip.reps),
       value: set.reps ?? '',
       'data-field': 'reps',
+      'data-focus-key': `set:${entry.exerciseId}:${i}:reps`,
       'aria-label': `Set ${i + 1} reps`,
       oninput: (e) => store.setSet(entry.exerciseId, i, { reps: e.target.value }),
     });
@@ -309,6 +330,7 @@ function exerciseBody(entry, exercise) {
       placeholder: '–',
       value: set.rpe ?? '',
       'data-field': 'rpe',
+      'data-focus-key': `set:${entry.exerciseId}:${i}:rpe`,
       'aria-label': `Set ${i + 1} RPE`,
       oninput: (e) => store.setSet(entry.exerciseId, i, { rpe: e.target.value }),
     });
@@ -389,16 +411,96 @@ function finishWorkout() {
   else toast(`Done. ${sessionHardSets(done)} sets, ${sessionVolume(done).toLocaleString()} lb moved.`);
 }
 
+// --------------------------------------------------------------- calendar
+function viewCalendar() {
+  const todayIso = today();
+  if (!ui.cal) {
+    const { y, m } = parseIso(todayIso);
+    ui.cal = { y, m };
+  }
+  const { y, m } = ui.cal;
+  const sessions = store.state.sessions;
+  const weeks = monthDays(sessions, y, m, todayIso);
+  const summary = monthSummary(sessions, y, m, todayIso);
+  const streak = weeklyStreak(sessions, todayIso, 4);
+  const since = daysSinceLastSession(sessions, todayIso);
+
+  const wrap = el('div');
+  const card = el('div', { class: 'card', 'data-calendar': '1' });
+
+  const step = (delta) => () => {
+    ui.cal = shiftMonth(y, m, delta);
+    render();
+  };
+  card.append(
+    el('div', { class: 'cal-head' }, [
+      el('button', { class: 'cal-nav', type: 'button', 'data-cal': 'prev', 'aria-label': 'Previous month', text: '‹', onclick: step(-1) }),
+      el('div', { class: 'cal-title', 'data-cal-title': '1', text: `${MONTH_NAMES[m]} ${y}` }),
+      el('button', { class: 'cal-nav', type: 'button', 'data-cal': 'next', 'aria-label': 'Next month', text: '›', onclick: step(1) }),
+    ])
+  );
+
+  const grid = el('div', { class: 'cal-grid' });
+  DAY_INITIALS.forEach((d, i) => grid.append(el('div', { class: 'cal-dow', text: d, key: i })));
+  for (const week of weeks) {
+    for (const day of week) {
+      if (!day) {
+        grid.append(el('div', { class: 'cal-day empty', 'aria-hidden': 'true' }));
+        continue;
+      }
+      const classes = ['cal-day'];
+      if (day.trained) classes.push('trained');
+      else if (day.isFuture) classes.push('future');
+      else classes.push('rest');
+      if (day.isToday) classes.push('today');
+
+      const state = day.trained ? day.label : day.isFuture ? 'upcoming' : 'rest day';
+      grid.append(
+        el('div', {
+          class: classes.join(' '),
+          'data-day-cell': day.date,
+          'data-trained': String(day.trained),
+          title: `${day.date} — ${state}`,
+          'aria-label': `${day.date}, ${state}`,
+          text: String(day.day),
+        })
+      );
+    }
+  }
+  card.append(grid);
+
+  card.append(
+    el('div', { class: 'cal-legend' }, [
+      el('span', {}, [el('i', { class: 'trained' }), 'Trained']),
+      el('span', {}, [el('i', { class: 'rest' }), 'Rest']),
+      el('span', {}, [el('i', { class: 'today' }), 'Today']),
+    ])
+  );
+  wrap.append(card);
+
+  wrap.append(
+    el('div', { class: 'grid three', 'data-cal-stats': '1' }, [
+      statCard('This month', summary.sessionCount),
+      statCard('Streak', streak, streak === 1 ? 'wk' : 'wks'),
+      statCard('Days since', since == null ? '–' : since),
+    ])
+  );
+  return wrap;
+}
+
 // ---------------------------------------------------------------- HISTORY tab
 function viewHistory() {
   const wrap = el('div');
-  wrap.append(el('h1', { text: 'History' }));
+  wrap.append(el('h1', { text: 'Training log' }));
+  wrap.append(el('p', { class: 'sub', text: 'Gold marks a day you trained.' }));
+  wrap.append(viewCalendar());
+
   const sessions = [...store.state.sessions].reverse();
   if (!sessions.length) {
-    wrap.append(emptyState('≡', 'No workouts yet', 'Log your first session on the Today tab and it will show up here.'));
+    wrap.append(emptyState('ΟΥΔΕΝ', 'No workouts yet', 'Log your first session on the Today tab and it will appear here.'));
     return wrap;
   }
-  wrap.append(el('p', { class: 'sub', text: `${sessions.length} sessions logged` }));
+  wrap.append(el('h2', { text: `${sessions.length} sessions` }));
 
   for (const s of sessions) {
     const card = el('div', { class: 'card', 'data-session': s.id });
@@ -457,7 +559,7 @@ function viewHistory() {
 // --------------------------------------------------------------- PROGRESS tab
 function viewProgress() {
   const wrap = el('div');
-  wrap.append(el('h1', { text: 'Progress' }));
+  wrap.append(el('h1', { text: 'Trials' }));
 
   const idx = exIndex();
   const trained = [...new Set(store.state.sessions.flatMap((s) => s.entries.map((e) => e.exerciseId)))];
@@ -517,7 +619,7 @@ function viewProgress() {
   // --- per-exercise strength ---
   wrap.append(el('h2', { text: 'Strength' }));
   if (!trained.length) {
-    wrap.append(emptyState('◤', 'No lifts logged yet', 'Estimated 1RM charts appear once you have logged an exercise at least twice.'));
+    wrap.append(emptyState('ΑΓΩΝ', 'No lifts logged yet', 'Estimated 1RM charts appear once you have logged an exercise at least twice.'));
   } else {
     if (!ui.chartExercise || !trained.includes(ui.chartExercise)) ui.chartExercise = trained[0];
     const select = el('select', {
@@ -576,7 +678,8 @@ function viewProgress() {
 function viewBody() {
   const wrap = el('div');
   const s = store.state;
-  wrap.append(el('h1', { text: 'Body & nutrition' }));
+  wrap.append(el('h1', { text: 'The temple' }));
+  wrap.append(el('p', { class: 'sub', text: 'What you are built of, and what to feed it.' }));
 
   const latest = store.latestMetric();
   const latestBw = s.bodyweights[s.bodyweights.length - 1];
@@ -650,7 +753,14 @@ function viewBody() {
   // --- bodyweight logging ---
   wrap.append(el('h2', { text: 'Bodyweight' }));
   const bwCard = el('div', { class: 'card' });
-  const bwInput = el('input', { type: 'number', step: '0.1', inputmode: 'decimal', placeholder: 'lb', 'data-input': 'bodyweight' });
+  const bwInput = el('input', {
+    type: 'number',
+    step: '0.1',
+    inputmode: 'decimal',
+    placeholder: 'lb',
+    'data-input': 'bodyweight',
+    'data-focus-key': 'bodyweight',
+  });
   bwCard.append(
     el('div', { class: 'row' }, [
       el('div', { style: 'flex:1' }, [bwInput]),
@@ -693,7 +803,14 @@ function viewBody() {
   const inputs = {};
   const grid = el('div', { class: 'grid two' });
   for (const [key, label, ph] of fields) {
-    inputs[key] = el('input', { type: 'number', step: '0.1', inputmode: 'decimal', placeholder: ph, 'data-metric': key });
+    inputs[key] = el('input', {
+      type: 'number',
+      step: '0.1',
+      inputmode: 'decimal',
+      placeholder: ph,
+      'data-metric': key,
+      'data-focus-key': `metric:${key}`,
+    });
     grid.append(el('div', { class: 'field' }, [el('label', { text: label }), inputs[key]]));
   }
   form.append(grid);
@@ -814,7 +931,7 @@ async function exportBackup() {
 function viewSettings() {
   const wrap = el('div');
   const s = store.state.settings;
-  wrap.append(el('h1', { text: 'Settings' }));
+  wrap.append(el('h1', { text: 'The forge' }));
 
   wrap.append(el('h2', { text: 'Program' }));
   const progSelect = el('select', {
@@ -865,6 +982,7 @@ function viewSettings() {
     step: '0.5',
     value: s.bodyFatCeiling,
     'data-input': 'ceiling',
+    'data-focus-key': 'ceiling',
     onchange: (e) => {
       const v = Number(e.target.value);
       if (Number.isFinite(v) && v > 5 && v < 40) store.setSetting('bodyFatCeiling', v);
@@ -951,6 +1069,25 @@ function syncStatusNode() {
 }
 
 /**
+ * Patch the status dot in place.
+ *
+ * Sync flips synced -> syncing -> synced after every write, which lands about a
+ * second after each keystroke. Re-rendering the view on that would destroy the
+ * input being typed into, so the dot is updated on its own.
+ */
+function updateSyncDot() {
+  const node = $('[data-sync]');
+  if (!node) return;
+  const status = syncer?.status || 'offline';
+  const { dot, title } = SYNC_LABELS[status] || SYNC_LABELS.offline;
+  node.className = `sync sync-${status}`;
+  node.dataset.sync = status;
+  node.title = title;
+  node.setAttribute('aria-label', title);
+  node.textContent = dot;
+}
+
+/**
  * Mirrors the log into the artifact db when the page is served with that
  * capability. Everything keeps working without it, on localStorage alone.
  */
@@ -961,7 +1098,7 @@ async function startSync() {
     if (!db) return;
     // Re-render on status changes and on data arriving from another device.
     // Never on local writes: that would recreate the input being typed into.
-    syncer = new Syncer(store, { db, onStatus: () => render(), onRemoteChange: () => render() });
+    syncer = new Syncer(store, { db, onStatus: updateSyncDot, onRemoteChange: () => render() });
     await syncer.start();
     render();
   } catch {
@@ -972,9 +1109,40 @@ async function startSync() {
 // ------------------------------------------------------------------- renderer
 const VIEWS = { today: viewToday, history: viewHistory, progress: viewProgress, body: viewBody, settings: viewSettings };
 
+/** Remembers which field the user is in, and where their caret is. */
+function captureFocus() {
+  const node = document.activeElement;
+  const key = node?.dataset?.focusKey;
+  if (!key) return null;
+  const caret = {};
+  try {
+    caret.start = node.selectionStart;
+    caret.end = node.selectionEnd;
+  } catch {
+    /* number inputs refuse selection reads in some browsers */
+  }
+  return { key, ...caret };
+}
+
+function restoreFocus(saved) {
+  if (!saved) return;
+  const node = $(`[data-focus-key="${CSS.escape(saved.key)}"]`);
+  if (!node) return;
+  node.focus();
+  if (saved.start != null) {
+    try {
+      node.setSelectionRange(saved.start, saved.end);
+    } catch {
+      /* not a text-selectable input */
+    }
+  }
+}
+
 function render() {
   const view = $('#view');
+  const focus = captureFocus();
   view.replaceChildren(VIEWS[ui.tab]());
+  restoreFocus(focus);
   for (const tab of $$('.tab')) tab.setAttribute('aria-selected', String(tab.dataset.tab === ui.tab));
 
   const right = $('#topbar-right');

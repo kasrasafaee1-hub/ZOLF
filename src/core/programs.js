@@ -31,11 +31,15 @@ export const PROGRAMS = {
   'kasra-4day': {
     id: 'kasra-4day',
     name: 'My Split (4 day)',
+    // Each day carries a patron whose domain matches the work: Atlas bears
+    // load, Zeus presses, Herakles pulls, Ares takes the arms.
     note: 'Legs+Core / Back+Tri / Chest+Delts+Bi / Arms+Core',
     days: [
       {
         id: 'legs-core',
         name: 'Legs, Abs & Core',
+        patron: 'Atlas',
+        epithet: 'who bears the weight of the heavens',
         exercises: [
           ex('back-squat', 'Back Squat', 'quads', 4, 5, 8, 'compound'),
           ex('rdl', 'Romanian Deadlift', 'hamstrings', 3, 8, 10, 'compound'),
@@ -51,6 +55,8 @@ export const PROGRAMS = {
       {
         id: 'back-triceps',
         name: 'Back & Triceps',
+        patron: 'Herakles',
+        epithet: 'of the twelve labours',
         exercises: [
           ex('weighted-pullup', 'Weighted Pull-Up', 'back', 4, 5, 8, 'compound'),
           ex('barbell-row', 'Barbell Row', 'back', 4, 6, 10, 'compound'),
@@ -66,6 +72,8 @@ export const PROGRAMS = {
       {
         id: 'chest-delts-biceps',
         name: 'Chest, Shoulders & Biceps',
+        patron: 'Zeus',
+        epithet: 'who hurls the thunderbolt',
         exercises: [
           ex('bench-press', 'Barbell Bench Press', 'chest', 4, 5, 8, 'compound'),
           ex('incline-db-press', 'Incline Dumbbell Press', 'chest', 3, 8, 12, 'compound'),
@@ -80,6 +88,8 @@ export const PROGRAMS = {
       {
         id: 'arms-core',
         name: 'Arms & Abs',
+        patron: 'Ares',
+        epithet: 'lord of war',
         exercises: [
           ex('ez-bar-curl', 'EZ-Bar Curl', 'biceps', 4, 8, 12),
           ex('preacher-curl', 'Preacher Curl', 'biceps', 3, 10, 12),
@@ -103,6 +113,8 @@ export const PROGRAMS = {
       {
         id: 'lower-a',
         name: 'Lower A (quad focus)',
+        patron: 'Atlas',
+        epithet: 'who bears the weight of the heavens',
         exercises: [
           ex('back-squat', 'Back Squat', 'quads', 4, 5, 8, 'compound'),
           ex('leg-press', 'Leg Press', 'quads', 3, 10, 15, 'compound'),
@@ -116,6 +128,8 @@ export const PROGRAMS = {
       {
         id: 'upper-push',
         name: 'Upper Push',
+        patron: 'Zeus',
+        epithet: 'who hurls the thunderbolt',
         exercises: [
           ex('bench-press', 'Barbell Bench Press', 'chest', 4, 5, 8, 'compound'),
           ex('ohp', 'Standing Overhead Press', 'shoulders', 3, 6, 8, 'compound'),
@@ -129,6 +143,8 @@ export const PROGRAMS = {
       {
         id: 'lower-b',
         name: 'Lower B (posterior focus)',
+        patron: 'Poseidon',
+        epithet: 'shaker of the earth',
         exercises: [
           ex('rdl', 'Romanian Deadlift', 'hamstrings', 4, 6, 10, 'compound'),
           ex('hip-thrust', 'Hip Thrust', 'glutes', 3, 8, 12, 'compound'),
@@ -142,6 +158,8 @@ export const PROGRAMS = {
       {
         id: 'upper-pull',
         name: 'Upper Pull',
+        patron: 'Herakles',
+        epithet: 'of the twelve labours',
         exercises: [
           ex('weighted-pullup', 'Weighted Pull-Up', 'back', 4, 5, 8, 'compound'),
           ex('barbell-row', 'Barbell Row', 'back', 4, 6, 10, 'compound'),
