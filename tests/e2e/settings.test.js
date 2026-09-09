@@ -148,3 +148,70 @@ test('erase wipes everything after confirmation', async () => {
   await expect(page.locator('#topbar-right')).toContainText('0 sessions');
   assert.deepEqual(app.errors, []);
 });
+
+test('export goes through the downloads capability when the host provides one', async () => {
+  // The artifact viewer makes <a download> inert, so the page must hand the
+  // file to window.claude.downloads instead. Stand in for that host here.
+  await page.addInitScript(() => {
+    window.__saves = [];
+    window.claude = {
+      use: async (name) =>
+        name === 'downloads'
+          ? {
+              save: async (req) => {
+                window.__saves.push({ filename: req.filename, data: req.data });
+                return { status: 'saved' };
+              },
+            }
+          : null,
+    };
+  });
+  await app.reset();
+  await tab(page, 'today');
+  await page.locator('[data-day="legs-core"]').click();
+  await logSet(page, 'back-squat', 0, 185, 8);
+  await page.locator('[data-action="finish"]').click();
+  await tab(page, 'settings');
+
+  await page.locator('[data-action="export"]').click();
+  await expect(page.locator('#toast')).toContainText('Exported');
+
+  const saves = await page.evaluate(() => window.__saves);
+  assert.equal(saves.length, 1, 'the file went through the capability, not an anchor');
+  assert.match(saves[0].filename, /^zolf-lift-\d{4}-\d{2}-\d{2}\.json$/);
+  const parsed = JSON.parse(saves[0].data);
+  assert.equal(parsed.sessions.length, 1);
+  assert.equal(parsed.sessions[0].entries[0].sets[0].weight, '185');
+
+  await page.addInitScript(() => {
+    delete window.claude;
+  });
+  await app.reset();
+});
+
+test('a viewer declining the save is reported, not retried', async () => {
+  await page.addInitScript(() => {
+    window.__saveAttempts = 0;
+    window.claude = {
+      use: async (name) =>
+        name === 'downloads'
+          ? {
+              save: async () => {
+                window.__saveAttempts += 1;
+                throw { code: 'declined', message: 'viewer said no' };
+              },
+            }
+          : null,
+    };
+  });
+  await app.reset();
+  await tab(page, 'settings');
+  await page.locator('[data-action="export"]').click();
+  await expect(page.locator('#toast')).toContainText('cancelled');
+  assert.equal(await page.evaluate(() => window.__saveAttempts), 1, 'no auto-retry');
+
+  await page.addInitScript(() => {
+    delete window.claude;
+  });
+  await app.reset();
+});

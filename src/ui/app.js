@@ -14,6 +14,7 @@ import {
   volumeAudit,
   buildExerciseIndex,
 } from '../core/training.js';
+import { Syncer } from '../core/sync.js';
 import {
   macroTargets,
   weeklyRate,
@@ -25,6 +26,7 @@ import {
 
 const store = new Store(window.localStorage);
 const ui = { tab: 'today', openExercise: null, openedFor: null, chartExercise: null, volumeMode: null };
+let syncer = null;
 
 // Expose for end-to-end tests to seed and inspect state.
 window.__zolf = { store, render: () => render() };
@@ -768,6 +770,46 @@ function viewBody() {
   return wrap;
 }
 
+/**
+ * Hand the log to the viewer as a file.
+ *
+ * A plain <a download> is inert inside the artifact viewer, so when the
+ * downloads capability is present the save goes through it. The anchor is kept
+ * for the version served from a plain web server, where it is the only option.
+ */
+async function exportBackup() {
+  const filename = `zolf-lift-${today()}.json`;
+  const json = store.exportJSON();
+
+  if (typeof window.claude?.use === 'function') {
+    let downloads = null;
+    try {
+      downloads = await window.claude.use('downloads');
+    } catch {
+      downloads = null;
+    }
+    if (downloads) {
+      try {
+        await downloads.save({ filename, data: json });
+        toast('Exported.');
+      } catch (err) {
+        // `declined` is the viewer saying no; never retry, never fall through
+        // to an anchor that would silently do nothing.
+        toast(err?.code === 'declined' ? 'Export cancelled.' : 'Could not export here.');
+      }
+      return;
+    }
+  }
+
+  const blob = new Blob([json], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('Exported.');
+}
+
 // --------------------------------------------------------------- SETTINGS tab
 function viewSettings() {
   const wrap = el('div');
@@ -843,15 +885,7 @@ function viewSettings() {
       class: 'btn block',
       'data-action': 'export',
       text: 'Export data (JSON)',
-      onclick: () => {
-        const blob = new Blob([store.exportJSON()], { type: 'application/json' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `zolf-lift-${today()}.json`;
-        a.click();
-        URL.revokeObjectURL(a.href);
-        toast('Exported.');
-      },
+      onclick: () => exportBackup(),
     })
   );
   const file = el('input', { type: 'file', accept: 'application/json', 'data-input': 'import', style: 'display:none' });
@@ -896,6 +930,45 @@ function viewSettings() {
   return wrap;
 }
 
+// ---------------------------------------------------------------------- sync
+const SYNC_LABELS = {
+  offline: { dot: '○', title: 'This device only — not synced' },
+  syncing: { dot: '◐', title: 'Syncing…' },
+  synced: { dot: '●', title: 'Synced — your log is backed up' },
+  error: { dot: '⚠', title: 'Sync failed — your log is still safe on this device' },
+};
+
+function syncStatusNode() {
+  const status = syncer?.status || 'offline';
+  const { dot, title } = SYNC_LABELS[status] || SYNC_LABELS.offline;
+  return el('span', {
+    class: `sync sync-${status}`,
+    'data-sync': status,
+    title,
+    'aria-label': title,
+    text: dot,
+  });
+}
+
+/**
+ * Mirrors the log into the artifact db when the page is served with that
+ * capability. Everything keeps working without it, on localStorage alone.
+ */
+async function startSync() {
+  if (typeof window.claude?.use !== 'function') return;
+  try {
+    const db = await window.claude.use('db');
+    if (!db) return;
+    // Re-render on status changes and on data arriving from another device.
+    // Never on local writes: that would recreate the input being typed into.
+    syncer = new Syncer(store, { db, onStatus: () => render(), onRemoteChange: () => render() });
+    await syncer.start();
+    render();
+  } catch {
+    /* the app is fully usable without sync */
+  }
+}
+
 // ------------------------------------------------------------------- renderer
 const VIEWS = { today: viewToday, history: viewHistory, progress: viewProgress, body: viewBody, settings: viewSettings };
 
@@ -907,6 +980,7 @@ function render() {
   const right = $('#topbar-right');
   const a = store.state.active;
   right.replaceChildren(
+    syncStatusNode(),
     a
       ? el('span', { class: 'pill pr', text: 'IN PROGRESS' })
       : el('span', { text: `${store.state.sessions.length} sessions` })
@@ -930,6 +1004,8 @@ function boot() {
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
     navigator.serviceWorker.register('./public/sw.js').catch(() => {});
   }
+
+  startSync();
 }
 
 boot();

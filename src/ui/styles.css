@@ -212,3 +212,9 @@ svg.chart .lbl { fill: var(--muted); font-size: 10px; }
 .mono { font-variant-numeric: tabular-nums; }
 .mt { margin-top: 14px; }
 .hr { height: 1px; background: var(--line); margin: 16px 0; border: 0; }
+
+.sync { font-size: 12px; line-height: 1; }
+.sync-offline { color: var(--muted); }
+.sync-syncing { color: var(--warn); }
+.sync-synced  { color: var(--good); }
+.sync-error   { color: var(--bad); }

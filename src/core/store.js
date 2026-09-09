@@ -22,6 +22,7 @@ export function memoryBackend(initial = {}) {
 export function defaultState() {
   return {
     version: SCHEMA_VERSION,
+    updatedAt: 0,
     settings: {
       programId: DEFAULT_PROGRAM_ID,
       activityId: 'moderate',
@@ -70,6 +71,9 @@ export class Store {
   update(fn) {
     const next = fn(this.state);
     if (next) this.state = next;
+    // Stamped on mutation, not on save, so import and reset reproduce their
+    // source byte for byte. mergeStates uses this to settle conflicts.
+    this.state = { ...this.state, updatedAt: Date.now() };
     this.save();
     return this.state;
   }
@@ -236,6 +240,7 @@ export function migrate(raw) {
     ...base,
     ...raw,
     version: SCHEMA_VERSION,
+    updatedAt: Number(raw.updatedAt) || 0,
     settings: { ...base.settings, ...(raw.settings || {}) },
     sessions: Array.isArray(raw.sessions) ? raw.sessions : [],
     metrics: Array.isArray(raw.metrics) ? raw.metrics : [],

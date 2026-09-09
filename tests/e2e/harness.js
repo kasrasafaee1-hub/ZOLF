@@ -20,6 +20,13 @@ function findBrowser() {
 
 export { expect, devices };
 
+/**
+ * Which document to test. Defaults to the development shell; set
+ * ZOLF_ENTRY=/dist/preview.html to run the same suite against the single-file
+ * bundle that gets published.
+ */
+export const ENTRY = process.env.ZOLF_ENTRY || '/index.html';
+
 export async function launch({ device = 'iPhone 13' } = {}) {
   const site = await startStaticServer(0);
   const browser = await chromium.launch({
@@ -40,7 +47,7 @@ export async function launch({ device = 'iPhone 13' } = {}) {
     errors,
     /** Fresh app with empty storage. */
     async reset() {
-      await page.goto(site.url + '/index.html');
+      await page.goto(site.url + ENTRY);
       await page.evaluate(() => localStorage.clear());
       await page.reload();
       await page.waitForSelector('.brand');
