@@ -32,7 +32,7 @@ test('the page loads without any console or runtime errors', async () => {
 test('starting a day opens the first exercise ready to log', async () => {
   await page.locator('[data-day="legs"]').click();
   await expect(page.getByRole('heading', { name: 'Legs' })).toBeVisible();
-  await expect(page.locator('[data-ex="back-squat"] .setrow')).toHaveCount(4);
+  await expect(page.locator('[data-ex="back-squat"] .setrow')).toHaveCount(2);
   await expect(page.locator('#topbar-right')).toContainText('IN PROGRESS');
 });
 
@@ -57,11 +57,15 @@ test('the rest timer can be extended and skipped', async () => {
   await expect(page.locator('#rest-bar')).toBeHidden();
 });
 
-test('ticking an empty set fills in the suggested target', async () => {
+test('reps arrive filled in and weight is left for you to enter', async () => {
   await page.locator('[data-day="legs"]').click();
   const row = page.locator('[data-ex="back-squat"] [data-set="0"]');
-  await row.locator('[data-field="done"]').click();
   await expect(row.locator('[data-field="reps"]')).toHaveValue('6');
+  await expect(row.locator('[data-field="weight"]')).toHaveValue('');
+  // So logging a set is: type the weight, tap the tick.
+  await row.locator('[data-field="weight"]').fill('225');
+  await row.locator('[data-field="done"]').click();
+  await expect(row.locator('[data-field="done"]')).toHaveAttribute('aria-pressed', 'true');
 });
 
 test('an in-progress workout survives a reload', async () => {
@@ -79,9 +83,9 @@ test('an in-progress workout survives a reload', async () => {
 test('sets can be added and removed mid-workout', async () => {
   await page.locator('[data-day="legs"]').click();
   await page.locator('[data-ex="back-squat"] [data-action="add-set"]').click();
-  await expect(page.locator('[data-ex="back-squat"] .setrow')).toHaveCount(5);
+  await expect(page.locator('[data-ex="back-squat"] .setrow')).toHaveCount(3);
   await page.locator('[data-ex="back-squat"] [data-set="0"] [data-field="remove"]').click();
-  await expect(page.locator('[data-ex="back-squat"] .setrow')).toHaveCount(4);
+  await expect(page.locator('[data-ex="back-squat"] .setrow')).toHaveCount(2);
 });
 
 test('exercises collapse and expand', async () => {
@@ -134,7 +138,7 @@ test('the picker flags the next day in the rotation', async () => {
 
 test('progression adds weight once every set hits the top of the range', async () => {
   await page.locator('[data-day="legs"]').click();
-  for (let i = 0; i < 4; i++) await logSet(page, 'back-squat', i, 185, 8);
+  for (let i = 0; i < 2; i++) await logSet(page, 'back-squat', i, 185, 8);
   await page.locator('[data-action="finish"]').click();
 
   await page.locator('[data-day="legs"]').click();

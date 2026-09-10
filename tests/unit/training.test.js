@@ -194,27 +194,30 @@ test('getDay resolves real days and refuses fake ones', () => {
   assert.equal(getDay('block-a', 'nope'), null);
 });
 
-test('the programmed volume is honest about what the split misses', () => {
-  // Locks in what the Trials screen tells him: the split he runs prescribes
-  // only 4 weekly sets of calves, under the range that grows them.
+test('the app reports the volume cost of two sets a lift', () => {
+  // Two sets per exercise is a deliberate choice, and it puts most muscles
+  // under the range that drives growth. The Trials screen must say so rather
+  // than present the programme as adequate.
   const audit = volumeAudit(plannedWeeklyVolume('block-a'));
-  assert.equal(audit.find((r) => r.muscle === 'calves').status, 'low');
-  for (const m of ['chest', 'back', 'shoulders', 'quads', 'hamstrings', 'biceps', 'triceps']) {
-    assert.equal(audit.find((r) => r.muscle === m).status, 'ok', `${m} should be in range`);
-  }
+  const low = audit.filter((r) => r.status === 'low').map((r) => r.muscle);
+  assert.ok(low.includes('calves'), 'calves are the worst-served muscle');
+  assert.ok(low.includes('biceps') && low.includes('triceps'), 'arms fall under at 4 sets');
+  assert.ok(low.length >= 4, 'the cut is reported broadly, not hidden');
+  // Back is the one muscle the split still trains hard enough.
+  assert.equal(audit.find((r) => r.muscle === 'back').status, 'ok');
 });
 
 
-test('the variation block trains the same muscles to the same standard', () => {
+
+test('the variation covers the same muscles at the same prescription', () => {
   const a = plannedWeeklyVolume('block-a');
   const b = plannedWeeklyVolume('block-b');
-  // Same muscle groups covered — the point of a variation, not a new split.
   assert.deepEqual(Object.keys(a).sort(), Object.keys(b).sort());
-  const audit = volumeAudit(b);
-  for (const m of ['chest', 'back', 'shoulders', 'quads', 'hamstrings', 'glutes', 'biceps', 'triceps', 'core']) {
-    assert.equal(audit.find((r) => r.muscle === m).status, 'ok', `${m} out of range in the variation`);
-  }
+  // Both blocks are the same shape, so neither is secretly the easier one.
+  const total = (v) => Object.values(v).reduce((x, y) => x + y, 0);
+  assert.equal(total(a), total(b), 'the two blocks carry equal total volume');
 });
+
 
 test('both blocks run the same four days so a swap changes only the lifts', () => {
   const a = PROGRAMS['block-a'].days.map((d) => d.id);

@@ -50,7 +50,7 @@ test('the finish bar counts sets with storage blocked', async () => {
   await page.locator('[data-day="push"]').click();
   await logSet(page, 'bench-press', 0, 225, 5);
   await logSet(page, 'bench-press', 1, 225, 5);
-  await expect(page.locator('#finish-count')).toHaveText('2/22 sets');
+  await expect(page.locator('#finish-count')).toHaveText('2/14 sets');
 });
 
 test('a whole workout reaches the calendar and the log', async () => {

@@ -155,7 +155,12 @@ function viewDayPicker() {
           class: 'card day-card',
           'data-day': day.id,
           onclick: () => {
-            store.startSession(day);
+            // Reps come pre-filled from where progression says to start, so
+            // the weight is the only thing left to enter.
+            store.startSession(day, today(), (exercise) => {
+              const prev = store.lastEntryFor(exercise.id);
+              return suggestNext(prev?.entry, exercise).reps;
+            });
             render();
           },
         },

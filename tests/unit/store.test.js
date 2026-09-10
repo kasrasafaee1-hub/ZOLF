@@ -350,3 +350,53 @@ test('one broken subscriber cannot stop the others or the save', () => {
   assert.equal(reached, 1);
   assert.equal(store.state.bodyweights.length, 1);
 });
+
+// ------------------------------------------- reps pre-filled, weight left open
+test('a new session arrives with reps filled and weight blank', () => {
+  const store = new Store(safeBackend(memoryBackend()));
+  const day = getDay('block-a', 'push');
+  store.startSession(day, '2026-09-10', (e) => e.repRange[0]);
+  for (const entry of store.state.active.entries) {
+    for (const set of entry.sets) {
+      assert.equal(set.reps, '6', `${entry.exerciseId} should arrive with reps filled`);
+      assert.equal(set.weight, '', `${entry.exerciseId} weight is the user's to enter`);
+      assert.equal(set.done, false);
+    }
+  }
+});
+
+test('pre-filled reps do not become phantom sets on finish', () => {
+  const store = new Store(safeBackend(memoryBackend()));
+  const day = getDay('block-a', 'push');
+  store.startSession(day, '2026-09-10', (e) => e.repRange[0]);
+  // Complete exactly one set; every other row still holds pre-filled reps.
+  store.setSet('bench-press', 0, { weight: 225, done: true });
+  const done = store.finishSession();
+  assert.equal(done.entries.length, 1, 'only the exercise actually worked is saved');
+  assert.equal(done.entries[0].sets.length, 1, 'only the set actually ticked is saved');
+});
+
+test('every lift is two sets of six to eight', () => {
+  for (const program of Object.values(PROGRAMS)) {
+    for (const day of program.days) {
+      for (const e of day.exercises) {
+        assert.equal(e.sets, 2, `${e.id} should be 2 sets`);
+        if (e.unit === 'sec') continue;
+        assert.deepEqual(e.repRange, [6, 8], `${e.id} should be 6-8 reps`);
+      }
+    }
+  }
+});
+
+test('a third set is one tap and inherits the row above it', () => {
+  const store = new Store(safeBackend(memoryBackend()));
+  const day = getDay('block-a', 'push');
+  store.startSession(day, '2026-09-10', (e) => e.repRange[0]);
+  store.setSet('bench-press', 1, { weight: 225, reps: 8, done: true });
+  store.addSet('bench-press');
+  const sets = store.state.active.entries[0].sets;
+  assert.equal(sets.length, 3);
+  assert.equal(sets[2].weight, 225);
+  assert.equal(sets[2].reps, 8);
+  assert.equal(sets[2].done, false);
+});

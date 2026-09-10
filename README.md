@@ -61,13 +61,18 @@ Settings:
   different exercise selection, so the stimulus changes without the structure
   moving.
 
+Every lift runs **2 sets of 6-8 reps**, by request: a short session where the
+only thing to type at the rack is the weight. Reps arrive pre-filled from the
+progression target; weight is deliberately left blank. A third set is one tap on
+"Add set" and inherits the row above it. Timed holds keep seconds.
+
 Each exercise carries its own rest, a role in the session (primary, volume,
 isolation, finisher, health, core) and the coaching cue that matters for it, and
-the rest timer uses the exercise's own rest rather than one global number. Timed
-holds like planks are logged in seconds, not reps.
+the rest timer uses the exercise's own rest rather than one global number.
 
-Both blocks prescribe only 4 weekly sets of calves, below the range that grows
-them. The Trials screen says so rather than quietly rewriting the program.
+Two sets a lift is a real volume cut — it puts most muscles under the range that
+drives growth, calves worst at 2 weekly sets. The Trials screen reports that
+plainly rather than presenting the programme as adequate.
 
 ## Testing
 

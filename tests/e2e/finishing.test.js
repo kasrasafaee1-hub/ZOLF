@@ -22,7 +22,7 @@ test('there is no finish bar until a workout is open', async () => {
 test('starting a workout puts finishing on screen straight away', async () => {
   await page.locator('[data-day="push"]').click();
   await expect(page.locator('#finish-bar')).toBeVisible();
-  await expect(page.locator('#finish-count')).toHaveText('0/22 sets');
+  await expect(page.locator('#finish-count')).toHaveText('0/14 sets');
   await expect(page.locator('#finish-day')).toHaveText('Push');
 });
 
@@ -49,9 +49,9 @@ test('the finish bar is reachable without scrolling, on a phone', async () => {
 test('the count tracks sets as they are logged', async () => {
   await page.locator('[data-day="push"]').click();
   await logSet(page, 'bench-press', 0, 185, 8);
-  await expect(page.locator('#finish-count')).toHaveText('1/22 sets');
+  await expect(page.locator('#finish-count')).toHaveText('1/14 sets');
   await logSet(page, 'bench-press', 1, 185, 8);
-  await expect(page.locator('#finish-count')).toHaveText('2/22 sets');
+  await expect(page.locator('#finish-count')).toHaveText('2/14 sets');
 });
 
 test('finishing is refused until something is actually logged', async () => {
@@ -125,7 +125,7 @@ test('an open workout survives a reload with its bar intact', async () => {
   await page.reload();
   await page.waitForSelector('.brand');
   await expect(page.locator('#finish-bar')).toBeVisible();
-  await expect(page.locator('#finish-count')).toHaveText('1/22 sets');
+  await expect(page.locator('#finish-count')).toHaveText('1/14 sets');
   await page.locator('#finish-now').click();
   await tab(page, 'history');
   await expect(page.locator('[data-session]')).toHaveCount(1);

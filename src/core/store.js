@@ -162,7 +162,14 @@ export class Store {
   }
 
   // --- workout session lifecycle ---
-  startSession(day, date = today()) {
+  /**
+   * @param day       the program day being started
+   * @param date      ISO date for the session
+   * @param prefill   (exercise) => reps to put in each row. Reps arrive filled
+   *                  in so the only thing to type at the rack is the weight;
+   *                  weight is deliberately left blank.
+   */
+  startSession(day, date = today(), prefill = null) {
     const session = {
       id: uid(),
       dayId: day.id,
@@ -176,7 +183,12 @@ export class Store {
         name: e.name,
         muscle: e.muscle,
         targetReps: e.repRange,
-        sets: Array.from({ length: e.sets }, () => ({ weight: '', reps: '', rpe: '', done: false })),
+        sets: Array.from({ length: e.sets }, () => ({
+          weight: '',
+          reps: prefill ? String(prefill(e) ?? '') : '',
+          rpe: '',
+          done: false,
+        })),
       })),
     };
     this.update((s) => ({ ...s, active: session }));
@@ -201,8 +213,9 @@ export class Store {
     return this.updateActive((a) => {
       const entry = a.entries.find((e) => e.exerciseId === exerciseId);
       if (entry) {
+        // An added set inherits the last one, so a third set is one tap.
         const last = entry.sets[entry.sets.length - 1];
-        entry.sets.push({ weight: last?.weight ?? '', reps: '', rpe: '', done: false });
+        entry.sets.push({ weight: last?.weight ?? '', reps: last?.reps ?? '', rpe: '', done: false });
       }
       return a;
     });

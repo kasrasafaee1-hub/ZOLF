@@ -89,7 +89,7 @@ test('typing a weight is not interrupted when the debounced sync fires', async (
 
 test('a full workout can be logged with sync running', async () => {
   await page.locator('[data-day="legs"]').click();
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < 2; i++) {
     const row = page.locator(`[data-ex="back-squat"] [data-set="${i}"]`);
     await row.locator('[data-field="weight"]').fill('185');
     await row.locator('[data-field="reps"]').fill('8');
