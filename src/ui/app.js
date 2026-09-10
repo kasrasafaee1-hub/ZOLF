@@ -481,13 +481,21 @@ function viewCalendar() {
         grid.append(el('div', { class: 'cal-day empty', 'aria-hidden': 'true' }));
         continue;
       }
+      const openHere = store.state.active?.date === day.date;
       const classes = ['cal-day'];
       if (day.trained) classes.push('trained');
+      else if (openHere) classes.push('pending');
       else if (day.isFuture) classes.push('future');
       else classes.push('rest');
       if (day.isToday) classes.push('today');
 
-      const state = day.trained ? day.label : day.isFuture ? 'upcoming' : 'rest day';
+      const state = day.trained
+        ? day.label
+        : openHere
+          ? 'workout open — not finished yet'
+          : day.isFuture
+            ? 'upcoming'
+            : 'rest day';
       if (day.date === ui.calSelected) classes.push('selected');
       grid.append(
         el('button', {
@@ -513,6 +521,7 @@ function viewCalendar() {
     el('div', { class: 'cal-legend' }, [
       el('span', {}, [el('i', { class: 'trained' }), 'Trained']),
       el('span', {}, [el('i', { class: 'rest' }), 'Rest']),
+      store.state.active ? el('span', {}, [el('i', { class: 'pending' }), 'Open']) : null,
       el('span', {}, [el('i', { class: 'today' }), 'Today']),
     ])
   );
@@ -610,7 +619,30 @@ function dayDetail(date) {
 function viewHistory() {
   const wrap = el('div');
   wrap.append(el('h1', { text: 'Training log' }));
-  wrap.append(el('p', { class: 'sub', text: 'Gold marks a day you trained.' }));
+  wrap.append(el('p', { class: 'sub', text: 'Green marks a day you trained.' }));
+
+  const active = store.state.active;
+  if (active) {
+    const done = active.entries.reduce((n, e) => n + e.sets.filter((s) => s.done && Number(s.reps) > 0).length, 0);
+    wrap.append(
+      el('div', { class: 'banner warn', 'data-active-banner': '1' }, [
+        el('b', { text: `${active.dayName} is still open` }),
+        `${done} ${done === 1 ? 'set' : 'sets'} logged. A workout joins the calendar and the log when you finish it.`,
+        el('button', {
+          class: 'btn primary block mt',
+          'data-action': 'finish-from-log',
+          text: done ? 'Finish it now' : 'Back to the workout',
+          onclick: () => {
+            if (done) finishWorkout();
+            else {
+              ui.tab = 'today';
+              render();
+            }
+          },
+        }),
+      ])
+    );
+  }
   wrap.append(viewCalendar());
 
   const sessions = [...store.state.sessions].reverse();
@@ -1355,6 +1387,30 @@ function viewSettings() {
   return wrap;
 }
 
+/**
+ * A workout only reaches the log when it is finished, so finishing must never
+ * be something you have to go looking for. This bar rides above the tab bar
+ * from the moment a session starts, on every tab, and is the primary way to
+ * file one — the button at the end of the exercise list is the secondary.
+ */
+function paintFinishBar() {
+  const bar = $('#finish-bar');
+  const a = store.state.active;
+  if (!a) {
+    bar.hidden = true;
+    document.body.classList.remove('has-finish-bar');
+    return;
+  }
+  const total = a.entries.reduce((n, e) => n + e.sets.length, 0);
+  const done = a.entries.reduce((n, e) => n + e.sets.filter((s) => s.done && Number(s.reps) > 0).length, 0);
+  $('#finish-count').textContent = `${done}/${total} sets`;
+  $('#finish-day').textContent = a.dayName || '';
+  $('#finish-now').textContent = done ? 'Finish workout' : 'Log a set first';
+  $('#finish-now').disabled = done === 0;
+  bar.hidden = false;
+  document.body.classList.add('has-finish-bar');
+}
+
 // ---------------------------------------------------------------------- sync
 const SYNC_LABELS = {
   offline: { dot: '○', title: 'This device only — not synced' },
@@ -1450,6 +1506,7 @@ function render() {
   const focus = captureFocus();
   view.replaceChildren(VIEWS[ui.tab]());
   restoreFocus(focus);
+  paintFinishBar();
   for (const tab of $$('.tab')) tab.setAttribute('aria-selected', String(tab.dataset.tab === ui.tab));
 
   const right = $('#topbar-right');
@@ -1469,6 +1526,7 @@ function boot() {
       render();
     });
   }
+  $('#finish-now').addEventListener('click', finishWorkout);
   $('#rest-add').addEventListener('click', () => {
     rest.endsAt += 30000;
     paintRest();

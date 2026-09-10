@@ -473,3 +473,38 @@ svg.chart .lbl { fill: var(--muted); font-size: 10px; font-family: var(--mono); 
   border-left: 2px solid var(--line-bright);
   padding: 6px 0 6px 10px; margin: 12px 0 0;
 }
+
+/* --- finishing must never be something you scroll to find --- */
+.finish-bar {
+  position: fixed; left: 0; right: 0;
+  bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
+  z-index: 26;
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 16px;
+  background: var(--surface);
+  border-top: 1px solid var(--mint);
+}
+.finish-bar[hidden] { display: none; }
+.finish-progress { flex: 1; min-width: 0; }
+.finish-count {
+  display: block; font-family: var(--display); font-size: 17px;
+  font-weight: 800; color: var(--cream); letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+.finish-day {
+  display: block; font-family: var(--mono); font-size: 9.5px;
+  color: var(--muted); text-transform: uppercase; letter-spacing: 0.09em;
+}
+.finish-bar .btn { white-space: nowrap; }
+.finish-bar .btn:disabled { opacity: 0.4; }
+
+/* Make room so the last control is never trapped under the bar. */
+body.has-finish-bar .view { padding-bottom: calc(var(--tabbar-h) + 160px); }
+body.has-finish-bar .rest-bar { bottom: calc(var(--tabbar-h) + 76px + env(safe-area-inset-bottom)); }
+
+/* A day with an unfinished workout on it. */
+.cal-day.pending {
+  border-color: var(--mint); border-style: dashed;
+  color: var(--mint);
+}
+.cal-legend i.pending { border-color: var(--mint); border-style: dashed; background: transparent; }

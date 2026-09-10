@@ -23,6 +23,14 @@
 
   <main id="view" class="view" aria-live="polite"></main>
 
+  <div id="finish-bar" class="finish-bar" hidden>
+    <div class="finish-progress">
+      <span id="finish-count" class="finish-count">0/0 sets</span>
+      <span id="finish-day" class="finish-day"></span>
+    </div>
+    <button id="finish-now" class="btn primary" type="button" data-action="finish-sticky">Finish workout</button>
+  </div>
+
   <div id="rest-bar" class="rest-bar" hidden>
     <span id="rest-label" class="rest-label">Rest</span>
     <strong id="rest-time" class="rest-time">2:30</strong>
