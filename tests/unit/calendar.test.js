@@ -13,7 +13,7 @@ import {
   parseIso,
 } from '../../src/core/calendar.js';
 
-const s = (date, dayId = 'legs-core', dayName = 'Legs, Abs & Core') => ({ id: date + dayId, date, dayId, dayName });
+const s = (date, dayId = 'legs', dayName = 'Legs') => ({ id: date + dayId, date, dayId, dayName });
 
 test('iso formatting pads month and day', () => {
   assert.equal(iso(2026, 0, 1), '2026-01-01');
@@ -67,7 +67,7 @@ test('a month starting on Sunday has no leading blanks', () => {
 });
 
 test('sessions index by date and keep two-a-days', () => {
-  const idx = sessionsByDate([s('2026-09-01'), s('2026-09-01', 'arms-core', 'Arms'), s('2026-09-03')]);
+  const idx = sessionsByDate([s('2026-09-01'), s('2026-09-01', 'full', 'Arms'), s('2026-09-03')]);
   assert.equal(idx['2026-09-01'].length, 2);
   assert.equal(idx['2026-09-03'].length, 1);
   assert.equal(idx['2026-09-02'], undefined);
@@ -82,7 +82,7 @@ test('trained days are marked and rest days are not', () => {
   const days = monthDays([s('2026-09-01'), s('2026-09-03')], 2026, 8, '2026-09-09').flat().filter(Boolean);
   const byDate = Object.fromEntries(days.map((d) => [d.date, d]));
   assert.equal(byDate['2026-09-01'].trained, true);
-  assert.equal(byDate['2026-09-01'].dayId, 'legs-core');
+  assert.equal(byDate['2026-09-01'].dayId, 'legs');
   assert.equal(byDate['2026-09-02'].trained, false);
   assert.equal(byDate['2026-09-03'].trained, true);
 });
@@ -98,16 +98,16 @@ test('today and future days are flagged', () => {
 
 test('a two-a-day is labelled with both sessions', () => {
   const days = monthDays(
-    [s('2026-09-01'), s('2026-09-01', 'arms-core', 'Arms & Abs')],
+    [s('2026-09-01'), s('2026-09-01', 'full', 'Full body')],
     2026, 8, '2026-09-09'
   ).flat().filter(Boolean);
   const day = days.find((d) => d.date === '2026-09-01');
   assert.equal(day.sessions.length, 2);
-  assert.match(day.label, /Legs.*\+.*Arms/);
+  assert.match(day.label, /Legs.*\+.*Full body/);
 });
 
 test('the month summary counts trained days, sessions and rest days so far', () => {
-  const sessions = [s('2026-09-01'), s('2026-09-01', 'arms-core'), s('2026-09-03')];
+  const sessions = [s('2026-09-01'), s('2026-09-01', 'full'), s('2026-09-03')];
   const sum = monthSummary(sessions, 2026, 8, '2026-09-09');
   assert.equal(sum.trainedDays, 2);
   assert.equal(sum.sessionCount, 3, 'both halves of the two-a-day count');

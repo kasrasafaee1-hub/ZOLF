@@ -23,8 +23,8 @@ const seed = (page, sessions) =>
   }, sessions);
 
 const squatSession = (date, weight) => ({
-  dayId: 'legs-core',
-  dayName: 'Legs, Abs & Core',
+  dayId: 'legs',
+  dayName: 'Legs',
   date,
   entries: [
     {
@@ -58,18 +58,19 @@ test('with no history it defaults to the program plan', async () => {
   await expect(page.getByText('No lifts logged yet')).toBeVisible();
 });
 
-test('the volume audit calls out the leg deficit in the requested split', async () => {
-  const glutes = page.locator('[data-muscle="glutes"]');
-  await expect(glutes).toContainText('LOW');
-  await expect(glutes).toContainText('below 4');
-  await expect(page.locator('[data-muscle="biceps"]')).toContainText('HIGH');
+test('the volume audit calls out what the programme under-trains', async () => {
+  await expect(page.locator('[data-muscle="calves"]')).toContainText('LOW');
+  await expect(page.locator('[data-muscle="calves"]')).toContainText('below 6');
+  for (const m of ['chest', 'back', 'quads', 'hamstrings']) {
+    await expect(page.locator(`[data-muscle="${m}"]`)).toContainText('IN RANGE');
+  }
 });
 
-test('switching to the balanced program clears those flags', async () => {
+test('the variation block trains the same muscles to the same standard', async () => {
   await tab(page, 'settings');
-  await page.locator('[data-select="program"]').selectOption('balanced-4day');
+  await page.locator('[data-select="program"]').selectOption('block-b');
   await tab(page, 'progress');
-  for (const m of ['quads', 'hamstrings', 'glutes', 'biceps', 'triceps']) {
+  for (const m of ['quads', 'hamstrings', 'glutes', 'chest', 'back', 'biceps', 'triceps']) {
     await expect(page.locator(`[data-muscle="${m}"]`)).toContainText('IN RANGE');
   }
 });
@@ -97,7 +98,7 @@ test('the plan view can be reached again from the actual view', async () => {
   await page.locator('[data-volume-mode="actual"]').click();
   await page.locator('[data-volume-mode="planned"]').click();
   await expect(page.getByText(/your program prescribes/)).toBeVisible();
-  await expect(page.locator('[data-muscle="quads"]')).toContainText('7 sets');
+  await expect(page.locator('[data-muscle="quads"]')).toContainText('14 sets');
 });
 
 test('strength chart plots estimated 1RM over time', async () => {
@@ -120,7 +121,7 @@ test('the exercise picker only lists lifts that were actually trained', async ()
   await seed(page, [squatSession('2026-08-01', 185)]);
   const options = page.locator('[data-select="exercise"] option');
   await expect(options).toHaveCount(1);
-  await expect(options).toHaveText('Back Squat');
+  await expect(options).toHaveText('Back squat');
 });
 
 test('tonnage chart appears once there is more than one session', async () => {

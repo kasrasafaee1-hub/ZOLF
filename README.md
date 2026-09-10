@@ -52,14 +52,22 @@ export/import your whole log as JSON.
 
 ## Programs
 
-- **My Split (4 day)** — Legs+Core / Back+Triceps / Chest+Delts+Biceps /
-  Arms+Core. The split as requested.
-- **Balanced 4 day** — Lower A / Upper Push / Lower B / Upper Pull. Trains legs
-  twice a week and cuts direct arm work down to a normal amount.
+Two blocks, same four days, meant to be swapped every couple of weeks from
+Settings:
 
-The Progress screen shows why the second one exists: as prescribed, the first
-split runs 19 weekly sets of biceps and triceps against 7 for quads and 3 for
-glutes. Both are shipped; the app flags the imbalance rather than hiding it.
+- **Block A — current** — Push (Mon) / Pull (Tue) / Legs (Thu) / Full (Sat), the
+  split as actually run.
+- **Block B — variation** — the same four days and the same muscle groups with a
+  different exercise selection, so the stimulus changes without the structure
+  moving.
+
+Each exercise carries its own rest, a role in the session (primary, volume,
+isolation, finisher, health, core) and the coaching cue that matters for it, and
+the rest timer uses the exercise's own rest rather than one global number. Timed
+holds like planks are logged in seconds, not reps.
+
+Both blocks prescribe only 4 weekly sets of calves, below the range that grows
+them. The Trials screen says so rather than quietly rewriting the program.
 
 ## Testing
 

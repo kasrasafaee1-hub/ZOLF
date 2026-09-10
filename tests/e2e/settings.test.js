@@ -15,23 +15,35 @@ beforeEach(async () => {
   await tab(page, 'settings');
 });
 
-test('program can be switched and the day picker follows', async () => {
-  await page.locator('[data-select="program"]').selectOption('balanced-4day');
-  await expect(page.getByText('Lower A / Upper Push')).toBeVisible();
+test('switching block keeps the four days but changes the lifts', async () => {
   await tab(page, 'today');
-  await expect(page.locator('[data-day="lower-a"]')).toContainText('Lower A');
-  await expect(page.locator('[data-day="lower-b"]')).toContainText('Lower B');
+  await page.locator('[data-day="push"]').click();
+  await expect(page.locator('[data-ex="bench-press"]')).toBeVisible();
+  page.once('dialog', (d) => d.accept());
+  await tab(page, 'settings');
+  await page.locator('[data-select="program"]').selectOption('block-b');
+  await expect(page.getByText('same muscles, different lifts')).toBeVisible();
+
+  await tab(page, 'today');
+  // Same four days...
+  for (const day of ['push', 'pull', 'legs', 'full']) {
+    await expect(page.locator(`[data-day="${day}"]`)).toBeVisible();
+  }
+  // ...different exercises inside them.
+  await page.locator('[data-day="push"]').click();
+  await expect(page.locator('[data-ex="incline-bb-press"]')).toBeVisible();
+  await expect(page.locator('[data-ex="bench-press"]')).toHaveCount(0);
 });
 
 test('switching program mid-workout asks before dropping the session', async () => {
   await tab(page, 'today');
-  await page.locator('[data-day="legs-core"]').click();
+  await page.locator('[data-day="legs"]').click();
   await logSet(page, 'back-squat', 0, 185, 8);
   await tab(page, 'settings');
   page.once('dialog', (d) => d.dismiss());
-  await page.locator('[data-select="program"]').selectOption('balanced-4day');
+  await page.locator('[data-select="program"]').selectOption('block-b');
   const programId = await page.evaluate(() => window.__zolf.store.state.settings.programId);
-  assert.equal(programId, 'kasra-4day', 'declining the prompt keeps the program and the workout');
+  assert.equal(programId, 'block-a', 'declining the prompt keeps the program and the workout');
   await tab(page, 'today');
   await expect(page.locator('#topbar-right')).toContainText('IN PROGRESS');
 });
@@ -50,11 +62,18 @@ test('activity level changes the calorie target', async () => {
   await expect(page.locator('[data-targets]')).toContainText('3,400'); // round(1840 * 1.65) * 1.12
 });
 
-test('rest duration setting is applied to the timer', async () => {
+test('each exercise rests for the time its own programme prescribes', async () => {
+  // The sheet asks for 3 minutes after squats and 60 seconds after calf
+  // raises; a single global setting would flatten that distinction.
   await page.locator('[data-select="rest"]').selectOption('60');
   await tab(page, 'today');
-  await page.locator('[data-day="legs-core"]').click();
+  await page.locator('[data-day="legs"]').click();
   await logSet(page, 'back-squat', 0, 185, 8);
+  await expect(page.locator('#rest-time')).toHaveText(/^(3:00|2:5\d)$/);
+  await page.locator('#rest-skip').click();
+
+  await page.locator('[data-toggle="standing-calf"]').click();
+  await logSet(page, 'standing-calf', 0, 90, 15);
   await expect(page.locator('#rest-time')).toHaveText(/^(1:00|0:5\d)$/);
 });
 
@@ -69,17 +88,17 @@ test('body fat ceiling is configurable and drives the bulk warning', async () =>
 });
 
 test('settings persist across a reload', async () => {
-  await page.locator('[data-select="program"]').selectOption('balanced-4day');
+  await page.locator('[data-select="program"]').selectOption('block-b');
   await page.locator('[data-select="rest"]').selectOption('180');
   await page.reload();
   await tab(page, 'settings');
-  await expect(page.locator('[data-select="program"]')).toHaveValue('balanced-4day');
+  await expect(page.locator('[data-select="program"]')).toHaveValue('block-b');
   await expect(page.locator('[data-select="rest"]')).toHaveValue('180');
 });
 
 test('export produces a downloadable backup of the log', async () => {
   await tab(page, 'today');
-  await page.locator('[data-day="legs-core"]').click();
+  await page.locator('[data-day="legs"]').click();
   await logSet(page, 'back-squat', 0, 185, 8);
   await page.locator('[data-action="finish"]').click();
   await tab(page, 'settings');
@@ -104,12 +123,12 @@ test('export produces a downloadable backup of the log', async () => {
 test('a backup can be imported back in', async () => {
   const backup = JSON.stringify({
     version: 1,
-    settings: { programId: 'kasra-4day', activityId: 'moderate', phaseId: 'bulk', restSeconds: 150, bodyFatCeiling: 20 },
+    settings: { programId: 'block-a', activityId: 'moderate', phaseId: 'bulk', restSeconds: 150, bodyFatCeiling: 20 },
     sessions: [
       {
         id: 'imported',
-        dayId: 'legs-core',
-        dayName: 'Legs, Abs & Core',
+        dayId: 'legs',
+        dayName: 'Legs',
         date: '2026-08-01',
         entries: [{ exerciseId: 'back-squat', name: 'Back Squat', muscle: 'quads', sets: [{ weight: 315, reps: 5, done: true }] }],
       },
@@ -139,7 +158,7 @@ test('importing a non-backup file is rejected without losing data', async () => 
 
 test('erase wipes everything after confirmation', async () => {
   await tab(page, 'today');
-  await page.locator('[data-day="legs-core"]').click();
+  await page.locator('[data-day="legs"]').click();
   await logSet(page, 'back-squat', 0, 185, 8);
   await page.locator('[data-action="finish"]').click();
   await tab(page, 'settings');
@@ -168,7 +187,7 @@ test('export goes through the downloads capability when the host provides one', 
   });
   await app.reset();
   await tab(page, 'today');
-  await page.locator('[data-day="legs-core"]').click();
+  await page.locator('[data-day="legs"]').click();
   await logSet(page, 'back-squat', 0, 185, 8);
   await page.locator('[data-action="finish"]').click();
   await tab(page, 'settings');

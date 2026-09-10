@@ -1,6 +1,6 @@
 import { $, $$, el, fmtDate, fmtDateLong, mmss, lineChart } from './dom.js';
 import { Store, today } from '../core/store.js';
-import { getProgram, PROGRAMS, plannedWeeklyVolume } from '../core/programs.js';
+import { getProgram, PROGRAMS, plannedWeeklyVolume, ROLES, prescription } from '../core/programs.js';
 import {
   estimated1RM,
   sessionVolume,
@@ -94,6 +94,14 @@ function toast(msg) {
 }
 
 // ------------------------------------------------------------------- helpers
+/** "90 sec" / "2 min" / "2:30" — how a rest reads on a sheet. */
+function restLabel(seconds) {
+  if (!seconds) return '—';
+  if (seconds < 60) return `${seconds} sec`;
+  const m = Math.floor(seconds / 60);
+  const rem = seconds % 60;
+  return rem ? `${m}:${String(rem).padStart(2, '0')} min` : `${m} min`;
+}
 const program = () => getProgram(store.state.settings.programId);
 const exIndex = () => buildExerciseIndex(program());
 const num = (v) => (v === '' || v === null || v === undefined ? NaN : Number(v));
@@ -144,12 +152,12 @@ function viewDayPicker() {
         [
           el('span', { class: 'n', text: String(i + 1) }),
           el('span', { class: 'body' }, [
-            day.patron ? el('span', { class: 'eyebrow', text: day.patron }) : null,
+            el('span', { class: 'eyebrow', text: [day.schedule, day.patron].filter(Boolean).join(' · ') }),
             el('span', { class: 't', text: day.name }),
             el('br'),
             el('span', {
               class: 's',
-              text: `${day.exercises.length} exercises · ${prev ? 'last ' + fmtDate(prev.date) : 'not logged yet'}`,
+              text: `${day.focus} · ${prev ? 'last ' + fmtDate(prev.date) : 'not logged yet'}`,
             }),
           ]),
           suggested ? el('span', { class: 'pill pr', text: 'NEXT' }) : null,
@@ -195,7 +203,14 @@ function viewActiveWorkout() {
   const doneSets = a.entries.reduce((n, e) => n + e.sets.filter((s) => s.done && Number(s.reps) > 0).length, 0);
 
   const dayDef = program().days.find((d) => d.id === a.dayId);
-  if (dayDef?.patron) wrap.append(el('span', { class: 'eyebrow', text: `Under ${dayDef.patron}` }));
+  if (dayDef) {
+    wrap.append(
+      el('span', {
+        class: 'eyebrow',
+        text: [dayDef.schedule, dayDef.focus, dayDef.patron && `Under ${dayDef.patron}`].filter(Boolean).join(' · '),
+      })
+    );
+  }
   wrap.append(el('h1', { text: a.dayName }));
   wrap.append(
     el('p', {
@@ -229,9 +244,14 @@ function viewActiveWorkout() {
             el('br'),
             el('span', {
               class: 'm',
-              text: `${entry.muscle} · ${exercise.repRange[0]}-${exercise.repRange[1]} reps`,
+              text: exercise.sets
+                ? `${prescription(exercise)} · rest ${restLabel(exercise.rest)}`
+                : `${entry.muscle} · ${exercise.repRange[0]}-${exercise.repRange[1]} reps`,
             }),
           ]),
+          exercise.role
+            ? el('span', { class: `role role-${ROLES[exercise.role]?.tone || 'quiet'}`, 'data-role': exercise.role, text: ROLES[exercise.role]?.label || exercise.role })
+            : null,
           el('span', { class: 'count', text: `${doneCount}/${entry.sets.length}` }),
           el('span', { class: 'muted', text: open ? '▾' : '▸' }),
         ]
@@ -292,6 +312,7 @@ function exerciseBody(entry, exercise) {
     const summary = prev.entry.sets.map((s) => `${s.weight || 'BW'}×${s.reps}`).join('  ');
     body.append(el('div', { class: 'prev', text: `Last (${fmtDate(prev.session.date)}): ${summary}` }));
   }
+  if (exercise.cue) body.append(el('div', { class: 'cue', 'data-cue': '1', text: exercise.cue }));
   body.append(
     el('div', { class: 'hint', 'data-hint': '1' }, [
       el('strong', { text: tip.weight != null ? `Target ${tip.weight} lb × ${tip.reps}. ` : 'Target: ' }),
@@ -303,7 +324,7 @@ function exerciseBody(entry, exercise) {
     el('div', { class: 'setlabels' }, [
       el('span', { text: '#' }),
       el('span', { text: 'lb' }),
-      el('span', { text: 'reps' }),
+      el('span', { text: exercise.unit === 'sec' ? 'sec' : 'reps' }),
       el('span', { text: 'rpe' }),
       el('span', { text: '✓' }),
       el('span', { text: '' }),
@@ -363,7 +384,7 @@ function exerciseBody(entry, exercise) {
           if (cur.reps === '') patch.reps = tip.reps;
         }
         store.setSet(entry.exerciseId, i, patch);
-        if (nextDone) startRest(store.state.settings.restSeconds);
+        if (nextDone) startRest(exercise.rest || store.state.settings.restSeconds);
         render();
       },
     });
@@ -1241,7 +1262,7 @@ function viewSettings() {
   }
   wrap.append(el('div', { class: 'card' }, [actSelect]));
 
-  wrap.append(el('h2', { text: 'Rest timer' }));
+  wrap.append(el('h2', { text: 'Default rest' }));
   const restSelect = el('select', {
     'data-select': 'rest',
     onchange: (e) => {
@@ -1252,7 +1273,15 @@ function viewSettings() {
   for (const v of [60, 90, 120, 150, 180, 240]) {
     restSelect.append(el('option', { value: v, selected: v === s.restSeconds, text: mmss(v) }));
   }
-  wrap.append(el('div', { class: 'card' }, [restSelect]));
+  wrap.append(
+    el('div', { class: 'card' }, [
+      restSelect,
+      el('p', {
+        class: 'small muted mt',
+        text: 'Used only for lifts with no rest of their own. Your program sets its own rest per exercise.',
+      }),
+    ])
+  );
 
   wrap.append(el('h2', { text: 'Body fat ceiling' }));
   const ceil = el('input', {

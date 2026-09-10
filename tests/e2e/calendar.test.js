@@ -12,8 +12,8 @@ const seed = (dates) =>
       ...state,
       sessions: rows.map((date, i) => ({
         id: 'seed' + i,
-        dayId: 'legs-core',
-        dayName: 'Legs, Abs & Core',
+        dayId: 'legs',
+        dayName: 'Legs',
         date,
         entries: [
           { exerciseId: 'back-squat', name: 'Back Squat', muscle: 'quads', sets: [{ weight: 185, reps: 8, done: true }] },
@@ -71,7 +71,7 @@ test('today is marked, and future days are dimmed rather than called rest', asyn
 test('a trained day names the session it holds', async () => {
   const d = iso(1);
   await seed([d]);
-  await expect(page.locator(`[data-day-cell="${d}"]`)).toHaveAttribute('title', new RegExp('Legs, Abs & Core'));
+  await expect(page.locator(`[data-day-cell="${d}"]`)).toHaveAttribute('title', new RegExp('Legs'));
 });
 
 test('the month can be paged back and forward', async () => {
@@ -117,7 +117,7 @@ test('with nothing logged the counters read empty, not broken', async () => {
 
 test('finishing a workout lights up today on the calendar', async () => {
   await tab(page, 'today');
-  await page.locator('[data-day="legs-core"]').click();
+  await page.locator('[data-day="legs"]').click();
   await logSet(page, 'back-squat', 0, 185, 8);
   await page.locator('[data-action="finish"]').click();
   await tab(page, 'history');
@@ -132,12 +132,13 @@ test('the calendar never scrolls the page sideways', async () => {
   assert.ok(overflow <= 1, `page overflows by ${overflow}px`);
 });
 
-test('each training day carries its patron god', async () => {
+test('each day shows the weekday it runs and its patron', async () => {
   await tab(page, 'today');
-  await expect(page.locator('[data-day="legs-core"] .eyebrow')).toHaveText('Atlas');
-  await expect(page.locator('[data-day="back-triceps"] .eyebrow')).toHaveText('Herakles');
-  await expect(page.locator('[data-day="chest-delts-biceps"] .eyebrow')).toHaveText('Zeus');
-  await expect(page.locator('[data-day="arms-core"] .eyebrow')).toHaveText('Ares');
-  await page.locator('[data-day="legs-core"]').click();
-  await expect(page.locator('.eyebrow').first()).toHaveText('Under Atlas');
+  await expect(page.locator('[data-day="push"] .eyebrow')).toHaveText('Mon · Zeus');
+  await expect(page.locator('[data-day="pull"] .eyebrow')).toHaveText('Tue · Herakles');
+  await expect(page.locator('[data-day="legs"] .eyebrow')).toHaveText('Thu · Atlas');
+  await expect(page.locator('[data-day="full"] .eyebrow')).toHaveText('Sat · Olympus');
+  await expect(page.locator('[data-day="push"]')).toContainText('Chest · Shoulders · Triceps');
+  await page.locator('[data-day="legs"]').click();
+  await expect(page.locator('.eyebrow').first()).toContainText('Under Atlas');
 });

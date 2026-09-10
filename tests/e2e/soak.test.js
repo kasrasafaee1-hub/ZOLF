@@ -73,12 +73,12 @@ before(async () => {
     localStorage.clear();
   });
   await page.reload();
-  await page.waitForSelector('[data-day="legs-core"]');
+  await page.waitForSelector('[data-day="legs"]');
 });
 after(async () => app?.close());
 
 test('twelve sessions of random numbers all survive, date by date', async () => {
-  const DAYS = ['legs-core', 'back-triceps', 'chest-delts-biceps', 'arms-core'];
+  const DAYS = ['legs', 'pull', 'push', 'full'];
   const expected = [];
 
   for (let i = 0; i < 12; i++) {

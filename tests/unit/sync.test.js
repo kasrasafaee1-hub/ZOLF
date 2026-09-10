@@ -7,8 +7,8 @@ import { getDay } from '../../src/core/programs.js';
 const session = (id, date) => ({
   id,
   date,
-  dayId: 'legs-core',
-  dayName: 'Legs, Abs & Core',
+  dayId: 'legs',
+  dayName: 'Legs',
   entries: [{ exerciseId: 'back-squat', name: 'Back Squat', muscle: 'quads', sets: [{ weight: 185, reps: 8, done: true }] }],
 });
 
@@ -87,7 +87,7 @@ test('settings follow the newer snapshot but keep keys only the older one has', 
 });
 
 test('an in-progress workout follows the device that touched it last', () => {
-  const active = { id: 'live', dayId: 'legs-core', entries: [] };
+  const active = { id: 'live', dayId: 'legs', entries: [] };
   const local = state({ updatedAt: 5 });
   const remote = state({ updatedAt: 50, active });
   assert.equal(mergeStates(local, remote).active.id, 'live');
@@ -103,7 +103,7 @@ test('a snapshot missing updatedAt is treated as the older one', () => {
   const remote = { sessions: [session('b', '2026-09-02')] };
   const merged = mergeStates(local, remote);
   assert.equal(merged.sessions.length, 2);
-  assert.equal(merged.settings.programId, 'kasra-4day', 'the well-formed side supplies the settings');
+  assert.equal(merged.settings.programId, 'block-a', 'the well-formed side supplies the settings');
 });
 
 test('sameState ignores the timestamp', () => {
@@ -146,7 +146,7 @@ function fakeDb(initial = null) {
 }
 
 const newStore = () => new Store(memoryBackend());
-const legDay = getDay('kasra-4day', 'legs-core');
+const legDay = getDay('block-a', 'legs');
 
 test('start pushes local state up when the remote is empty', async () => {
   const store = newStore();
@@ -329,14 +329,14 @@ test('anything unrecognisable is refused rather than merged', () => {
 });
 
 test('an in-progress workout is never dropped by a remote snapshot', () => {
-  const active = { id: 'live', dayId: 'legs-core', entries: [{ exerciseId: 'back-squat', sets: [{ weight: 185, reps: 8, done: true }] }] };
+  const active = { id: 'live', dayId: 'legs', entries: [{ exerciseId: 'back-squat', sets: [{ weight: 185, reps: 8, done: true }] }] };
   const local = { ...defaultState(), updatedAt: 10, active };
   const remoteNewer = { ...defaultState(), updatedAt: 99999, active: null };
   assert.equal(mergeStates(local, remoteNewer).active?.id, 'live', 'a newer remote must not wipe live sets');
 });
 
 test('a remote in-progress workout is adopted when this device has none', () => {
-  const active = { id: 'phone', dayId: 'legs-core', entries: [] };
+  const active = { id: 'phone', dayId: 'legs', entries: [] };
   const local = { ...defaultState(), updatedAt: 99999, active: null };
   const remote = { ...defaultState(), updatedAt: 1, active };
   assert.equal(mergeStates(local, remote).active?.id, 'phone');

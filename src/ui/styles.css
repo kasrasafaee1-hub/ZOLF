@@ -454,3 +454,22 @@ svg.chart .lbl { fill: var(--muted); font-size: 10px; font-family: var(--mono); 
 }
 .detail-set-n { color: var(--dim); font-size: 9.5px; }
 .detail-set-rpe { color: var(--muted); }
+
+/* --- an exercise's role in the session, after the program sheet --- */
+.role {
+  font-family: var(--mono); font-size: 9px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.09em;
+  padding: 4px 9px; border-radius: 999px;
+  border: 1px solid currentColor; white-space: nowrap;
+}
+.role-primary { color: var(--mint); }
+.role-volume { color: #6FB6E8; }
+.role-accent { color: #E88CC0; }
+.role-quiet { color: var(--dim); }
+
+.cue {
+  font-family: var(--mono); font-size: 10.5px; line-height: 1.6;
+  color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em;
+  border-left: 2px solid var(--line-bright);
+  padding: 6px 0 6px 10px; margin: 12px 0 0;
+}

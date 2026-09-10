@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { Store, memoryBackend, defaultState, migrate, today, STORAGE_KEY } from '../../src/core/store.js';
 import { getDay, PROGRAMS } from '../../src/core/programs.js';
 
-const legDay = getDay('kasra-4day', 'legs-core');
+const legDay = getDay('block-a', 'legs');
 const newStore = () => new Store(memoryBackend());
 
 const completeEntry = (store, exerciseId, weight, reps, count = 3) => {
@@ -12,7 +12,7 @@ const completeEntry = (store, exerciseId, weight, reps, count = 3) => {
 
 test('a fresh store starts on the requested split with no history', () => {
   const s = newStore();
-  assert.equal(s.state.settings.programId, 'kasra-4day');
+  assert.equal(s.state.settings.programId, 'block-a');
   assert.deepEqual(s.state.sessions, []);
   assert.equal(s.state.active, null);
 });
@@ -22,7 +22,7 @@ test('starting a session builds one entry per exercise with the planned sets', (
   const session = s.startSession(legDay, '2026-09-09');
   assert.equal(session.entries.length, legDay.exercises.length);
   assert.equal(session.entries[0].sets.length, legDay.exercises[0].sets);
-  assert.equal(s.state.active.dayId, 'legs-core');
+  assert.equal(s.state.active.dayId, 'legs');
 });
 
 test('logged sets persist through a reload of the same backend', () => {
@@ -188,9 +188,9 @@ test('metrics can be deleted', () => {
 test('settings changes stick', () => {
   const s = newStore();
   s.setSetting('phaseId', 'cut');
-  s.setSetting('programId', 'balanced-4day');
+  s.setSetting('programId', 'block-b');
   assert.equal(s.state.settings.phaseId, 'cut');
-  assert.equal(s.state.settings.programId, 'balanced-4day');
+  assert.equal(s.state.settings.programId, 'block-b');
 });
 
 test('export then import restores an identical state', () => {
@@ -220,7 +220,7 @@ test('corrupt storage falls back to a clean state rather than crashing', () => {
   const backend = memoryBackend({ [STORAGE_KEY]: '{{{ not json' });
   const s = new Store(backend);
   assert.deepEqual(s.state.sessions, []);
-  assert.equal(s.state.settings.programId, 'kasra-4day');
+  assert.equal(s.state.settings.programId, 'block-a');
 });
 
 test('migrate fills in fields missing from an old payload', () => {

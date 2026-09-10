@@ -60,7 +60,7 @@ beforeEach(async () => {
   });
   await page.reload();
   await page.waitForSelector('.brand');
-  await page.waitForSelector('[data-day="legs-core"]');
+  await page.waitForSelector('[data-day="legs"]');
   app.errors.length = 0;
 });
 
@@ -69,7 +69,7 @@ test('sync comes up and reports itself synced', async () => {
 });
 
 test('typing a weight is not interrupted when the debounced sync fires', async () => {
-  await page.locator('[data-day="legs-core"]').click();
+  await page.locator('[data-day="legs"]').click();
   const weight = page.locator('[data-ex="back-squat"] [data-set="0"] [data-field="weight"]');
   await weight.click();
   await weight.type('18', { delay: 30 });
@@ -88,7 +88,7 @@ test('typing a weight is not interrupted when the debounced sync fires', async (
 });
 
 test('a full workout can be logged with sync running', async () => {
-  await page.locator('[data-day="legs-core"]').click();
+  await page.locator('[data-day="legs"]').click();
   for (let i = 0; i < 4; i++) {
     const row = page.locator(`[data-ex="back-squat"] [data-set="${i}"]`);
     await row.locator('[data-field="weight"]').fill('185');
@@ -105,7 +105,7 @@ test('a full workout can be logged with sync running', async () => {
 });
 
 test('the log is restored from the server after local storage is wiped', async () => {
-  await page.locator('[data-day="legs-core"]').click();
+  await page.locator('[data-day="legs"]').click();
   const row = page.locator('[data-ex="back-squat"] [data-set="0"]');
   await row.locator('[data-field="weight"]').fill('225');
   await row.locator('[data-field="reps"]').fill('5');
@@ -124,7 +124,7 @@ test('the log is restored from the server after local storage is wiped', async (
 });
 
 test('our own echoed write does not churn the page', async () => {
-  await page.locator('[data-day="legs-core"]').click();
+  await page.locator('[data-day="legs"]').click();
   await page.waitForTimeout(1500);
   const before = await page.evaluate(() => window.__db.sets);
   await page.waitForTimeout(1500);

@@ -13,7 +13,7 @@ import {
   volumeAudit,
   buildExerciseIndex,
 } from '../../src/core/training.js';
-import { PROGRAMS, plannedWeeklyVolume, getDay } from '../../src/core/programs.js';
+import { PROGRAMS, plannedWeeklyVolume, getDay, ROLES, prescription } from '../../src/core/programs.js';
 
 const set = (weight, reps, done = true) => ({ weight, reps, rpe: '', done });
 
@@ -162,10 +162,11 @@ test('volume audit flags under- and over-shooting muscles worst-first', () => {
 });
 
 test('exercise index covers every exercise in a program', () => {
-  const idx = buildExerciseIndex(PROGRAMS['kasra-4day']);
-  assert.ok(idx['back-squat']);
-  assert.ok(idx['ez-bar-curl']);
-  for (const day of PROGRAMS['kasra-4day'].days) {
+  const idx = buildExerciseIndex(PROGRAMS['block-a']);
+  assert.ok(idx['bench-press'], 'the push day is indexed');
+  assert.ok(idx['back-squat'], 'the legs day is indexed');
+  assert.ok(idx['plank'], 'a timed core hold is indexed');
+  for (const day of PROGRAMS['block-a'].days) {
     for (const e of day.exercises) assert.ok(idx[e.id], `${e.id} missing from index`);
   }
 });
@@ -179,31 +180,53 @@ test('every program day is well formed', () => {
       assert.equal(new Set(ids).size, ids.length, `${day.id} has duplicate exercise ids`);
       for (const e of day.exercises) {
         assert.ok(e.sets > 0);
-        assert.ok(e.repRange[0] < e.repRange[1], `${e.id} rep range is inverted`);
+        // A fixed prescription (3 x 12) is a valid range with equal ends.
+        assert.ok(e.repRange[0] <= e.repRange[1], `${e.id} rep range is inverted`);
+        assert.ok(e.rest > 0, `${e.id} has no rest prescribed`);
+        assert.ok(ROLES[e.role], `${e.id} has an unknown role: ${e.role}`);
       }
     }
   }
 });
 
 test('getDay resolves real days and refuses fake ones', () => {
-  assert.equal(getDay('kasra-4day', 'legs-core').name, 'Legs, Abs & Core');
-  assert.equal(getDay('kasra-4day', 'nope'), null);
+  assert.equal(getDay('block-a', 'legs').name, 'Legs');
+  assert.equal(getDay('block-a', 'nope'), null);
 });
 
-test("the user's split under-does legs and over-does arms", () => {
-  // This is the finding the app surfaces on the Volume screen; lock it in so a
-  // future edit to the program cannot silently change the advice.
-  const v = plannedWeeklyVolume('kasra-4day');
-  assert.ok(v.biceps > v.quads, 'expected the arm bias this split has');
-  const audit = volumeAudit(v);
-  assert.equal(audit.find((r) => r.muscle === 'glutes').status, 'low');
-  assert.equal(audit.find((r) => r.muscle === 'biceps').status, 'high');
-});
-
-test('the balanced alternative fixes the leg volume', () => {
-  const v = plannedWeeklyVolume('balanced-4day');
-  const audit = volumeAudit(v);
-  for (const m of ['quads', 'hamstrings', 'glutes', 'biceps', 'triceps']) {
+test('the programmed volume is honest about what the split misses', () => {
+  // Locks in what the Trials screen tells him: the split he runs prescribes
+  // only 4 weekly sets of calves, under the range that grows them.
+  const audit = volumeAudit(plannedWeeklyVolume('block-a'));
+  assert.equal(audit.find((r) => r.muscle === 'calves').status, 'low');
+  for (const m of ['chest', 'back', 'shoulders', 'quads', 'hamstrings', 'biceps', 'triceps']) {
     assert.equal(audit.find((r) => r.muscle === m).status, 'ok', `${m} should be in range`);
   }
 });
+
+
+test('the variation block trains the same muscles to the same standard', () => {
+  const a = plannedWeeklyVolume('block-a');
+  const b = plannedWeeklyVolume('block-b');
+  // Same muscle groups covered — the point of a variation, not a new split.
+  assert.deepEqual(Object.keys(a).sort(), Object.keys(b).sort());
+  const audit = volumeAudit(b);
+  for (const m of ['chest', 'back', 'shoulders', 'quads', 'hamstrings', 'glutes', 'biceps', 'triceps', 'core']) {
+    assert.equal(audit.find((r) => r.muscle === m).status, 'ok', `${m} out of range in the variation`);
+  }
+});
+
+test('both blocks run the same four days so a swap changes only the lifts', () => {
+  const a = PROGRAMS['block-a'].days.map((d) => d.id);
+  const b = PROGRAMS['block-b'].days.map((d) => d.id);
+  assert.deepEqual(a, b);
+  assert.deepEqual(a, ['push', 'pull', 'legs', 'full']);
+});
+
+test('a prescription reads the way the sheet does', () => {
+  assert.equal(prescription({ sets: 4, repRange: [6, 8], unit: 'reps' }), '4 × 6–8');
+  assert.equal(prescription({ sets: 3, repRange: [12, 12], unit: 'reps' }), '3 × 12');
+  assert.equal(prescription({ sets: 3, repRange: [45, 60], unit: 'sec' }), '3 × 45–60 sec');
+  assert.equal(prescription({ sets: 2, repRange: [10, 10], unit: 'reps', perSide: true }), '2 × 10 each side');
+});
+
