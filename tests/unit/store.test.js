@@ -271,3 +271,82 @@ test('every source module is included in the published bundle', async () => {
   const { assertAllModulesBundled } = await import('../../scripts/bundle.js');
   await assertAllModulesBundled();
 });
+
+// --------------------------------------------------- storage that fights back
+import { safeBackend } from '../../src/core/store.js';
+
+/** A localStorage that throws on write, as iOS Safari does in a blocked iframe. */
+const hostileBackend = () => ({
+  getItem: () => null,
+  setItem: () => {
+    throw new DOMException('The quota has been exceeded.', 'QuotaExceededError');
+  },
+  removeItem: () => {},
+});
+
+test('a browser that blocks storage does not stop a set being logged', () => {
+  const store = new Store(safeBackend(hostileBackend()));
+  const day = getDay('block-a', 'legs');
+  store.startSession(day, '2026-09-10');
+  store.setSet('back-squat', 0, { weight: 225, reps: 5, done: true });
+  const entry = store.state.active.entries.find((e) => e.exerciseId === 'back-squat');
+  assert.equal(entry.sets[0].weight, 225, 'the set was recorded despite storage throwing');
+  assert.equal(entry.sets[0].done, true);
+});
+
+test('a whole workout can still be finished with storage blocked', () => {
+  const store = new Store(safeBackend(hostileBackend()));
+  const day = getDay('block-a', 'legs');
+  store.startSession(day, '2026-09-10');
+  store.setSet('back-squat', 0, { weight: 225, reps: 5, done: true });
+  const done = store.finishSession();
+  assert.ok(done, 'finishing worked');
+  assert.equal(store.state.sessions.length, 1);
+  assert.equal(store.state.active, null);
+});
+
+test('blocked storage is reported rather than hidden', () => {
+  const store = new Store(safeBackend(hostileBackend()));
+  assert.equal(store.persistent, false);
+  const healthy = new Store(safeBackend(memoryBackend()));
+  assert.equal(healthy.persistent, true);
+});
+
+test('storage revoked mid-session degrades instead of throwing', () => {
+  let allow = true;
+  const flaky = {
+    data: {},
+    getItem(k) {
+      return this.data[k] ?? null;
+    },
+    setItem(k, v) {
+      if (!allow) throw new Error('storage revoked');
+      this.data[k] = v;
+    },
+    removeItem(k) {
+      delete this.data[k];
+    },
+  };
+  const store = new Store(safeBackend(flaky));
+  store.addBodyweight(179.7, '2026-09-10');
+  assert.equal(store.persistent, true);
+
+  allow = false;
+  store.addBodyweight(180.1, '2026-09-11');
+  assert.equal(store.state.bodyweights.length, 2, 'the entry was still recorded');
+  assert.equal(store.persistent, false, 'and the failure is now reported');
+});
+
+test('one broken subscriber cannot stop the others or the save', () => {
+  const store = new Store(safeBackend(memoryBackend()));
+  let reached = 0;
+  store.subscribe(() => {
+    throw new Error('a listener blew up');
+  });
+  store.subscribe(() => {
+    reached += 1;
+  });
+  store.addBodyweight(179.7, '2026-09-10');
+  assert.equal(reached, 1);
+  assert.equal(store.state.bodyweights.length, 1);
+});

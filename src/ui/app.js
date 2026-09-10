@@ -1,5 +1,5 @@
 import { $, $$, el, fmtDate, fmtDateLong, mmss, lineChart } from './dom.js';
-import { Store, today } from '../core/store.js';
+import { Store, today, safeBackend } from '../core/store.js';
 import { getProgram, PROGRAMS, plannedWeeklyVolume, ROLES, prescription } from '../core/programs.js';
 import {
   estimated1RM,
@@ -45,12 +45,22 @@ import {
   PHASES,
 } from '../core/nutrition.js';
 
-const store = new Store(window.localStorage);
+const store = new Store(safeBackend(window.localStorage));
 const ui = { tab: 'today', openExercise: null, openedFor: null, chartExercise: null, volumeMode: null, cal: null, calSelected: null };
 let syncer = null;
 
+// Anything that escapes a handler used to vanish into the console, where a
+// phone user can never see it. Keep the last few so Diagnostics can show them.
+const faults = [];
+const recordFault = (what, err) => {
+  faults.unshift({ at: new Date().toISOString(), what, message: String(err?.message || err) });
+  faults.length = Math.min(faults.length, 5);
+};
+window.addEventListener('error', (e) => recordFault('error', e.error || e.message));
+window.addEventListener('unhandledrejection', (e) => recordFault('promise', e.reason));
+
 // Expose for end-to-end tests to seed and inspect state.
-window.__zolf = { store, render: () => render() };
+window.__zolf = { store, render: () => render(), faults };
 
 // ---------------------------------------------------------------- rest timer
 const rest = { endsAt: 0, tick: null };
@@ -1334,6 +1344,42 @@ function viewSettings() {
       el('p', { class: 'small muted mt', text: 'The app tells you to stop bulking once your scan hits this. Past ~20% the surplus buys mostly fat.' }),
     ])
   );
+
+  // --- diagnostics -------------------------------------------------------
+  wrap.append(el('h2', { text: 'Diagnostics' }));
+  const diag = el('div', { class: 'card', 'data-diagnostics': '1' });
+  const rows = [
+    ['Saved on this device', store.persistent ? 'Yes' : 'NO — blocked by this browser'],
+    ['Backed up to your account', syncer ? { offline: 'Not connected', syncing: 'Syncing…', synced: 'Yes', error: 'Failed' }[syncer.status] : 'Not connected'],
+    ['Workouts in the log', String(store.state.sessions.length)],
+    ['Workout open right now', store.state.active ? `${store.state.active.dayName} (${store.state.active.entries.reduce((n, e) => n + e.sets.filter((x) => x.done && Number(x.reps) > 0).length, 0)} sets)` : 'None'],
+    ['Weigh-ins', String(store.state.bodyweights.length)],
+    ['Program', getProgram(store.state.settings.programId).name],
+  ];
+  const table = el('table');
+  const tbody = el('tbody');
+  for (const [k, v] of rows) {
+    tbody.append(el('tr', { 'data-diag-row': k }, [el('td', { text: k }), el('td', { class: 'num', text: v })]));
+  }
+  table.append(tbody);
+  diag.append(table);
+
+  if (!store.persistent) {
+    diag.append(
+      el('div', { class: 'banner stop mt', 'data-storage-warning': '1' }, [
+        el('b', { text: 'This browser is blocking storage' }),
+        'Your log is kept in memory and will vanish when the tab closes. In Safari, turn off Private Browsing and allow site data — or open this page in Chrome.',
+      ])
+    );
+  }
+  if (store.lastError) diag.append(el('p', { class: 'small muted mt', text: `Storage: ${store.lastError}` }));
+  if (faults.length) {
+    diag.append(el('div', { class: 'small muted mt', text: 'Recent faults' }));
+    for (const f of faults) {
+      diag.append(el('div', { class: 'small', 'data-fault': '1', text: `${f.what}: ${f.message}` }));
+    }
+  }
+  wrap.append(diag);
 
   wrap.append(el('h2', { text: 'Backup' }));
   const backup = el('div', { class: 'card' });

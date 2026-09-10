@@ -6,6 +6,62 @@ import { DEFAULT_PROGRAM_ID } from './programs.js';
 export const STORAGE_KEY = 'zolf-lift:v1';
 export const SCHEMA_VERSION = 1;
 
+/**
+ * localStorage that cannot take the app down with it.
+ *
+ * An artifact runs in a sandboxed cross-origin iframe. iOS Safari — in Private
+ * Browsing, with site data blocked, or simply with partitioned third-party
+ * storage — makes `localStorage.setItem` THROW there. An unguarded write meant
+ * every mutation threw out of its click handler, so taps did nothing at all.
+ * Persistence is a convenience; logging a set is not. When the real store is
+ * unusable we fall back to memory and say so, rather than failing.
+ */
+export function safeBackend(candidate) {
+  const memory = memoryBackend();
+  let usable = false;
+  try {
+    const probe = '__zolf_probe__';
+    candidate.setItem(probe, '1');
+    candidate.removeItem(probe);
+    usable = true;
+  } catch {
+    usable = false;
+  }
+
+  const store = usable ? candidate : memory;
+  const backend = {
+    persistent: usable,
+    lastError: usable ? null : 'This browser is blocking storage for this page.',
+    getItem(key) {
+      try {
+        return store.getItem(key);
+      } catch (err) {
+        backend.persistent = false;
+        backend.lastError = String(err?.message || err);
+        return memory.getItem(key);
+      }
+    },
+    setItem(key, value) {
+      try {
+        store.setItem(key, value);
+      } catch (err) {
+        // Quota, or storage revoked mid-session. Keep going in memory.
+        backend.persistent = false;
+        backend.lastError = String(err?.message || err);
+        memory.setItem(key, value);
+      }
+    },
+    removeItem(key) {
+      try {
+        store.removeItem(key);
+      } catch {
+        memory.removeItem(key);
+      }
+    },
+  };
+  return backend;
+}
+
 export function memoryBackend(initial = {}) {
   const data = { ...initial };
   return {
@@ -46,6 +102,7 @@ export class Store {
   constructor(backend) {
     this.backend = backend;
     this.listeners = new Set();
+    this.lastError = null;
     this.state = this.load();
   }
 
@@ -60,9 +117,28 @@ export class Store {
     }
   }
 
+  /**
+   * Persist, then notify. Neither step may throw: a storage failure must not
+   * stop a set being logged, and one broken listener must not stop the others.
+   */
   save() {
-    this.backend.setItem(STORAGE_KEY, JSON.stringify(this.state));
-    for (const fn of this.listeners) fn(this.state);
+    try {
+      this.backend.setItem(STORAGE_KEY, JSON.stringify(this.state));
+    } catch (err) {
+      this.lastError = String(err?.message || err);
+    }
+    for (const fn of [...this.listeners]) {
+      try {
+        fn(this.state);
+      } catch (err) {
+        this.lastError = String(err?.message || err);
+      }
+    }
+  }
+
+  /** Whether writes are actually reaching durable storage on this device. */
+  get persistent() {
+    return this.backend.persistent !== false;
   }
 
   subscribe(fn) {

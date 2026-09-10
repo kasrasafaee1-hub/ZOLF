@@ -61,7 +61,14 @@ export async function launch({ device = 'iPhone 13' } = {}) {
     /** Fresh app with empty storage. */
     async reset() {
       await page.goto(site.url + ENTRY);
-      await page.evaluate(() => localStorage.clear());
+      // A test may have blocked storage; clearing it must not fail the reset.
+      await page.evaluate(() => {
+        try {
+          localStorage.clear();
+        } catch {
+          /* storage is blocked in this test */
+        }
+      });
       await page.reload();
       await page.waitForSelector('.brand');
       errors.length = 0;
