@@ -43,14 +43,27 @@ export function mergeStates(local, remote) {
   const metrics = unionBy(local.metrics, remote.metrics, 'date', localWins).sort((a, b) =>
     String(a.date).localeCompare(String(b.date))
   );
+  // Protein is many entries a day, so it unions by id like sessions do;
+  // creatine is one dose a day and unions by date.
+  const protein = unionBy(local.protein, remote.protein, 'id', localWins).sort((a, b) =>
+    String(a.date).localeCompare(String(b.date))
+  );
+  const creatine = unionBy(local.creatine, remote.creatine, 'date', localWins).sort((a, b) =>
+    String(a.date).localeCompare(String(b.date))
+  );
 
   return {
     ...newer,
     sessions,
     bodyweights,
     metrics,
+    protein,
+    creatine,
     settings: { ...(localWins ? remote.settings : local.settings), ...(newer.settings || {}) },
-    active: newer.active ?? null,
+    // An in-progress workout on THIS device always wins. Losing the sets you
+    // are part-way through is the worst thing sync could do; a stale active
+    // session left on another device is a shrug you can discard by hand.
+    active: local.active ?? remote.active ?? null,
     updatedAt: Math.max(localAt, remoteAt),
   };
 }
@@ -67,6 +80,45 @@ const stripVolatile = (s) => {
 };
 
 export const DOC_PATH = 'log/state';
+
+/** Does this look like one of our snapshots, rather than some wrapper object? */
+export function isStateLike(x) {
+  if (!x || typeof x !== 'object' || Array.isArray(x)) return false;
+  return (
+    Array.isArray(x.sessions) ||
+    Array.isArray(x.bodyweights) ||
+    Array.isArray(x.protein) ||
+    (!!x.settings && typeof x.settings === 'object')
+  );
+}
+
+/**
+ * Pull our state out of whatever the store hands back.
+ *
+ * The document API may return the payload directly, behind a `data` property,
+ * or behind a Firestore-style `data()` method, and we wrap the state in
+ * `{state, updatedAt}` on the way in. Guessing wrong once meant merging a
+ * wrapper object as if it were a state, so anything unrecognisable is refused
+ * outright rather than merged.
+ */
+export function unwrapSnapshot(snapshot) {
+  if (!snapshot || typeof snapshot !== 'object') return null;
+  if (snapshot.exists === false) return null;
+
+  let raw = snapshot;
+  if (typeof raw.data === 'function') {
+    try {
+      raw = raw.data();
+    } catch {
+      return null;
+    }
+  } else if (raw.data && typeof raw.data === 'object') {
+    raw = raw.data;
+  }
+  if (!raw || typeof raw !== 'object') return null;
+  if (raw.state && typeof raw.state === 'object') raw = raw.state;
+  return isStateLike(raw) ? raw : null;
+}
 
 /**
  * Mirrors a Store into a db document and back.
@@ -110,9 +162,7 @@ export class Syncer {
     this.setStatus('syncing');
     try {
       const doc = this.db.doc(DOC_PATH);
-      const snapshot = await doc.get();
-      const remote = snapshot?.data ?? snapshot ?? null;
-      const merged = mergeStates(this.store.state, remote?.state ? remote.state : remote);
+      const merged = mergeStates(this.store.state, unwrapSnapshot(await doc.get()));
       if (merged && !sameState(merged, this.store.state)) {
         this.applyRemote(merged);
       }
@@ -129,8 +179,7 @@ export class Syncer {
     if (typeof doc.onSnapshot !== 'function') return;
     try {
       const off = doc.onSnapshot((snapshot) => {
-        const remote = snapshot?.data ?? snapshot ?? null;
-        const incoming = remote?.state ? remote.state : remote;
+        const incoming = unwrapSnapshot(snapshot);
         if (!incoming) return;
         const merged = mergeStates(this.store.state, incoming);
         if (!sameState(merged, this.store.state)) this.applyRemote(merged);

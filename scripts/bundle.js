@@ -18,6 +18,7 @@ const MODULES = [
   'src/core/store.js',
   'src/core/sync.js',
   'src/core/calendar.js',
+  'src/core/supplements.js',
   'src/ui/dom.js',
   'src/ui/app.js',
 ];

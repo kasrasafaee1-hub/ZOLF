@@ -1,36 +1,36 @@
 <title>ZOLF Lift</title>
 <style>
-/* ZOLF Lift — a temple at night.
-   Deliberately single-world: gilt on deep aegean dark, the way figures were
-   drawn on black-figure pottery. Every colour is painted explicitly so the
-   page holds on either host ground. */
+/* ZOLF Lift
+   Deep forest green and cream with a mint signal colour, after the reference
+   direction: heavy grotesk display over monospace labels, hairline-bordered
+   panels, arrow-in-box affordances. Committed single-world — every colour is
+   painted explicitly so the page holds on either host ground. */
 
 :root {
   color-scheme: dark;
 
-  --bg: #0e1116;          /* aegean night, blue-biased so it is chosen, not black */
-  --surface: #171c24;     /* marble in shadow */
-  --surface-2: #1f2631;
-  --line: #2c3543;        /* cool grey, biased toward the blue of the ground */
-  --line-bright: #3a465a;
+  --bg: #142C26;          /* deepest forest, the page ground */
+  --surface: #1D3B33;     /* panel */
+  --surface-2: #26493F;   /* raised control */
+  --line: #33594B;        /* hairline, green-biased so it is chosen not grey */
+  --line-bright: #47705F;
 
-  --text: #ece6d9;        /* aged marble, warm against the cold ground */
-  --muted: #8a94a6;
-  --dim: #5d6779;
+  --cream: #F4F0E0;
+  --text: #F4F0E0;
+  --muted: #9DBAAC;
+  --dim: #6E9384;
 
-  --gold: #c9a227;        /* olympian gilt — the one bold thing on the page */
-  --gold-bright: #e3bd45;
-  --gold-soft: rgba(201, 162, 39, 0.14);
-  --aegean: #4e7fa8;      /* secondary, for the calendar and quiet accents */
+  --mint: #3ADB86;        /* the one signal colour */
+  --mint-deep: #23B76A;
+  --mint-soft: rgba(58, 219, 134, 0.12);
 
-  --laurel: #5fa777;      /* semantic, kept separate from the accent */
-  --amber: #d9a441;
-  --amphora: #b4483f;
+  --warn: #E8C56A;
+  --bad: #E07A6A;
 
-  --display: 'Cinzel', 'Trajan Pro', 'Times New Roman', serif;
-  --body: 'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --display: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 
-  --radius: 12px;
+  --radius: 6px;
   --tabbar-h: 60px;
 }
 
@@ -40,7 +40,7 @@ html, body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: var(--body);
+  font-family: var(--display);
   font-size: 15px;
   line-height: 1.55;
   -webkit-text-size-adjust: 100%;
@@ -48,77 +48,78 @@ html, body {
 
 .app { min-height: 100dvh; display: flex; flex-direction: column; }
 
-/* --- header, with a woven meander for an entablature --- */
+/* --- header --- */
 .topbar {
   position: sticky; top: 0; z-index: 20;
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  padding: 12px 16px 11px;
-  padding-top: max(12px, env(safe-area-inset-top));
-  background: rgba(14, 17, 22, 0.94);
+  padding: 13px 16px;
+  padding-top: max(13px, env(safe-area-inset-top));
+  background: rgba(20, 44, 38, 0.95);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
 }
-/* Greek key, drawn as a repeating gradient rather than an image. */
-.topbar::after {
-  content: '';
-  position: absolute; left: 0; right: 0; bottom: -3px; height: 3px;
-  background-image:
-    repeating-linear-gradient(90deg,
-      var(--gold) 0 2px, transparent 2px 6px, var(--gold) 6px 8px, transparent 8px 14px);
-  opacity: 0.5;
-}
 .brand {
   font-family: var(--display);
-  font-weight: 700; font-size: 15px;
-  letter-spacing: 0.18em;
-  color: var(--gold);
+  font-weight: 800; font-size: 15px;
+  letter-spacing: -0.01em; color: var(--cream);
+  text-transform: uppercase;
 }
-.brand span { color: var(--muted); margin-left: 7px; letter-spacing: 0.12em; font-weight: 600; }
-.topbar-right { font-size: 12.5px; color: var(--muted); display: flex; gap: 9px; align-items: center; }
+.brand span { color: var(--mint); margin-left: 6px; }
+.topbar-right {
+  font-family: var(--mono);
+  font-size: 11px; color: var(--muted);
+  display: flex; gap: 9px; align-items: center;
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
 
 .view {
   flex: 1; width: 100%; max-width: 720px; margin: 0 auto;
-  padding: 20px 16px calc(var(--tabbar-h) + 92px);
+  padding: 22px 16px calc(var(--tabbar-h) + 92px);
 }
 
-/* --- type scale --- */
+/* --- type --- */
 h1 {
   font-family: var(--display);
-  font-size: 25px; font-weight: 700; line-height: 1.2;
-  letter-spacing: 0.02em; text-wrap: balance;
-  margin: 0 0 6px; color: var(--text);
+  font-size: 34px; font-weight: 800; line-height: 0.95;
+  letter-spacing: -0.025em; text-transform: uppercase;
+  text-wrap: balance; margin: 0 0 10px; color: var(--cream);
 }
 h2 {
-  font-family: var(--display);
-  font-size: 13px; font-weight: 600;
-  text-transform: uppercase; letter-spacing: 0.2em;
-  color: var(--gold); margin: 30px 0 12px;
+  font-family: var(--mono);
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.13em;
+  color: var(--mint); margin: 30px 0 12px;
 }
-h3 { font-size: 16px; font-weight: 600; margin: 0; }
+h3 { font-size: 17px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
 p { margin: 0 0 10px; }
-.sub { color: var(--muted); font-size: 13.5px; margin: 0 0 18px; }
+.sub {
+  font-family: var(--mono);
+  color: var(--mint); font-size: 11px; line-height: 1.6;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  margin: 0 0 20px;
+}
 .eyebrow {
-  font-family: var(--display);
-  font-size: 10.5px; font-weight: 600;
-  text-transform: uppercase; letter-spacing: 0.22em;
-  color: var(--gold); display: block;
+  font-family: var(--mono);
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.14em;
+  color: var(--mint); display: block; margin-bottom: 3px;
 }
 
-/* --- surfaces: spend borders by role, not on everything --- */
+/* --- panels --- */
 .card {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 15px; margin-bottom: 12px;
+  padding: 16px; margin-bottom: 10px;
 }
 .card.tight { padding: 12px; }
 .card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
-.card-head .meta { color: var(--muted); font-size: 12px; white-space: nowrap; }
+.card-head .meta { font-family: var(--mono); color: var(--muted); font-size: 10.5px; white-space: nowrap; text-transform: uppercase; }
 
-.grid { display: grid; gap: 10px; }
+.grid { display: grid; gap: 8px; }
 .grid.two { grid-template-columns: 1fr 1fr; }
 .grid.three { grid-template-columns: repeat(3, 1fr); }
-.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.row { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; }
 .spread { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 
 button { font: inherit; cursor: pointer; }
@@ -126,226 +127,270 @@ button { font: inherit; cursor: pointer; }
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   background: var(--surface-2); color: var(--text);
-  border: 1px solid var(--line-bright); border-radius: 10px;
-  padding: 11px 15px; font-weight: 600; min-height: 44px;
-  font-family: var(--body);
+  border: 1px solid var(--line-bright); border-radius: var(--radius);
+  padding: 11px 16px; min-height: 44px;
+  font-family: var(--mono); font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.07em;
 }
 .btn:active { transform: translateY(1px); }
-.btn.primary {
-  background: linear-gradient(180deg, var(--gold-bright), var(--gold));
-  border-color: var(--gold); color: #241c05; font-weight: 700;
-  letter-spacing: 0.02em;
-}
+.btn.primary { background: var(--mint); border-color: var(--mint); color: #0B2019; }
 .btn.ghost { background: transparent; }
-.btn.danger { color: var(--amphora); border-color: #4a2a28; }
+.btn.danger { color: var(--bad); border-color: #5A3833; }
 .btn.block { width: 100%; }
-.btn.sm { padding: 7px 11px; min-height: 36px; font-size: 13px; border-radius: 8px; }
+.btn.sm { padding: 7px 11px; min-height: 34px; font-size: 10.5px; }
 
 .chip {
-  background: var(--surface-2); border: 1px solid var(--line-bright); color: var(--text);
-  border-radius: 999px; padding: 7px 13px; font-size: 13px; font-weight: 600;
+  background: transparent; border: 1px solid var(--line-bright); color: var(--text);
+  border-radius: 999px; padding: 7px 13px;
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.04em;
 }
-.chip.on { background: var(--gold); border-color: var(--gold); color: #241c05; }
+.chip.on { background: var(--mint); border-color: var(--mint); color: #0B2019; }
 
 input, select, textarea {
-  font-family: var(--body); font-size: 15px;
-  background: var(--surface-2); color: var(--text);
-  border: 1px solid var(--line-bright); border-radius: 9px;
+  font-family: var(--mono); font-size: 14px;
+  background: var(--bg); color: var(--text);
+  border: 1px solid var(--line-bright); border-radius: var(--radius);
   padding: 10px 12px; width: 100%; min-height: 44px;
 }
 input:focus-visible, select:focus-visible, textarea:focus-visible,
 button:focus-visible, .tab:focus-visible {
-  outline: 2px solid var(--gold-bright); outline-offset: 2px;
+  outline: 2px solid var(--mint); outline-offset: 2px;
 }
 label {
-  display: block; font-size: 11px; color: var(--muted);
-  margin-bottom: 5px; font-weight: 600;
-  text-transform: uppercase; letter-spacing: 0.09em;
+  display: block; font-family: var(--mono);
+  font-size: 10px; color: var(--muted); margin-bottom: 5px;
+  font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;
 }
 .field { margin-bottom: 12px; }
 
-/* --- day picker --- */
+/* --- day picker: title left, arrow-in-box right, after the reference --- */
 .day-card { display: flex; align-items: center; gap: 13px; text-align: left; width: 100%; }
 .day-card .n {
-  width: 42px; height: 42px; flex: none; border-radius: 50%;
-  background: var(--gold-soft); color: var(--gold);
-  border: 1px solid rgba(201, 162, 39, 0.35);
+  width: 38px; height: 38px; flex: none; border-radius: var(--radius);
+  background: var(--mint-soft); color: var(--mint);
+  border: 1px solid rgba(58, 219, 134, 0.3);
   display: grid; place-items: center;
-  font-family: var(--display); font-weight: 700; font-size: 15px;
+  font-family: var(--mono); font-weight: 700; font-size: 13px;
 }
 .day-card .body { flex: 1; min-width: 0; }
-.day-card .body .t { font-family: var(--display); font-weight: 600; font-size: 15.5px; }
-.day-card .body .s { color: var(--muted); font-size: 12px; }
+.day-card .body .t { font-family: var(--display); font-weight: 600; font-size: 17px; letter-spacing: -0.01em; }
+.day-card .body .s { font-family: var(--mono); color: var(--muted); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.04em; }
+.day-card .go {
+  width: 30px; height: 30px; flex: none;
+  border: 1px solid var(--mint); border-radius: 3px;
+  color: var(--mint); display: grid; place-items: center;
+  font-size: 14px; line-height: 1;
+}
 
 /* --- exercise logging --- */
 .ex {
   border: 1px solid var(--line); border-radius: var(--radius);
-  background: var(--surface); margin-bottom: 10px; overflow: hidden;
+  background: var(--surface); margin-bottom: 8px; overflow: hidden;
 }
-.ex.done { border-left: 3px solid var(--laurel); }
+.ex.done { border-color: var(--mint-deep); }
 .ex-head {
   display: flex; align-items: center; gap: 10px;
-  padding: 13px 14px; width: 100%;
+  padding: 14px; width: 100%;
   background: none; border: 0; color: inherit; text-align: left;
 }
 .ex-head .t { flex: 1; min-width: 0; }
-.ex-head .t .n { font-weight: 600; font-size: 15.5px; }
-.ex-head .t .m { font-size: 12px; color: var(--muted); }
-.ex-head .count { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; font-weight: 600; }
-.ex.done .ex-head .count { color: var(--laurel); }
-.ex-body { padding: 0 14px 13px; border-top: 1px solid var(--line); }
+.ex-head .t .n { font-weight: 600; font-size: 17px; letter-spacing: -0.01em; }
+.ex-head .t .m { font-family: var(--mono); font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.ex-head .count { font-family: var(--mono); font-size: 11px; color: var(--muted); font-weight: 700; }
+.ex.done .ex-head .count { color: var(--mint); }
+.ex-body { padding: 0 14px 14px; border-top: 1px solid var(--line); }
 
 .hint {
-  background: var(--gold-soft);
-  border-left: 2px solid var(--gold);
-  border-radius: 0 8px 8px 0;
-  padding: 9px 12px; font-size: 12.5px; margin: 11px 0; color: #e8d5a3;
+  background: var(--mint-soft);
+  border-left: 2px solid var(--mint);
+  padding: 10px 12px; margin: 12px 0;
+  font-family: var(--mono); font-size: 10.5px; line-height: 1.65;
+  text-transform: uppercase; letter-spacing: 0.04em; color: #C8E9D8;
 }
-.prev { font-size: 12px; color: var(--muted); margin: 11px 0 6px; font-variant-numeric: tabular-nums; }
+.hint strong { color: var(--mint); }
+.prev { font-family: var(--mono); font-size: 10.5px; color: var(--muted); margin: 12px 0 6px; text-transform: uppercase; letter-spacing: 0.04em; }
 
 .setrow, .setlabels {
   display: grid; grid-template-columns: 22px 1fr 1fr 46px 42px 30px;
   gap: 6px; align-items: center;
 }
-.setrow { margin-bottom: 7px; }
-.setrow .idx { color: var(--dim); font-size: 12px; text-align: center; font-weight: 700; }
+.setrow { margin-bottom: 6px; }
+.setrow .idx { font-family: var(--mono); color: var(--dim); font-size: 11px; text-align: center; font-weight: 700; }
 .setrow input {
   padding: 8px 4px; text-align: center; min-height: 42px;
-  font-variant-numeric: tabular-nums; font-weight: 600;
+  font-variant-numeric: tabular-nums; font-weight: 700; font-size: 15px;
 }
 .setrow .tick {
-  min-height: 42px; border-radius: 9px; border: 1px solid var(--line-bright);
-  background: var(--surface-2); color: var(--dim); font-size: 17px; font-weight: 700;
+  min-height: 42px; border-radius: var(--radius); border: 1px solid var(--line-bright);
+  background: var(--bg); color: var(--dim); font-size: 16px; font-weight: 700;
 }
-.setrow .tick[aria-pressed="true"] { background: var(--laurel); border-color: var(--laurel); color: #06210f; }
+.setrow .tick[aria-pressed="true"] { background: var(--mint); border-color: var(--mint); color: #0B2019; }
 .setrow .kill {
-  min-height: 42px; border-radius: 9px; border: 1px solid var(--line);
+  min-height: 42px; border-radius: var(--radius); border: 1px solid var(--line);
   background: transparent; color: var(--dim); padding: 0; font-size: 15px;
 }
 .setlabels {
-  font-size: 10px; color: var(--dim); text-transform: uppercase;
-  letter-spacing: 0.1em; margin-bottom: 6px; font-weight: 700;
+  font-family: var(--mono); font-size: 9.5px; color: var(--dim);
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 7px; font-weight: 700;
 }
 .setlabels span { text-align: center; }
 
-/* --- data tiles --- */
+/* --- data --- */
 .stat {
   background: var(--surface); border: 1px solid var(--line);
   border-radius: var(--radius); padding: 13px;
 }
 .stat .k {
-  font-size: 10.5px; color: var(--muted); text-transform: uppercase;
-  letter-spacing: 0.11em; font-weight: 700;
+  font-family: var(--mono); font-size: 9.5px; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.11em; font-weight: 700;
 }
 .stat .v {
-  font-size: 23px; font-weight: 700; margin-top: 3px;
-  font-variant-numeric: tabular-nums; color: var(--text);
+  font-family: var(--display); font-size: 26px; font-weight: 800;
+  margin-top: 2px; letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums; color: var(--cream);
 }
-.stat .u { font-size: 12px; color: var(--muted); font-weight: 600; }
+.stat .u { font-family: var(--mono); font-size: 10.5px; color: var(--muted); font-weight: 600; }
 
-.pill { font-size: 10.5px; padding: 3px 9px; border-radius: 999px; font-weight: 700; letter-spacing: 0.07em; }
-.pill.ok { background: rgba(95, 167, 119, 0.16); color: var(--laurel); }
-.pill.low { background: rgba(217, 164, 65, 0.16); color: var(--amber); }
-.pill.high { background: rgba(180, 72, 63, 0.18); color: #d4695f; }
-.pill.pr { background: var(--gold); color: #241c05; }
+.pill {
+  font-family: var(--mono); font-size: 9.5px; padding: 4px 9px;
+  border-radius: 3px; font-weight: 700; letter-spacing: 0.08em;
+}
+.pill.ok { background: var(--mint-soft); color: var(--mint); }
+.pill.low { background: rgba(232, 197, 106, 0.14); color: var(--warn); }
+.pill.high { background: rgba(224, 122, 106, 0.16); color: var(--bad); }
+.pill.pr { background: var(--mint); color: #0B2019; }
 
-.bar { height: 7px; background: var(--surface-2); border-radius: 999px; overflow: hidden; margin-top: 7px; }
-.bar > i { display: block; height: 100%; background: var(--laurel); border-radius: 999px; }
-.bar.low > i { background: var(--amber); }
-.bar.high > i { background: var(--amphora); }
+.bar { height: 6px; background: var(--bg); border: 1px solid var(--line); border-radius: 999px; overflow: hidden; margin-top: 8px; }
+.bar > i { display: block; height: 100%; background: var(--mint); }
+.bar.low > i { background: var(--warn); }
+.bar.high > i { background: var(--bad); }
 
 .banner {
-  border-radius: var(--radius); padding: 13px 15px; margin-bottom: 12px;
-  font-size: 13.5px; border: 1px solid;
+  border-radius: var(--radius); padding: 14px; margin-bottom: 10px;
+  font-family: var(--mono); font-size: 10.5px; line-height: 1.7;
+  text-transform: uppercase; letter-spacing: 0.04em;
+  border: 1px solid;
 }
-.banner.ok { background: rgba(95, 167, 119, 0.08); border-color: rgba(95, 167, 119, 0.32); }
-.banner.warn { background: rgba(217, 164, 65, 0.08); border-color: rgba(217, 164, 65, 0.34); }
-.banner.stop { background: rgba(180, 72, 63, 0.1); border-color: rgba(180, 72, 63, 0.4); }
+.banner.ok { background: var(--mint-soft); border-color: rgba(58, 219, 134, 0.35); color: #C8E9D8; }
+.banner.warn { background: rgba(232, 197, 106, 0.08); border-color: rgba(232, 197, 106, 0.35); color: #EBDDB0; }
+.banner.stop { background: rgba(224, 122, 106, 0.09); border-color: rgba(224, 122, 106, 0.4); color: #F0C4BB; }
 .banner b {
-  display: block; margin-bottom: 4px;
-  font-family: var(--display); letter-spacing: 0.04em;
+  display: block; margin-bottom: 5px;
+  font-family: var(--display); font-size: 15px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: -0.01em; color: var(--cream);
 }
-.banner ul { margin: 4px 0 0; padding-left: 18px; }
+.banner ul { margin: 4px 0 0; padding-left: 16px; }
 
-.empty { text-align: center; color: var(--muted); padding: 42px 18px; }
-.empty .big { font-family: var(--display); font-size: 30px; color: var(--gold); opacity: 0.55; margin-bottom: 10px; letter-spacing: 0.1em; }
+.empty { text-align: center; color: var(--muted); padding: 44px 18px; }
+.empty .big {
+  font-family: var(--display); font-size: 26px; font-weight: 800;
+  color: var(--mint); opacity: 0.45; margin-bottom: 10px;
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.empty strong { font-family: var(--display); font-size: 17px; color: var(--cream); }
 
-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); }
+table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 11.5px; }
+th, td { text-align: left; padding: 9px 6px; border-bottom: 1px solid var(--line); }
 th {
-  color: var(--muted); font-size: 10.5px;
+  color: var(--muted); font-size: 9.5px;
   text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700;
 }
 td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 
 svg.chart { width: 100%; height: 150px; display: block; overflow: visible; }
 svg.chart .grid-line { stroke: var(--line); stroke-width: 1; }
-svg.chart .line { fill: none; stroke: var(--gold); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
-svg.chart .dot { fill: var(--gold); }
-svg.chart .lbl { fill: var(--muted); font-size: 10px; font-family: var(--body); }
+svg.chart .line { fill: none; stroke: var(--mint); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+svg.chart .dot { fill: var(--mint); }
+svg.chart .lbl { fill: var(--muted); font-size: 10px; font-family: var(--mono); }
+
+/* --- fuel --- */
+.fuel-count {
+  font-family: var(--display); font-size: 30px; font-weight: 800;
+  line-height: 1.1; letter-spacing: -0.03em; color: var(--cream);
+  font-variant-numeric: tabular-nums;
+}
+.fuel-of { font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: 0; }
+.fuel-bar { height: 8px; }
+.fuel-list { display: flex; flex-direction: column; gap: 5px; }
+.fuel-item {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--bg); border: 1px solid var(--line);
+  border-radius: 3px; padding: 8px 10px;
+  font-family: var(--mono); font-size: 11px;
+}
+.fuel-item-label { flex: 1; min-width: 0; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+.fuel-remove {
+  border: 0; background: transparent; color: var(--dim);
+  font-size: 15px; line-height: 1; padding: 2px 4px; min-height: 0;
+}
 
 /* --- calendar --- */
-.cal-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
-.cal-title { font-family: var(--display); font-size: 16px; font-weight: 600; letter-spacing: 0.06em; }
-.cal-nav {
-  width: 38px; height: 38px; border-radius: 9px;
-  border: 1px solid var(--line-bright); background: var(--surface-2);
-  color: var(--text); font-size: 16px; line-height: 1; padding: 0;
+.cal-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+.cal-title {
+  font-family: var(--display); font-size: 17px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: -0.01em;
 }
-.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+.cal-nav {
+  width: 36px; height: 36px; border-radius: 3px; padding: 0;
+  border: 1px solid var(--line-bright); background: transparent;
+  color: var(--mint); font-size: 15px; line-height: 1;
+}
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
 .cal-dow {
-  text-align: center; font-size: 10px; font-weight: 700; color: var(--dim);
-  letter-spacing: 0.08em; padding-bottom: 4px;
+  text-align: center; font-family: var(--mono); font-size: 9px;
+  font-weight: 700; color: var(--dim); letter-spacing: 0.1em; padding-bottom: 5px;
 }
 .cal-day {
   aspect-ratio: 1; display: grid; place-items: center;
-  border-radius: 50%; font-size: 12.5px; font-weight: 600;
+  border-radius: 3px; font-family: var(--mono); font-size: 11.5px; font-weight: 600;
   font-variant-numeric: tabular-nums;
   border: 1px solid transparent; background: transparent;
   color: var(--dim); padding: 0; width: 100%;
 }
 .cal-day.empty { visibility: hidden; }
-/* Rest days that have already passed: present, but quiet. */
 .cal-day.rest { color: var(--muted); border-color: var(--line); }
-.cal-day.future { color: var(--dim); opacity: 0.45; }
-/* Trained: gilt, the one loud thing in the grid. */
-.cal-day.trained {
-  background: linear-gradient(180deg, var(--gold-bright), var(--gold));
-  border-color: var(--gold); color: #241c05; font-weight: 700;
-}
-.cal-day.today { box-shadow: 0 0 0 2px var(--aegean); }
-.cal-day.trained.today { box-shadow: 0 0 0 2px var(--aegean); }
+.cal-day.future { color: var(--dim); opacity: 0.4; }
+.cal-day.trained { background: var(--mint); border-color: var(--mint); color: #0B2019; font-weight: 700; }
+.cal-day.today { box-shadow: inset 0 0 0 1px var(--cream); }
 
-.cal-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 14px; font-size: 12px; color: var(--muted); }
+.cal-legend {
+  display: flex; flex-wrap: wrap; gap: 14px; margin-top: 16px;
+  font-family: var(--mono); font-size: 9.5px; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
 .cal-legend span { display: inline-flex; align-items: center; gap: 6px; }
-.cal-legend i { width: 13px; height: 13px; border-radius: 50%; border: 1px solid var(--line); display: inline-block; }
-.cal-legend i.trained { background: var(--gold); border-color: var(--gold); }
-.cal-legend i.rest { background: transparent; border-color: var(--line-bright); }
-.cal-legend i.today { border-color: var(--aegean); box-shadow: 0 0 0 1.5px var(--aegean); }
+.cal-legend i { width: 12px; height: 12px; border-radius: 2px; border: 1px solid var(--line-bright); display: inline-block; }
+.cal-legend i.trained { background: var(--mint); border-color: var(--mint); }
+.cal-legend i.rest { background: transparent; }
+.cal-legend i.today { box-shadow: inset 0 0 0 1px var(--cream); }
 
 /* --- rest timer --- */
 .rest-bar {
   position: fixed; left: 12px; right: 12px;
   bottom: calc(var(--tabbar-h) + 10px + env(safe-area-inset-bottom));
   z-index: 30; display: flex; align-items: center; gap: 10px;
-  background: linear-gradient(180deg, var(--gold-bright), var(--gold));
-  color: #241c05; border-radius: 12px; padding: 10px 13px;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+  background: var(--mint); color: #0B2019;
+  border-radius: var(--radius); padding: 11px 13px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
   max-width: 696px; margin: 0 auto;
 }
 .rest-bar[hidden] { display: none; }
 .rest-bar .rest-label {
-  font-family: var(--display); font-size: 11px; font-weight: 700;
-  letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.75;
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.7;
 }
-.rest-bar .rest-time { font-size: 21px; font-variant-numeric: tabular-nums; margin-left: auto; font-weight: 700; }
-.rest-bar .chip { background: rgba(36, 28, 5, 0.16); border-color: transparent; color: #241c05; font-weight: 700; }
+.rest-bar .rest-time {
+  font-family: var(--display); font-size: 22px; font-weight: 800;
+  font-variant-numeric: tabular-nums; margin-left: auto; letter-spacing: -0.02em;
+}
+.rest-bar .chip { background: rgba(11, 32, 25, 0.14); border-color: transparent; color: #0B2019; font-weight: 700; }
 
-/* --- tabbar: inscriptional, no icons --- */
+/* --- tabbar --- */
 .tabbar {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 25;
   display: grid; grid-template-columns: repeat(5, 1fr);
-  background: rgba(14, 17, 22, 0.97);
+  background: rgba(20, 44, 38, 0.97);
   backdrop-filter: blur(10px);
   border-top: 1px solid var(--line);
   padding-bottom: env(safe-area-inset-bottom);
@@ -354,38 +399,63 @@ svg.chart .lbl { fill: var(--muted); font-size: 10px; font-family: var(--body); 
   background: none; border: 0; color: var(--dim);
   display: flex; align-items: center; justify-content: center;
   height: var(--tabbar-h); padding: 8px 2px;
-  font-family: var(--display); font-size: 10.5px; font-weight: 600;
-  text-transform: uppercase; letter-spacing: 0.12em;
+  font-family: var(--mono); font-size: 9.5px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.1em;
   border-top: 2px solid transparent;
 }
-.tab[aria-selected="true"] { color: var(--gold); border-top-color: var(--gold); }
+.tab[aria-selected="true"] { color: var(--mint); border-top-color: var(--mint); }
 
 .toast {
   position: fixed; left: 50%; transform: translateX(-50%);
   bottom: calc(var(--tabbar-h) + 22px + env(safe-area-inset-bottom));
-  background: var(--surface-2); border: 1px solid var(--gold);
-  color: var(--text); padding: 11px 18px; border-radius: 999px;
-  z-index: 60; font-size: 13.5px; font-weight: 600;
-  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.6);
+  background: var(--surface-2); border: 1px solid var(--mint);
+  color: var(--text); padding: 11px 18px; border-radius: var(--radius);
+  z-index: 60; font-family: var(--mono); font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.04em;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.55);
   max-width: 90vw; text-align: center;
 }
 
 .muted { color: var(--muted); }
-.small { font-size: 12.5px; }
-.mono { font-variant-numeric: tabular-nums; }
-.mt { margin-top: 14px; }
+.small { font-family: var(--mono); font-size: 10.5px; line-height: 1.65; }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.mt { margin-top: 12px; }
 .hr { height: 1px; background: var(--line); margin: 16px 0; border: 0; }
 
-.sync { font-size: 11px; line-height: 1; }
+.sync { font-size: 10px; line-height: 1; }
 .sync-offline { color: var(--dim); }
-.sync-syncing { color: var(--amber); }
-.sync-synced  { color: var(--laurel); }
-.sync-error   { color: var(--amphora); }
+.sync-syncing { color: var(--warn); }
+.sync-synced  { color: var(--mint); }
+.sync-error   { color: var(--bad); }
 
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
   .btn:active { transform: none; }
 }
+
+/* --- one day's workout, opened from the calendar --- */
+.cal-day.selected { box-shadow: inset 0 0 0 2px var(--cream); }
+.day-detail { border-color: var(--mint); }
+.day-detail-date {
+  font-family: var(--display); font-size: 18px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: -0.01em; color: var(--cream);
+}
+.day-detail-session h3 { font-size: 16px; }
+.detail-ex {
+  border-top: 1px solid var(--line);
+  padding: 10px 0 2px; margin-top: 8px;
+}
+.detail-ex-name { font-family: var(--display); font-weight: 600; font-size: 14px; }
+.detail-sets { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
+.detail-set {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--bg); border: 1px solid var(--line);
+  border-radius: 3px; padding: 5px 9px;
+  font-family: var(--mono); font-size: 11px;
+  font-variant-numeric: tabular-nums; color: var(--text);
+}
+.detail-set-n { color: var(--dim); font-size: 9.5px; }
+.detail-set-rpe { color: var(--muted); }
 
 </style>
 
@@ -978,6 +1048,8 @@ function defaultState() {
     sessions: [],
     metrics: [],
     bodyweights: [],
+    protein: [],
+    creatine: [],
     active: null,
   };
 }
@@ -1134,6 +1206,35 @@ class Store {
     }));
   }
 
+  // --- daily fuel ---
+
+  /** Protein is many entries a day, so each one is kept separately. */
+  addProtein(grams, label = '', date = today()) {
+    const g = Number(grams);
+    if (!Number.isFinite(g) || g <= 0) return this.state;
+    return this.update((s) => ({
+      ...s,
+      protein: [...s.protein, { id: uid(), date, grams: g, label: String(label || '') }],
+    }));
+  }
+
+  removeProtein(id) {
+    return this.update((s) => ({ ...s, protein: s.protein.filter((p) => p.id !== id) }));
+  }
+
+  /** Creatine is one dose a day; logging again replaces it. */
+  setCreatine(grams, date = today()) {
+    const g = Number(grams);
+    const rest = this.state.creatine.filter((c) => c.date !== date);
+    if (!Number.isFinite(g) || g <= 0) {
+      return this.update((s) => ({ ...s, creatine: rest }));
+    }
+    return this.update((s) => ({
+      ...s,
+      creatine: [...rest, { id: uid(), date, grams: g }].sort((a, b) => a.date.localeCompare(b.date)),
+    }));
+  }
+
   addMetric(metric) {
     const m = { id: uid(), date: today(), ...metric };
     return this.update((s) => ({
@@ -1189,11 +1290,15 @@ function migrate(raw) {
     sessions: Array.isArray(raw.sessions) ? raw.sessions : [],
     metrics: Array.isArray(raw.metrics) ? raw.metrics : [],
     bodyweights: Array.isArray(raw.bodyweights) ? raw.bodyweights : [],
+    protein: Array.isArray(raw.protein) ? raw.protein : [],
+    creatine: Array.isArray(raw.creatine) ? raw.creatine : [],
     active: raw.active || null,
   };
   state.sessions.sort((a, b) => String(a.date).localeCompare(String(b.date)));
   state.bodyweights.sort((a, b) => String(a.date).localeCompare(String(b.date)));
   state.metrics.sort((a, b) => String(a.date).localeCompare(String(b.date)));
+  state.protein.sort((a, b) => String(a.date).localeCompare(String(b.date)));
+  state.creatine.sort((a, b) => String(a.date).localeCompare(String(b.date)));
   return state;
 }
 
@@ -1243,14 +1348,27 @@ function mergeStates(local, remote) {
   const metrics = unionBy(local.metrics, remote.metrics, 'date', localWins).sort((a, b) =>
     String(a.date).localeCompare(String(b.date))
   );
+  // Protein is many entries a day, so it unions by id like sessions do;
+  // creatine is one dose a day and unions by date.
+  const protein = unionBy(local.protein, remote.protein, 'id', localWins).sort((a, b) =>
+    String(a.date).localeCompare(String(b.date))
+  );
+  const creatine = unionBy(local.creatine, remote.creatine, 'date', localWins).sort((a, b) =>
+    String(a.date).localeCompare(String(b.date))
+  );
 
   return {
     ...newer,
     sessions,
     bodyweights,
     metrics,
+    protein,
+    creatine,
     settings: { ...(localWins ? remote.settings : local.settings), ...(newer.settings || {}) },
-    active: newer.active ?? null,
+    // An in-progress workout on THIS device always wins. Losing the sets you
+    // are part-way through is the worst thing sync could do; a stale active
+    // session left on another device is a shrug you can discard by hand.
+    active: local.active ?? remote.active ?? null,
     updatedAt: Math.max(localAt, remoteAt),
   };
 }
@@ -1267,6 +1385,45 @@ const stripVolatile = (s) => {
 };
 
 const DOC_PATH = 'log/state';
+
+/** Does this look like one of our snapshots, rather than some wrapper object? */
+function isStateLike(x) {
+  if (!x || typeof x !== 'object' || Array.isArray(x)) return false;
+  return (
+    Array.isArray(x.sessions) ||
+    Array.isArray(x.bodyweights) ||
+    Array.isArray(x.protein) ||
+    (!!x.settings && typeof x.settings === 'object')
+  );
+}
+
+/**
+ * Pull our state out of whatever the store hands back.
+ *
+ * The document API may return the payload directly, behind a `data` property,
+ * or behind a Firestore-style `data()` method, and we wrap the state in
+ * `{state, updatedAt}` on the way in. Guessing wrong once meant merging a
+ * wrapper object as if it were a state, so anything unrecognisable is refused
+ * outright rather than merged.
+ */
+function unwrapSnapshot(snapshot) {
+  if (!snapshot || typeof snapshot !== 'object') return null;
+  if (snapshot.exists === false) return null;
+
+  let raw = snapshot;
+  if (typeof raw.data === 'function') {
+    try {
+      raw = raw.data();
+    } catch {
+      return null;
+    }
+  } else if (raw.data && typeof raw.data === 'object') {
+    raw = raw.data;
+  }
+  if (!raw || typeof raw !== 'object') return null;
+  if (raw.state && typeof raw.state === 'object') raw = raw.state;
+  return isStateLike(raw) ? raw : null;
+}
 
 /**
  * Mirrors a Store into a db document and back.
@@ -1310,9 +1467,7 @@ class Syncer {
     this.setStatus('syncing');
     try {
       const doc = this.db.doc(DOC_PATH);
-      const snapshot = await doc.get();
-      const remote = snapshot?.data ?? snapshot ?? null;
-      const merged = mergeStates(this.store.state, remote?.state ? remote.state : remote);
+      const merged = mergeStates(this.store.state, unwrapSnapshot(await doc.get()));
       if (merged && !sameState(merged, this.store.state)) {
         this.applyRemote(merged);
       }
@@ -1329,8 +1484,7 @@ class Syncer {
     if (typeof doc.onSnapshot !== 'function') return;
     try {
       const off = doc.onSnapshot((snapshot) => {
-        const remote = snapshot?.data ?? snapshot ?? null;
-        const incoming = remote?.state ? remote.state : remote;
+        const incoming = unwrapSnapshot(snapshot);
         if (!incoming) return;
         const merged = mergeStates(this.store.state, incoming);
         if (!sameState(merged, this.store.state)) this.applyRemote(merged);
@@ -1526,6 +1680,115 @@ function daysSinceLastSession(sessions, todayIso) {
   return Math.round((Date.UTC(b.y, b.m, b.d) - Date.UTC(a.y, a.m, a.d)) / 86400000);
 }
 
+// ---------- src/core/supplements.js ----------
+// Daily fuel: protein intake and creatine adherence.
+//
+// Protein is many entries a day summed against a target; creatine is one dose
+// a day where consistency is the whole point, so it is measured as a streak and
+// as adherence over a window rather than as a total.
+
+const CREATINE_DEFAULT_G = 5;
+
+/** Quick-add amounts, in grams of protein. */
+const PROTEIN_PRESETS = [
+  { label: 'Whey scoop', grams: 25 },
+  { label: 'Chicken 6oz', grams: 50 },
+  { label: 'Steak 6oz', grams: 45 },
+  { label: 'Greek yogurt', grams: 20 },
+  { label: '3 eggs', grams: 18 },
+  { label: 'Shake + milk', grams: 33 },
+];
+
+const onDate = (rows, date) => (rows || []).filter((r) => r?.date === date);
+
+/** Total grams of protein logged on a date. */
+function proteinOnDate(entries, date) {
+  return onDate(entries, date).reduce((sum, e) => sum + (Number(e.grams) || 0), 0);
+}
+
+/** One total per day, oldest first — the shape the charts want. */
+function proteinDailyTotals(entries) {
+  const byDate = {};
+  for (const e of entries || []) {
+    if (!e?.date) continue;
+    byDate[e.date] = (byDate[e.date] || 0) + (Number(e.grams) || 0);
+  }
+  return Object.entries(byDate)
+    .map(([date, value]) => ({ date, value }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+}
+
+/** Every ISO date in the `days`-long window ending on `todayIso`, oldest first. */
+function windowDates(todayIso, days) {
+  const [y, m, d] = todayIso.split('-').map(Number);
+  const out = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const dt = new Date(Date.UTC(y, m - 1, d - i));
+    out.push(dt.toISOString().slice(0, 10));
+  }
+  return out;
+}
+
+/**
+ * Protein performance over a window.
+ * Only days at or before today count, so a fresh window does not read as
+ * missed days you have not lived through yet.
+ */
+function proteinAdherence(entries, target, todayIso, days = 7) {
+  const dates = windowDates(todayIso, days);
+  const totals = dates.map((date) => proteinOnDate(entries, date));
+  const logged = totals.filter((t) => t > 0);
+  const daysHit = target > 0 ? totals.filter((t) => t >= target).length : 0;
+  const average = logged.length ? Math.round(totals.reduce((a, b) => a + b, 0) / dates.length) : 0;
+  return { dates, totals, average, daysHit, days: dates.length, loggedDays: logged.length };
+}
+
+/** Grams of creatine recorded for a date, 0 if none. */
+function creatineOnDate(log, date) {
+  const hit = onDate(log, date)[0];
+  return hit ? Number(hit.grams) || 0 : 0;
+}
+
+/**
+ * Consecutive days ending today on which creatine was taken.
+ * Today not being logged yet does not break the streak — it just has not
+ * happened. Yesterday missing does.
+ */
+function creatineStreak(log, todayIso) {
+  const taken = new Set((log || []).filter((r) => Number(r?.grams) > 0).map((r) => r.date));
+  const [y, m, d] = todayIso.split('-').map(Number);
+  let streak = 0;
+  for (let i = 0; i < 3650; i++) {
+    const date = new Date(Date.UTC(y, m - 1, d - i)).toISOString().slice(0, 10);
+    if (taken.has(date)) streak += 1;
+    else if (i === 0) continue; // today is still open
+    else break;
+  }
+  return streak;
+}
+
+/** How many of the last `days` days carried a dose. */
+function creatineAdherence(log, todayIso, days = 30) {
+  const dates = windowDates(todayIso, days);
+  const taken = dates.filter((date) => creatineOnDate(log, date) > 0).length;
+  return { taken, of: dates.length, pct: Math.round((taken / dates.length) * 100) };
+}
+
+/** Plain-language read on the last week of protein. */
+function proteinVerdict({ average, target, loggedDays, days }) {
+  if (!loggedDays) return { status: 'none', message: 'Nothing logged yet this week.' };
+  if (!target) return { status: 'none', message: `Averaging ${average} g/day.` };
+  const pct = Math.round((average / target) * 100);
+  if (pct >= 95) return { status: 'ok', message: `Averaging ${average} g/day — on target.` };
+  if (pct >= 80) {
+    return { status: 'warn', message: `Averaging ${average} g/day — ${target - average} g short of ${target}.` };
+  }
+  return {
+    status: 'low',
+    message: `Averaging ${average} g/day against ${target}. That gap is enough to cost you muscle on a bulk.`,
+  };
+}
+
 // ---------- src/ui/dom.js ----------
 // Tiny DOM helpers + a dependency-free line chart.
 
@@ -1649,7 +1912,7 @@ function lineChart(points, { height = 150, unit = '' } = {}) {
 
 // ---------- src/ui/app.js ----------
 const store = new Store(window.localStorage);
-const ui = { tab: 'today', openExercise: null, openedFor: null, chartExercise: null, volumeMode: null, cal: null };
+const ui = { tab: 'today', openExercise: null, openedFor: null, chartExercise: null, volumeMode: null, cal: null, calSelected: null };
 let syncer = null;
 
 // Expose for end-to-end tests to seed and inspect state.
@@ -1755,7 +2018,8 @@ function viewDayPicker() {
               text: `${day.exercises.length} exercises · ${prev ? 'last ' + fmtDate(prev.date) : 'not logged yet'}`,
             }),
           ]),
-          suggested ? el('span', { class: 'pill pr', text: 'NEXT' }) : el('span', { class: 'muted', text: '›' }),
+          suggested ? el('span', { class: 'pill pr', text: 'NEXT' }) : null,
+          el('span', { class: 'go', 'aria-hidden': 'true', text: '↗' }),
         ]
       )
     );
@@ -2069,14 +2333,21 @@ function viewCalendar() {
       if (day.isToday) classes.push('today');
 
       const state = day.trained ? day.label : day.isFuture ? 'upcoming' : 'rest day';
+      if (day.date === ui.calSelected) classes.push('selected');
       grid.append(
-        el('div', {
+        el('button', {
+          type: 'button',
           class: classes.join(' '),
           'data-day-cell': day.date,
           'data-trained': String(day.trained),
           title: `${day.date} — ${state}`,
           'aria-label': `${day.date}, ${state}`,
+          'aria-pressed': String(day.date === ui.calSelected),
           text: String(day.day),
+          onclick: () => {
+            ui.calSelected = ui.calSelected === day.date ? null : day.date;
+            render();
+          },
         })
       );
     }
@@ -2099,7 +2370,85 @@ function viewCalendar() {
       statCard('Days since', since == null ? '–' : since),
     ])
   );
+
+  if (ui.calSelected) wrap.append(dayDetail(ui.calSelected));
   return wrap;
+}
+
+/**
+ * Everything logged on one date: each exercise, each set as it was entered,
+ * with the estimated 1RM of the best set so progression is readable at a
+ * glance rather than reconstructed from memory.
+ */
+function dayDetail(date) {
+  const sessions = store.state.sessions.filter((s) => s.date === date);
+  const panel = el('div', { class: 'card day-detail', 'data-day-detail': date });
+
+  panel.append(
+    el('div', { class: 'spread' }, [
+      el('div', {}, [
+        el('span', { class: 'eyebrow', text: 'Session detail' }),
+        el('div', { class: 'day-detail-date', text: fmtDateLong(date) }),
+      ]),
+      el('button', {
+        class: 'btn sm ghost',
+        type: 'button',
+        'data-action': 'close-day',
+        text: 'Close',
+        onclick: () => {
+          ui.calSelected = null;
+          render();
+        },
+      }),
+    ])
+  );
+
+  if (!sessions.length) {
+    panel.append(
+      el('p', { class: 'small muted mt', 'data-day-empty': '1', text: 'Rest day — nothing logged.' })
+    );
+    return panel;
+  }
+
+  for (const session of sessions) {
+    panel.append(
+      el('div', { class: 'day-detail-session', 'data-detail-session': session.id }, [
+        el('div', { class: 'spread mt' }, [
+          el('h3', { text: session.dayName || session.dayId }),
+          el('span', {
+            class: 'small muted mono',
+            text: `${sessionHardSets(session)} sets · ${sessionVolume(session).toLocaleString()} lb`,
+          }),
+        ]),
+      ])
+    );
+
+    for (const entry of session.entries) {
+      const best = bestSet(entry);
+      const block = el('div', { class: 'detail-ex', 'data-detail-ex': entry.exerciseId });
+      block.append(
+        el('div', { class: 'spread' }, [
+          el('strong', { class: 'detail-ex-name', text: entry.name }),
+          best ? el('span', { class: 'pill ok', text: `${best.e1rm} lb 1RM` }) : null,
+        ])
+      );
+      const rows = el('div', { class: 'detail-sets' });
+      entry.sets.forEach((set, i) => {
+        rows.append(
+          el('span', { class: 'detail-set', 'data-detail-set': i }, [
+            el('span', { class: 'detail-set-n', text: `${i + 1}` }),
+            `${set.weight === '' || set.weight == null ? 'BW' : set.weight} × ${set.reps}`,
+            set.rpe ? el('span', { class: 'detail-set-rpe', text: ` @${set.rpe}` }) : null,
+          ])
+        );
+      });
+      block.append(rows);
+      panel.append(block);
+    }
+
+    if (session.note) panel.append(el('p', { class: 'small muted mt', text: `“${session.note}”` }));
+  }
+  return panel;
 }
 
 // ---------------------------------------------------------------- HISTORY tab
@@ -2288,6 +2637,183 @@ function viewProgress() {
   return wrap;
 }
 
+// ------------------------------------------------------------------- fuel
+/**
+ * Today's protein and creatine.
+ *
+ * Protein is a running total against the computed target; creatine is a single
+ * daily dose where the only thing that matters is not missing days, so it is
+ * shown as a streak and 30-day adherence rather than a quantity.
+ */
+function viewFuel(target) {
+  const todayIso = today();
+  const st = store.state;
+  const wrap = el('div');
+
+  const eaten = proteinOnDate(st.protein, todayIso);
+  const pct = target ? Math.min(100, Math.round((eaten / target) * 100)) : 0;
+  const left = Math.max(0, target - eaten);
+
+  wrap.append(el('h2', { text: 'Today’s fuel' }));
+
+  // --- protein ---
+  const card = el('div', { class: 'card', 'data-fuel': 'protein' });
+  card.append(
+    el('div', { class: 'spread' }, [
+      el('div', {}, [
+        el('span', { class: 'eyebrow', text: 'Protein' }),
+        el('div', { class: 'fuel-count', 'data-protein-total': '1' }, [
+          String(eaten),
+          el('span', { class: 'fuel-of', text: target ? ` / ${target} g` : ' g' }),
+        ]),
+      ]),
+      el('div', {
+        class: `pill ${pct >= 95 ? 'ok' : pct >= 60 ? 'low' : 'high'}`,
+        'data-protein-pct': '1',
+        text: `${pct}%`,
+      }),
+    ])
+  );
+  card.append(el('div', { class: 'bar fuel-bar' }, [el('i', { style: `width:${pct}%` })]));
+  card.append(
+    el('p', {
+      class: 'small muted mt',
+      'data-protein-left': '1',
+      text: target
+        ? left > 0
+          ? `${left} g to go today.`
+          : 'Target hit. Anything more is a bonus.'
+        : 'Add an InBody scan below to get a protein target.',
+    })
+  );
+
+  const presets = el('div', { class: 'row mt' });
+  for (const preset of PROTEIN_PRESETS) {
+    presets.append(
+      el('button', {
+        class: 'chip',
+        type: 'button',
+        'data-preset': String(preset.grams),
+        text: `${preset.label} +${preset.grams}`,
+        onclick: () => {
+          store.addProtein(preset.grams, preset.label, todayIso);
+          render();
+        },
+      })
+    );
+  }
+  card.append(presets);
+
+  const custom = el('input', {
+    type: 'number',
+    inputmode: 'numeric',
+    placeholder: 'grams',
+    'data-input': 'protein-custom',
+    'data-focus-key': 'protein-custom',
+  });
+  const addCustom = () => {
+    const g = num(custom.value);
+    if (!Number.isFinite(g) || g <= 0) return toast('Enter grams first.');
+    store.addProtein(g, 'Custom', todayIso);
+    toast(`+${g} g protein.`);
+    render();
+  };
+  card.append(
+    el('div', { class: 'row mt' }, [
+      el('div', { style: 'flex:1' }, [custom]),
+      el('button', { class: 'btn primary', 'data-action': 'add-protein', text: 'Add', onclick: addCustom }),
+    ])
+  );
+
+  const todayEntries = (st.protein || []).filter((e) => e.date === todayIso);
+  if (todayEntries.length) {
+    const list = el('div', { class: 'fuel-list mt' });
+    for (const entry of todayEntries) {
+      list.append(
+        el('div', { class: 'fuel-item', 'data-protein-entry': entry.id }, [
+          el('span', { class: 'fuel-item-label', text: entry.label || 'Protein' }),
+          el('span', { class: 'mono', text: `${entry.grams} g` }),
+          el('button', {
+            class: 'fuel-remove',
+            type: 'button',
+            'aria-label': `Remove ${entry.label || 'entry'}`,
+            text: '×',
+            onclick: () => {
+              store.removeProtein(entry.id);
+              render();
+            },
+          }),
+        ])
+      );
+    }
+    card.append(list);
+  }
+  wrap.append(card);
+
+  // --- creatine ---
+  const dose = creatineOnDate(st.creatine, todayIso);
+  const streak = creatineStreak(st.creatine, todayIso);
+  const adherence = creatineAdherence(st.creatine, todayIso, 30);
+  const cCard = el('div', { class: 'card', 'data-fuel': 'creatine' });
+  cCard.append(
+    el('div', { class: 'spread' }, [
+      el('div', {}, [
+        el('span', { class: 'eyebrow', text: 'Creatine' }),
+        el('div', {
+          class: 'fuel-count',
+          'data-creatine-state': dose > 0 ? 'taken' : 'not-taken',
+          text: dose > 0 ? `${dose} g taken` : 'Not yet today',
+        }),
+      ]),
+      el('button', {
+        class: `btn ${dose > 0 ? '' : 'primary'}`,
+        type: 'button',
+        'data-action': 'toggle-creatine',
+        text: dose > 0 ? 'Undo' : `Take ${CREATINE_DEFAULT_G} g`,
+        onclick: () => {
+          store.setCreatine(dose > 0 ? 0 : CREATINE_DEFAULT_G, todayIso);
+          if (dose === 0) toast(`Creatine logged. ${creatineStreak(store.state.creatine, todayIso)} day streak.`);
+          render();
+        },
+      }),
+    ])
+  );
+  cCard.append(
+    el('div', { class: 'grid two mt', 'data-creatine-stats': '1' }, [
+      statCard('Streak', streak, streak === 1 ? 'day' : 'days'),
+      statCard('Last 30 days', `${adherence.taken}/${adherence.of}`, `${adherence.pct}%`),
+    ])
+  );
+  cCard.append(
+    el('p', {
+      class: 'small muted mt',
+      text: 'Creatine works on saturation, not timing. Missing days is the only way to get it wrong.',
+    })
+  );
+  wrap.append(cCard);
+
+  // --- the week ---
+  const week = proteinAdherence(st.protein, target, todayIso, 7);
+  const verdict = proteinVerdict({ ...week, target });
+  if (week.loggedDays) {
+    wrap.append(
+      el('div', { class: `banner ${verdict.status === 'ok' ? 'ok' : verdict.status === 'warn' ? 'warn' : 'stop'}`, 'data-protein-week': '1' }, [
+        el('b', { text: 'Protein, last 7 days' }),
+        verdict.message,
+        target ? el('div', { class: 'small mt', text: `Hit target on ${week.daysHit} of ${week.days} days.` }) : null,
+      ])
+    );
+    const totals = proteinDailyTotals(st.protein);
+    if (totals.length > 1) {
+      wrap.append(el('div', { class: 'card' }, [
+        el('div', { class: 'small muted', text: 'Protein per day (g)' }),
+        lineChart(totals.slice(-30), { unit: ' g' }),
+      ]));
+    }
+  }
+  return wrap;
+}
+
 // ------------------------------------------------------------------- BODY tab
 function viewBody() {
   const wrap = el('div');
@@ -2300,6 +2826,7 @@ function viewBody() {
   const weightLb = latestBw?.weight ?? latest?.weight ?? null;
   const bodyFatPct = latest?.bodyFatPct ?? null;
 
+  let proteinTarget = 0;
   if (weightLb == null || bodyFatPct == null) {
     wrap.append(
       el('div', { class: 'banner warn' }, [
@@ -2329,6 +2856,7 @@ function viewBody() {
       ])
     );
 
+    proteinTarget = t.protein;
     wrap.append(el('h2', { text: 'Daily targets' }));
     wrap.append(
       el('div', { class: 'grid two', 'data-targets': '1' }, [
@@ -2363,6 +2891,8 @@ function viewBody() {
     }
     wrap.append(el('h2', { text: 'Phase' }), phaseRow);
   }
+
+  wrap.append(viewFuel(proteinTarget));
 
   // --- bodyweight logging ---
   wrap.append(el('h2', { text: 'Bodyweight' }));

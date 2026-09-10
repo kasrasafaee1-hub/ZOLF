@@ -16,6 +16,17 @@ import {
 } from '../core/training.js';
 import { Syncer } from '../core/sync.js';
 import {
+  CREATINE_DEFAULT_G,
+  PROTEIN_PRESETS,
+  proteinOnDate,
+  proteinDailyTotals,
+  proteinAdherence,
+  proteinVerdict,
+  creatineOnDate,
+  creatineStreak,
+  creatineAdherence,
+} from '../core/supplements.js';
+import {
   MONTH_NAMES,
   DAY_INITIALS,
   monthDays,
@@ -35,7 +46,7 @@ import {
 } from '../core/nutrition.js';
 
 const store = new Store(window.localStorage);
-const ui = { tab: 'today', openExercise: null, openedFor: null, chartExercise: null, volumeMode: null, cal: null };
+const ui = { tab: 'today', openExercise: null, openedFor: null, chartExercise: null, volumeMode: null, cal: null, calSelected: null };
 let syncer = null;
 
 // Expose for end-to-end tests to seed and inspect state.
@@ -141,7 +152,8 @@ function viewDayPicker() {
               text: `${day.exercises.length} exercises · ${prev ? 'last ' + fmtDate(prev.date) : 'not logged yet'}`,
             }),
           ]),
-          suggested ? el('span', { class: 'pill pr', text: 'NEXT' }) : el('span', { class: 'muted', text: '›' }),
+          suggested ? el('span', { class: 'pill pr', text: 'NEXT' }) : null,
+          el('span', { class: 'go', 'aria-hidden': 'true', text: '↗' }),
         ]
       )
     );
@@ -455,14 +467,21 @@ function viewCalendar() {
       if (day.isToday) classes.push('today');
 
       const state = day.trained ? day.label : day.isFuture ? 'upcoming' : 'rest day';
+      if (day.date === ui.calSelected) classes.push('selected');
       grid.append(
-        el('div', {
+        el('button', {
+          type: 'button',
           class: classes.join(' '),
           'data-day-cell': day.date,
           'data-trained': String(day.trained),
           title: `${day.date} — ${state}`,
           'aria-label': `${day.date}, ${state}`,
+          'aria-pressed': String(day.date === ui.calSelected),
           text: String(day.day),
+          onclick: () => {
+            ui.calSelected = ui.calSelected === day.date ? null : day.date;
+            render();
+          },
         })
       );
     }
@@ -485,7 +504,85 @@ function viewCalendar() {
       statCard('Days since', since == null ? '–' : since),
     ])
   );
+
+  if (ui.calSelected) wrap.append(dayDetail(ui.calSelected));
   return wrap;
+}
+
+/**
+ * Everything logged on one date: each exercise, each set as it was entered,
+ * with the estimated 1RM of the best set so progression is readable at a
+ * glance rather than reconstructed from memory.
+ */
+function dayDetail(date) {
+  const sessions = store.state.sessions.filter((s) => s.date === date);
+  const panel = el('div', { class: 'card day-detail', 'data-day-detail': date });
+
+  panel.append(
+    el('div', { class: 'spread' }, [
+      el('div', {}, [
+        el('span', { class: 'eyebrow', text: 'Session detail' }),
+        el('div', { class: 'day-detail-date', text: fmtDateLong(date) }),
+      ]),
+      el('button', {
+        class: 'btn sm ghost',
+        type: 'button',
+        'data-action': 'close-day',
+        text: 'Close',
+        onclick: () => {
+          ui.calSelected = null;
+          render();
+        },
+      }),
+    ])
+  );
+
+  if (!sessions.length) {
+    panel.append(
+      el('p', { class: 'small muted mt', 'data-day-empty': '1', text: 'Rest day — nothing logged.' })
+    );
+    return panel;
+  }
+
+  for (const session of sessions) {
+    panel.append(
+      el('div', { class: 'day-detail-session', 'data-detail-session': session.id }, [
+        el('div', { class: 'spread mt' }, [
+          el('h3', { text: session.dayName || session.dayId }),
+          el('span', {
+            class: 'small muted mono',
+            text: `${sessionHardSets(session)} sets · ${sessionVolume(session).toLocaleString()} lb`,
+          }),
+        ]),
+      ])
+    );
+
+    for (const entry of session.entries) {
+      const best = bestSet(entry);
+      const block = el('div', { class: 'detail-ex', 'data-detail-ex': entry.exerciseId });
+      block.append(
+        el('div', { class: 'spread' }, [
+          el('strong', { class: 'detail-ex-name', text: entry.name }),
+          best ? el('span', { class: 'pill ok', text: `${best.e1rm} lb 1RM` }) : null,
+        ])
+      );
+      const rows = el('div', { class: 'detail-sets' });
+      entry.sets.forEach((set, i) => {
+        rows.append(
+          el('span', { class: 'detail-set', 'data-detail-set': i }, [
+            el('span', { class: 'detail-set-n', text: `${i + 1}` }),
+            `${set.weight === '' || set.weight == null ? 'BW' : set.weight} × ${set.reps}`,
+            set.rpe ? el('span', { class: 'detail-set-rpe', text: ` @${set.rpe}` }) : null,
+          ])
+        );
+      });
+      block.append(rows);
+      panel.append(block);
+    }
+
+    if (session.note) panel.append(el('p', { class: 'small muted mt', text: `“${session.note}”` }));
+  }
+  return panel;
 }
 
 // ---------------------------------------------------------------- HISTORY tab
@@ -674,6 +771,183 @@ function viewProgress() {
   return wrap;
 }
 
+// ------------------------------------------------------------------- fuel
+/**
+ * Today's protein and creatine.
+ *
+ * Protein is a running total against the computed target; creatine is a single
+ * daily dose where the only thing that matters is not missing days, so it is
+ * shown as a streak and 30-day adherence rather than a quantity.
+ */
+function viewFuel(target) {
+  const todayIso = today();
+  const st = store.state;
+  const wrap = el('div');
+
+  const eaten = proteinOnDate(st.protein, todayIso);
+  const pct = target ? Math.min(100, Math.round((eaten / target) * 100)) : 0;
+  const left = Math.max(0, target - eaten);
+
+  wrap.append(el('h2', { text: 'Today’s fuel' }));
+
+  // --- protein ---
+  const card = el('div', { class: 'card', 'data-fuel': 'protein' });
+  card.append(
+    el('div', { class: 'spread' }, [
+      el('div', {}, [
+        el('span', { class: 'eyebrow', text: 'Protein' }),
+        el('div', { class: 'fuel-count', 'data-protein-total': '1' }, [
+          String(eaten),
+          el('span', { class: 'fuel-of', text: target ? ` / ${target} g` : ' g' }),
+        ]),
+      ]),
+      el('div', {
+        class: `pill ${pct >= 95 ? 'ok' : pct >= 60 ? 'low' : 'high'}`,
+        'data-protein-pct': '1',
+        text: `${pct}%`,
+      }),
+    ])
+  );
+  card.append(el('div', { class: 'bar fuel-bar' }, [el('i', { style: `width:${pct}%` })]));
+  card.append(
+    el('p', {
+      class: 'small muted mt',
+      'data-protein-left': '1',
+      text: target
+        ? left > 0
+          ? `${left} g to go today.`
+          : 'Target hit. Anything more is a bonus.'
+        : 'Add an InBody scan below to get a protein target.',
+    })
+  );
+
+  const presets = el('div', { class: 'row mt' });
+  for (const preset of PROTEIN_PRESETS) {
+    presets.append(
+      el('button', {
+        class: 'chip',
+        type: 'button',
+        'data-preset': String(preset.grams),
+        text: `${preset.label} +${preset.grams}`,
+        onclick: () => {
+          store.addProtein(preset.grams, preset.label, todayIso);
+          render();
+        },
+      })
+    );
+  }
+  card.append(presets);
+
+  const custom = el('input', {
+    type: 'number',
+    inputmode: 'numeric',
+    placeholder: 'grams',
+    'data-input': 'protein-custom',
+    'data-focus-key': 'protein-custom',
+  });
+  const addCustom = () => {
+    const g = num(custom.value);
+    if (!Number.isFinite(g) || g <= 0) return toast('Enter grams first.');
+    store.addProtein(g, 'Custom', todayIso);
+    toast(`+${g} g protein.`);
+    render();
+  };
+  card.append(
+    el('div', { class: 'row mt' }, [
+      el('div', { style: 'flex:1' }, [custom]),
+      el('button', { class: 'btn primary', 'data-action': 'add-protein', text: 'Add', onclick: addCustom }),
+    ])
+  );
+
+  const todayEntries = (st.protein || []).filter((e) => e.date === todayIso);
+  if (todayEntries.length) {
+    const list = el('div', { class: 'fuel-list mt' });
+    for (const entry of todayEntries) {
+      list.append(
+        el('div', { class: 'fuel-item', 'data-protein-entry': entry.id }, [
+          el('span', { class: 'fuel-item-label', text: entry.label || 'Protein' }),
+          el('span', { class: 'mono', text: `${entry.grams} g` }),
+          el('button', {
+            class: 'fuel-remove',
+            type: 'button',
+            'aria-label': `Remove ${entry.label || 'entry'}`,
+            text: '×',
+            onclick: () => {
+              store.removeProtein(entry.id);
+              render();
+            },
+          }),
+        ])
+      );
+    }
+    card.append(list);
+  }
+  wrap.append(card);
+
+  // --- creatine ---
+  const dose = creatineOnDate(st.creatine, todayIso);
+  const streak = creatineStreak(st.creatine, todayIso);
+  const adherence = creatineAdherence(st.creatine, todayIso, 30);
+  const cCard = el('div', { class: 'card', 'data-fuel': 'creatine' });
+  cCard.append(
+    el('div', { class: 'spread' }, [
+      el('div', {}, [
+        el('span', { class: 'eyebrow', text: 'Creatine' }),
+        el('div', {
+          class: 'fuel-count',
+          'data-creatine-state': dose > 0 ? 'taken' : 'not-taken',
+          text: dose > 0 ? `${dose} g taken` : 'Not yet today',
+        }),
+      ]),
+      el('button', {
+        class: `btn ${dose > 0 ? '' : 'primary'}`,
+        type: 'button',
+        'data-action': 'toggle-creatine',
+        text: dose > 0 ? 'Undo' : `Take ${CREATINE_DEFAULT_G} g`,
+        onclick: () => {
+          store.setCreatine(dose > 0 ? 0 : CREATINE_DEFAULT_G, todayIso);
+          if (dose === 0) toast(`Creatine logged. ${creatineStreak(store.state.creatine, todayIso)} day streak.`);
+          render();
+        },
+      }),
+    ])
+  );
+  cCard.append(
+    el('div', { class: 'grid two mt', 'data-creatine-stats': '1' }, [
+      statCard('Streak', streak, streak === 1 ? 'day' : 'days'),
+      statCard('Last 30 days', `${adherence.taken}/${adherence.of}`, `${adherence.pct}%`),
+    ])
+  );
+  cCard.append(
+    el('p', {
+      class: 'small muted mt',
+      text: 'Creatine works on saturation, not timing. Missing days is the only way to get it wrong.',
+    })
+  );
+  wrap.append(cCard);
+
+  // --- the week ---
+  const week = proteinAdherence(st.protein, target, todayIso, 7);
+  const verdict = proteinVerdict({ ...week, target });
+  if (week.loggedDays) {
+    wrap.append(
+      el('div', { class: `banner ${verdict.status === 'ok' ? 'ok' : verdict.status === 'warn' ? 'warn' : 'stop'}`, 'data-protein-week': '1' }, [
+        el('b', { text: 'Protein, last 7 days' }),
+        verdict.message,
+        target ? el('div', { class: 'small mt', text: `Hit target on ${week.daysHit} of ${week.days} days.` }) : null,
+      ])
+    );
+    const totals = proteinDailyTotals(st.protein);
+    if (totals.length > 1) {
+      wrap.append(el('div', { class: 'card' }, [
+        el('div', { class: 'small muted', text: 'Protein per day (g)' }),
+        lineChart(totals.slice(-30), { unit: ' g' }),
+      ]));
+    }
+  }
+  return wrap;
+}
+
 // ------------------------------------------------------------------- BODY tab
 function viewBody() {
   const wrap = el('div');
@@ -686,6 +960,7 @@ function viewBody() {
   const weightLb = latestBw?.weight ?? latest?.weight ?? null;
   const bodyFatPct = latest?.bodyFatPct ?? null;
 
+  let proteinTarget = 0;
   if (weightLb == null || bodyFatPct == null) {
     wrap.append(
       el('div', { class: 'banner warn' }, [
@@ -715,6 +990,7 @@ function viewBody() {
       ])
     );
 
+    proteinTarget = t.protein;
     wrap.append(el('h2', { text: 'Daily targets' }));
     wrap.append(
       el('div', { class: 'grid two', 'data-targets': '1' }, [
@@ -749,6 +1025,8 @@ function viewBody() {
     }
     wrap.append(el('h2', { text: 'Phase' }), phaseRow);
   }
+
+  wrap.append(viewFuel(proteinTarget));
 
   // --- bodyweight logging ---
   wrap.append(el('h2', { text: 'Bodyweight' }));

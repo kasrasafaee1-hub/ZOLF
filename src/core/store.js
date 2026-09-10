@@ -34,6 +34,8 @@ export function defaultState() {
     sessions: [],
     metrics: [],
     bodyweights: [],
+    protein: [],
+    creatine: [],
     active: null,
   };
 }
@@ -190,6 +192,35 @@ export class Store {
     }));
   }
 
+  // --- daily fuel ---
+
+  /** Protein is many entries a day, so each one is kept separately. */
+  addProtein(grams, label = '', date = today()) {
+    const g = Number(grams);
+    if (!Number.isFinite(g) || g <= 0) return this.state;
+    return this.update((s) => ({
+      ...s,
+      protein: [...s.protein, { id: uid(), date, grams: g, label: String(label || '') }],
+    }));
+  }
+
+  removeProtein(id) {
+    return this.update((s) => ({ ...s, protein: s.protein.filter((p) => p.id !== id) }));
+  }
+
+  /** Creatine is one dose a day; logging again replaces it. */
+  setCreatine(grams, date = today()) {
+    const g = Number(grams);
+    const rest = this.state.creatine.filter((c) => c.date !== date);
+    if (!Number.isFinite(g) || g <= 0) {
+      return this.update((s) => ({ ...s, creatine: rest }));
+    }
+    return this.update((s) => ({
+      ...s,
+      creatine: [...rest, { id: uid(), date, grams: g }].sort((a, b) => a.date.localeCompare(b.date)),
+    }));
+  }
+
   addMetric(metric) {
     const m = { id: uid(), date: today(), ...metric };
     return this.update((s) => ({
@@ -245,10 +276,14 @@ export function migrate(raw) {
     sessions: Array.isArray(raw.sessions) ? raw.sessions : [],
     metrics: Array.isArray(raw.metrics) ? raw.metrics : [],
     bodyweights: Array.isArray(raw.bodyweights) ? raw.bodyweights : [],
+    protein: Array.isArray(raw.protein) ? raw.protein : [],
+    creatine: Array.isArray(raw.creatine) ? raw.creatine : [],
     active: raw.active || null,
   };
   state.sessions.sort((a, b) => String(a.date).localeCompare(String(b.date)));
   state.bodyweights.sort((a, b) => String(a.date).localeCompare(String(b.date)));
   state.metrics.sort((a, b) => String(a.date).localeCompare(String(b.date)));
+  state.protein.sort((a, b) => String(a.date).localeCompare(String(b.date)));
+  state.creatine.sort((a, b) => String(a.date).localeCompare(String(b.date)));
   return state;
 }

@@ -283,3 +283,84 @@ test('stop unsubscribes so a stopped syncer stops writing', async () => {
   await new Promise((r) => setTimeout(r, 50));
   assert.equal(db.calls.set, before);
 });
+
+// ------------------------------------------------- snapshot shapes and safety
+import { unwrapSnapshot, isStateLike } from '../../src/core/sync.js';
+
+const realState = () => ({ ...defaultState(), updatedAt: 500, sessions: [session('s1', '2026-09-01')] });
+
+test('a state is recognised, a wrapper object is not', () => {
+  assert.ok(isStateLike(defaultState()));
+  assert.ok(isStateLike({ sessions: [] }));
+  assert.ok(isStateLike({ settings: { programId: 'x' } }));
+  assert.ok(!isStateLike(null));
+  assert.ok(!isStateLike('nope'));
+  assert.ok(!isStateLike([]));
+  assert.ok(!isStateLike({ id: 'log/state', exists: true }));
+});
+
+test('the payload is found however the document API returns it', () => {
+  const state = realState();
+  // Returned directly.
+  assert.equal(unwrapSnapshot(state)?.sessions.length, 1);
+  // Wrapped the way we write it.
+  assert.equal(unwrapSnapshot({ state, updatedAt: 9 })?.sessions.length, 1);
+  // Behind a data property.
+  assert.equal(unwrapSnapshot({ data: { state, updatedAt: 9 } })?.sessions.length, 1);
+  // Behind a Firestore-style data() method — the shape that silently
+  // produced a function where a state was expected.
+  assert.equal(unwrapSnapshot({ exists: true, data: () => ({ state, updatedAt: 9 }) })?.sessions.length, 1);
+});
+
+test('anything unrecognisable is refused rather than merged', () => {
+  assert.equal(unwrapSnapshot(null), null);
+  assert.equal(unwrapSnapshot(undefined), null);
+  assert.equal(unwrapSnapshot('a string'), null);
+  assert.equal(unwrapSnapshot({ exists: false }), null);
+  assert.equal(unwrapSnapshot({ id: 'log/state' }), null);
+  assert.equal(
+    unwrapSnapshot({
+      data: () => {
+        throw new Error('boom');
+      },
+    }),
+    null
+  );
+});
+
+test('an in-progress workout is never dropped by a remote snapshot', () => {
+  const active = { id: 'live', dayId: 'legs-core', entries: [{ exerciseId: 'back-squat', sets: [{ weight: 185, reps: 8, done: true }] }] };
+  const local = { ...defaultState(), updatedAt: 10, active };
+  const remoteNewer = { ...defaultState(), updatedAt: 99999, active: null };
+  assert.equal(mergeStates(local, remoteNewer).active?.id, 'live', 'a newer remote must not wipe live sets');
+});
+
+test('a remote in-progress workout is adopted when this device has none', () => {
+  const active = { id: 'phone', dayId: 'legs-core', entries: [] };
+  const local = { ...defaultState(), updatedAt: 99999, active: null };
+  const remote = { ...defaultState(), updatedAt: 1, active };
+  assert.equal(mergeStates(local, remote).active?.id, 'phone');
+});
+
+test('a garbage snapshot cannot destroy a finished session', async () => {
+  const store = newStore();
+  store.startSession(legDay, '2026-09-09');
+  store.setSet('back-squat', 0, { weight: 185, reps: 8, done: true });
+  store.finishSession();
+
+  const junkDb = {
+    doc: () => ({
+      get: async () => ({ id: 'log/state', exists: true }),
+      set: async () => {},
+      onSnapshot: (fn) => {
+        setTimeout(() => fn({ id: 'log/state' }), 0);
+        return () => {};
+      },
+    }),
+  };
+  const syncer = new Syncer(store, { db: junkDb, debounceMs: 5 });
+  await syncer.start();
+  await new Promise((r) => setTimeout(r, 30));
+  assert.equal(store.state.sessions.length, 1, 'the workout survived an unreadable snapshot');
+  syncer.stop();
+});
