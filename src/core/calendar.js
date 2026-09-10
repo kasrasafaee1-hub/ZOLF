@@ -96,35 +96,21 @@ export function monthSummary(sessions, y, m, todayIso) {
 }
 
 /**
- * Consecutive calendar weeks, counting back from the week containing
- * `todayIso`, that hit `target` sessions or more. The current week counts only
- * once it has already reached the target, so a week still in progress never
- * breaks a run you are on track to keep.
+ * Sessions in the last `days` days, counting today.
+ *
+ * This replaced a consecutive-weeks streak, which read "0 weeks" for anyone
+ * training three times a week and gave no signal on the day you looked at it.
+ * A rolling count against your target frequency is useful every day.
  */
-export function weeklyStreak(sessions, todayIso, target = 4) {
+export function sessionsInLastDays(sessions, todayIso, days = 7) {
   const byDate = sessionsByDate(sessions);
   const { y, m, d } = parseIso(todayIso);
-  const today = new Date(y, m, d);
-  const weekStart = new Date(today);
-  weekStart.setDate(today.getDate() - today.getDay());
-
-  let streak = 0;
-  for (let back = 0; back < 260; back++) {
-    const start = new Date(weekStart);
-    start.setDate(weekStart.getDate() - back * 7);
-    let count = 0;
-    for (let i = 0; i < 7; i++) {
-      const day = new Date(start);
-      day.setDate(start.getDate() + i);
-      const key = iso(day.getFullYear(), day.getMonth(), day.getDate());
-      if (key > todayIso) continue;
-      count += (byDate[key] || []).length;
-    }
-    if (count >= target) streak += 1;
-    else if (back > 0) break;
-    else if (count < target) continue; // an unfinished current week is not a break
+  let count = 0;
+  for (let i = 0; i < days; i++) {
+    const date = new Date(Date.UTC(y, m, d - i)).toISOString().slice(0, 10);
+    count += (byDate[date] || []).length;
   }
-  return streak;
+  return count;
 }
 
 /** Whole days since the last session, or null if nothing has been logged. */

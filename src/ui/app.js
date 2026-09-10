@@ -31,7 +31,7 @@ import {
   DAY_INITIALS,
   monthDays,
   monthSummary,
-  weeklyStreak,
+  sessionsInLastDays,
   daysSinceLastSession,
   shiftMonth,
   parseIso,
@@ -470,7 +470,7 @@ function viewCalendar() {
   const sessions = store.state.sessions;
   const weeks = monthDays(sessions, y, m, todayIso);
   const summary = monthSummary(sessions, y, m, todayIso);
-  const streak = weeklyStreak(sessions, todayIso, 4);
+  const lastWeek = sessionsInLastDays(sessions, todayIso, 7);
   const since = daysSinceLastSession(sessions, todayIso);
 
   const wrap = el('div');
@@ -545,7 +545,7 @@ function viewCalendar() {
   wrap.append(
     el('div', { class: 'grid three', 'data-cal-stats': '1' }, [
       statCard('This month', summary.sessionCount),
-      statCard('Streak', streak, streak === 1 ? 'wk' : 'wks'),
+      statCard('Last 7 days', `${lastWeek}/4`),
       statCard('Days since', since == null ? '–' : since),
     ])
   );
@@ -1571,9 +1571,16 @@ function render() {
 }
 
 function boot() {
-  for (const tab of $$('.tab')) {
-    tab.addEventListener('click', () => {
-      ui.tab = tab.dataset.tab;
+  for (const tabButton of $$('.tab')) {
+    tabButton.addEventListener('click', () => {
+      const next = tabButton.dataset.tab;
+      // Coming back to the log should land on this month, not wherever you
+      // last paged to. Paging is preserved while you stay on the tab.
+      if (next === 'history' && ui.tab !== 'history') {
+        ui.cal = null;
+        ui.calSelected = null;
+      }
+      ui.tab = next;
       render();
     });
   }

@@ -5,7 +5,7 @@ import {
   monthDays,
   monthSummary,
   sessionsByDate,
-  weeklyStreak,
+  sessionsInLastDays,
   daysSinceLastSession,
   shiftMonth,
   daysInMonth,
@@ -121,41 +121,10 @@ test('future days are not counted as rest days', () => {
   assert.equal(sum.trainedDays, 0);
 });
 
-test('a streak counts consecutive weeks that hit the target', () => {
-  // 4 sessions in each of the two weeks before the current one.
-  const sessions = [
-    ...['2026-08-24', '2026-08-25', '2026-08-27', '2026-08-28'].map((d) => s(d)),
-    ...['2026-08-31', '2026-09-01', '2026-09-03', '2026-09-04'].map((d) => s(d)),
-  ];
-  // Wednesday 2026-09-09, current week still in progress with 0 sessions.
-  assert.equal(weeklyStreak(sessions, '2026-09-09', 4), 2);
-});
 
-test('an unfinished current week does not break a streak', () => {
-  const sessions = ['2026-08-31', '2026-09-01', '2026-09-03', '2026-09-04'].map((d) => s(d));
-  assert.equal(weeklyStreak(sessions, '2026-09-08', 4), 1);
-});
 
-test('a completed current week extends the streak', () => {
-  const sessions = [
-    ...['2026-08-31', '2026-09-01', '2026-09-03', '2026-09-04'].map((d) => s(d)),
-    ...['2026-09-07', '2026-09-08', '2026-09-09', '2026-09-10'].map((d) => s(d)),
-  ];
-  assert.equal(weeklyStreak(sessions, '2026-09-10', 4), 2);
-});
 
-test('a missed week ends the streak', () => {
-  const sessions = [
-    ...['2026-08-17', '2026-08-18', '2026-08-19', '2026-08-20'].map((d) => s(d)),
-    // week of Aug 23 missed entirely
-    ...['2026-08-31', '2026-09-01', '2026-09-03', '2026-09-04'].map((d) => s(d)),
-  ];
-  assert.equal(weeklyStreak(sessions, '2026-09-08', 4), 1);
-});
 
-test('no sessions means no streak', () => {
-  assert.equal(weeklyStreak([], '2026-09-09', 4), 0);
-});
 
 test('days since the last session', () => {
   assert.equal(daysSinceLastSession([s('2026-09-07')], '2026-09-09'), 2);
@@ -169,4 +138,21 @@ test('days since the last session spans a month boundary', () => {
 
 test('days since uses the latest session, not the last in the array', () => {
   assert.equal(daysSinceLastSession([s('2026-09-08'), s('2026-09-01')], '2026-09-09'), 1);
+});
+
+test('the rolling count covers the last seven days including today', () => {
+  const sessions = ['2026-09-09', '2026-09-08', '2026-09-04', '2026-09-01'].map((d) => s(d));
+  assert.equal(sessionsInLastDays(sessions, '2026-09-09', 7), 3, 'Sep 1 falls outside the window');
+  assert.equal(sessionsInLastDays(sessions, '2026-09-09', 14), 4);
+  assert.equal(sessionsInLastDays([], '2026-09-09', 7), 0);
+});
+
+test('two sessions in one day both count toward the week', () => {
+  const sessions = [s('2026-09-09'), s('2026-09-09', 'push', 'Push')];
+  assert.equal(sessionsInLastDays(sessions, '2026-09-09', 7), 2);
+});
+
+test('the window crosses a month boundary', () => {
+  assert.equal(sessionsInLastDays([s('2026-08-31')], '2026-09-02', 7), 1);
+  assert.equal(sessionsInLastDays([s('2026-08-25')], '2026-09-02', 7), 0);
 });

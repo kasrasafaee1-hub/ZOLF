@@ -33,9 +33,10 @@ and it tells you to add weight (10 lb on lower-body compounds, 5 lb on
 everything else). Fall under the bottom and it backs the weight off. Otherwise
 it holds the weight and asks for one more rep on your worst set.
 
-**Log** — a month calendar with trained days in gold and rest days outlined,
-plus sessions this month, current week streak, and days since the last session.
-Under it, every session and set with estimated 1RM per exercise.
+**Log** — a month calendar with trained days filled and rest days outlined, plus
+sessions this month, sessions in the last 7 days against the 4-day target, and
+days since the last session. Tap any date for that day's full session. Under it,
+every session and set with estimated 1RM per exercise.
 
 **Progress** — weekly hard sets per muscle against hypertrophy landmarks, in two
 views: what your program prescribes, and what you actually completed in the last
@@ -82,6 +83,14 @@ npm run test:unit    # pure logic, no browser
 npm run test:e2e     # drives the real app in Chromium
 npm run test:bundle  # the same suite against the single-file published build
 ```
+
+`tests/e2e/daily-use.test.js` plays two weeks of ordinary use in order on one
+install — train the four days, eat, take creatine, weigh in, then do it again
+the next week — and checks the app carried it all forward. It is the "is this
+useful on a Tuesday" test rather than a feature-by-feature one.
+
+`tests/e2e/blocked-storage.test.js` runs the app where localStorage throws, as
+it does in a sandboxed iframe on iOS Safari.
 
 `tests/e2e/synced-app.test.js` runs the app with a stand-in for the `db`
 capability, which is how it runs when published. That configuration is not the

@@ -93,7 +93,7 @@ test('paging back twelve months lands on the same month a year earlier', async (
 
 test('every counter label fits on one line so the tiles align', async () => {
   await seed([iso(1)]);
-  for (const label of ['This month', 'Streak', 'Days since']) {
+  for (const label of ['This month', 'Last 7 days', 'Days since']) {
     const k = page.locator('[data-cal-stats] .stat .k').filter({ hasText: label });
     const box = await k.boundingBox();
     assert.ok(box.height < 24, `"${label}" wrapped onto two lines (${box.height}px)`);
@@ -105,7 +105,7 @@ test('the counters report sessions, streak and days since', async () => {
   const stats = page.locator('[data-cal-stats] .stat');
   await expect(stats.filter({ hasText: 'This month' })).toContainText('2');
   await expect(stats.filter({ hasText: 'Days since' })).toContainText('1');
-  await expect(stats.filter({ hasText: 'Streak' })).toBeVisible();
+  await expect(stats.filter({ hasText: 'Last 7 days' })).toContainText('2/4');
 });
 
 test('with nothing logged the counters read empty, not broken', async () => {
@@ -141,4 +141,36 @@ test('each day shows the weekday it runs and its patron', async () => {
   await expect(page.locator('[data-day="push"]')).toContainText('Chest · Shoulders · Triceps');
   await page.locator('[data-day="legs"]').click();
   await expect(page.locator('.eyebrow').first()).toContainText('Under Atlas');
+});
+
+test('coming back to the log lands on this month, not where you paged to', async () => {
+  const thisMonth = await page.locator('[data-cal-title]').textContent();
+  await page.locator('[data-cal="prev"]').click();
+  await page.locator('[data-cal="prev"]').click();
+  assert.notEqual(await page.locator('[data-cal-title]').textContent(), thisMonth);
+
+  await tab(page, 'today');
+  await tab(page, 'history');
+  await expect(page.locator('[data-cal-title]')).toHaveText(thisMonth);
+});
+
+test('paging is kept while you stay on the log', async () => {
+  const thisMonth = await page.locator('[data-cal-title]').textContent();
+  await page.locator('[data-cal="prev"]').click();
+  const prev = await page.locator('[data-cal-title]').textContent();
+  // Opening and closing a day must not throw you back to today.
+  const cell = await page.locator('[data-day-cell]').first().getAttribute('data-day-cell');
+  await page.locator(`[data-day-cell="${cell}"]`).click();
+  await page.locator('[data-action="close-day"]').click();
+  await expect(page.locator('[data-cal-title]')).toHaveText(prev);
+  assert.notEqual(prev, thisMonth);
+});
+
+test('an open day closes when you leave the log', async () => {
+  const cell = await page.locator('[data-day-cell]').first().getAttribute('data-day-cell');
+  await page.locator(`[data-day-cell="${cell}"]`).click();
+  await expect(page.locator(`[data-day-detail="${cell}"]`)).toBeVisible();
+  await tab(page, 'today');
+  await tab(page, 'history');
+  await expect(page.locator('[data-day-detail]')).toHaveCount(0);
 });
