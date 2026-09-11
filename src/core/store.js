@@ -2,6 +2,8 @@
 // getItem/setItem shape works, which is what makes it unit-testable in node.
 
 import { DEFAULT_PROGRAM_ID } from './programs.js';
+import { PROFILE_ID } from './profile.js';
+import { getProfile } from './profiles.js';
 
 export const STORAGE_KEY = 'zolf-lift:v1';
 export const SCHEMA_VERSION = 1;
@@ -76,16 +78,23 @@ export function memoryBackend(initial = {}) {
 }
 
 export function defaultState() {
+  const profile = getProfile(PROFILE_ID);
   return {
     version: SCHEMA_VERSION,
     updatedAt: 0,
     settings: {
       programId: DEFAULT_PROGRAM_ID,
-      activityId: 'moderate',
+      activityId: profile.activityId,
       phaseId: 'bulk',
-      bodyFatCeiling: 20,
+      // Calibrated to the profile: a woman's ceiling sits higher than a man's.
+      bodyFatCeiling: profile.bodyFatCeiling,
       restSeconds: 150,
       units: 'lb',
+      // Blocks alternate on a fixed cadence from the day the app is first
+      // opened, so nobody has to remember to change programme.
+      autoRotate: true,
+      rotationWeeks: 2,
+      rotationStart: today(),
     },
     sessions: [],
     metrics: [],

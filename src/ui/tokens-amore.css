@@ -1,0 +1,48 @@
+/* Amore — warm bone and ink, after Italian stationery rather than a gym app.
+   Light-committed: read in bright gym lighting, and quiet enough that the
+   numbers are the loudest thing on the page. */
+
+:root {
+  color-scheme: light;
+
+  --bg: #F6F2EA;          /* warm bone, the page ground */
+  --surface: #FFFDF8;     /* paper */
+  --surface-2: #EFE8DC;   /* raised */
+  --line: #DED3C2;        /* warm hairline, never a cold grey */
+  --line-bright: #C4B49C;
+
+  --cream: #2E2028;       /* the "ink" role — deep aubergine, not black */
+  --text: #2E2028;
+  --muted: #7A6A72;
+  --dim: #A2929A;
+
+  --mint: #9E2B4E;        /* the signal colour: deep rose, used sparingly */
+  --mint-deep: #7C1F3C;
+  --mint-soft: rgba(158, 43, 78, 0.09);
+  --aegean: #B08D57;      /* brass, for quiet secondary marks */
+
+  --laurel: #4F7A52;      /* semantic, kept apart from the accent */
+  --warn: #B8802A;
+  --amber: #B8802A;
+  --bad: #A33A2C;
+  --amphora: #A33A2C;
+  --gold: #B08D57;
+  --gold-bright: #C7A570;
+  --gold-soft: rgba(176, 141, 87, 0.14);
+
+  --display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --body: 'Karla', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --mono: 'Karla', ui-monospace, Menlo, monospace;
+
+  --hint-ink: #7C1F3C;   /* text inside a tinted callout */
+  --ok-ink: #33513A;
+  --warn-ink: #6F4E14;
+  --bad-ink: #6E251A;
+
+  --chrome: rgba(246, 242, 234, 0.96);  /* sticky header and tab bar */
+  --on-accent: #FFFDF8;                 /* text that sits on the accent */
+  --accent-border: rgba(158, 43, 78, 0.28);
+
+  --radius: 10px;
+  --tabbar-h: 60px;
+}

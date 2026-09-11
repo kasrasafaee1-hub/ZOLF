@@ -69,6 +69,7 @@ test('the volume audit reports what two sets a lift costs', async () => {
 
 test('the variation block reads the same on the volume audit', async () => {
   await tab(page, 'settings');
+  await page.locator('[data-action="toggle-rotation"]').click();
   await page.locator('[data-select="program"]').selectOption('block-b');
   await tab(page, 'progress');
   await expect(page.locator('[data-muscle="back"]')).toContainText('IN RANGE');

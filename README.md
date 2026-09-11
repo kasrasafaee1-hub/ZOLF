@@ -51,10 +51,31 @@ fast, too slow, or have hit your body-fat ceiling and should switch to a cut.
 **Settings** — swap programs, activity level, rest length, body-fat ceiling, and
 export/import your whole log as JSON.
 
+## Two apps, one codebase
+
+`src/core/profiles.js` holds everything that differs between people — wordmark,
+tab names, the sex the body-composition maths is calibrated for, and which
+programme set loads. `npm run build` emits one file per profile:
+
+| Profile | App | Split |
+|---|---|---|
+| `zolf` | ZOLF Lift | Push Mon / Pull Tue / Legs Thu / Full Sat |
+| `amore` | Amore's Splits | Push Tue / Quads Wed / Pull Thu / Glutes Fri |
+
+Body fat is judged against sex-specific bands — 22% is athletic for a woman and
+average for a man, so reading one against the other's scale gives bad advice —
+and the bulk ceiling defaults accordingly (20% / 28%).
+
+Adding a person is an entry in `profiles.js`, a programme set, and a palette in
+`src/ui/tokens-<id>.css`. No fork.
+
 ## Programs
 
-Two blocks, same four days, meant to be swapped every couple of weeks from
-Settings:
+Two blocks per person, same days and muscle groups, different exercises. They
+**rotate automatically every two weeks** from the day the app is first opened —
+derived from the calendar, so both devices agree without syncing a flag and an
+old session still tells you which block you were on. It can be turned off in
+settings, which freezes whichever block is live rather than jumping.
 
 - **Block A — current** — Push (Mon) / Pull (Tue) / Legs (Thu) / Full (Sat), the
   split as actually run.

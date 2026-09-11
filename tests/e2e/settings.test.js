@@ -16,6 +16,8 @@ beforeEach(async () => {
 });
 
 test('switching block keeps the four days but changes the lifts', async () => {
+  // Rotation owns the block by default, so take manual control first.
+  await page.locator('[data-action="toggle-rotation"]').click();
   await tab(page, 'today');
   await page.locator('[data-day="push"]').click();
   await expect(page.locator('[data-ex="bench-press"]')).toBeVisible();
@@ -36,6 +38,7 @@ test('switching block keeps the four days but changes the lifts', async () => {
 });
 
 test('switching program mid-workout asks before dropping the session', async () => {
+  await page.locator('[data-action="toggle-rotation"]').click();
   await tab(page, 'today');
   await page.locator('[data-day="legs"]').click();
   await logSet(page, 'back-squat', 0, 185, 8);
@@ -88,10 +91,12 @@ test('body fat ceiling is configurable and drives the bulk warning', async () =>
 });
 
 test('settings persist across a reload', async () => {
+  await page.locator('[data-action="toggle-rotation"]').click();
   await page.locator('[data-select="program"]').selectOption('block-b');
   await page.locator('[data-select="rest"]').selectOption('180');
   await page.reload();
   await tab(page, 'settings');
+  await expect(page.locator('[data-rotation-state]')).toHaveAttribute('data-rotation-state', 'off');
   await expect(page.locator('[data-select="program"]')).toHaveValue('block-b');
   await expect(page.locator('[data-select="rest"]')).toHaveValue('180');
 });
@@ -233,4 +238,50 @@ test('a viewer declining the save is reported, not retried', async () => {
     delete window.claude;
   });
   await app.reset();
+});
+
+test('blocks rotate on their own, so nobody has to remember to switch', async () => {
+  await expect(page.locator('[data-rotation-state]')).toHaveAttribute('data-rotation-state', 'on');
+  await expect(page.locator('[data-rotation-card]')).toContainText('every 2 weeks');
+  // While it is on, the manual picker is out of the way.
+  await expect(page.locator('[data-select="program"]')).toBeDisabled();
+
+  await tab(page, 'today');
+  await expect(page.locator('[data-rotation]')).toContainText('new exercises in');
+});
+
+test('rotation actually changes the exercises when the fortnight turns', async () => {
+  // Backdate the rotation start so today falls in the second block.
+  await page.evaluate(() => {
+    const d = new Date();
+    d.setDate(d.getDate() - 15);
+    const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    window.__zolf.store.setSetting('rotationStart', iso);
+    window.__zolf.render();
+  });
+  await tab(page, 'today');
+  await page.locator('[data-day="push"]').click();
+  await expect(page.locator('[data-ex="incline-bb-press"]')).toBeVisible();
+  await expect(page.locator('[data-ex="bench-press"]')).toHaveCount(0);
+  page.once('dialog', (d) => d.accept());
+  await page.locator('[data-action="discard"]').click();
+});
+
+test('turning rotation off freezes today’s block rather than jumping', async () => {
+  await page.evaluate(() => {
+    const d = new Date();
+    d.setDate(d.getDate() - 15);
+    const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    window.__zolf.store.setSetting('rotationStart', iso);
+    window.__zolf.render();
+  });
+  await page.locator('[data-action="toggle-rotation"]').click();
+  await expect(page.locator('[data-rotation-state]')).toHaveAttribute('data-rotation-state', 'off');
+  await expect(page.locator('[data-select="program"]')).toHaveValue('block-b');
+  await expect(page.locator('[data-select="program"]')).toBeEnabled();
+
+  await tab(page, 'today');
+  await expect(page.locator('[data-rotation]')).toHaveCount(0);
+  await page.locator('[data-day="push"]').click();
+  await expect(page.locator('[data-ex="incline-bb-press"]')).toBeVisible();
 });

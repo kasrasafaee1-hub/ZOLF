@@ -11,41 +11,65 @@
 </style>
 </head>
 <body>
-<title>ZOLF Lift</title>
+<title>Amore’s Splits</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Karla:wght@400;500;600;700&display=swap" />
 <style>
+/* Amore — warm bone and ink, after Italian stationery rather than a gym app.
+   Light-committed: read in bright gym lighting, and quiet enough that the
+   numbers are the loudest thing on the page. */
+
+:root {
+  color-scheme: light;
+
+  --bg: #F6F2EA;          /* warm bone, the page ground */
+  --surface: #FFFDF8;     /* paper */
+  --surface-2: #EFE8DC;   /* raised */
+  --line: #DED3C2;        /* warm hairline, never a cold grey */
+  --line-bright: #C4B49C;
+
+  --cream: #2E2028;       /* the "ink" role — deep aubergine, not black */
+  --text: #2E2028;
+  --muted: #7A6A72;
+  --dim: #A2929A;
+
+  --mint: #9E2B4E;        /* the signal colour: deep rose, used sparingly */
+  --mint-deep: #7C1F3C;
+  --mint-soft: rgba(158, 43, 78, 0.09);
+  --aegean: #B08D57;      /* brass, for quiet secondary marks */
+
+  --laurel: #4F7A52;      /* semantic, kept apart from the accent */
+  --warn: #B8802A;
+  --amber: #B8802A;
+  --bad: #A33A2C;
+  --amphora: #A33A2C;
+  --gold: #B08D57;
+  --gold-bright: #C7A570;
+  --gold-soft: rgba(176, 141, 87, 0.14);
+
+  --display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --body: 'Karla', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --mono: 'Karla', ui-monospace, Menlo, monospace;
+
+  --hint-ink: #7C1F3C;   /* text inside a tinted callout */
+  --ok-ink: #33513A;
+  --warn-ink: #6F4E14;
+  --bad-ink: #6E251A;
+
+  --chrome: rgba(246, 242, 234, 0.96);  /* sticky header and tab bar */
+  --on-accent: #FFFDF8;                 /* text that sits on the accent */
+  --accent-border: rgba(158, 43, 78, 0.28);
+
+  --radius: 10px;
+  --tabbar-h: 60px;
+}
+
 /* ZOLF Lift
    Deep forest green and cream with a mint signal colour, after the reference
    direction: heavy grotesk display over monospace labels, hairline-bordered
    panels, arrow-in-box affordances. Committed single-world — every colour is
    painted explicitly so the page holds on either host ground. */
 
-:root {
-  color-scheme: dark;
 
-  --bg: #142C26;          /* deepest forest, the page ground */
-  --surface: #1D3B33;     /* panel */
-  --surface-2: #26493F;   /* raised control */
-  --line: #33594B;        /* hairline, green-biased so it is chosen not grey */
-  --line-bright: #47705F;
-
-  --cream: #F4F0E0;
-  --text: #F4F0E0;
-  --muted: #9DBAAC;
-  --dim: #6E9384;
-
-  --mint: #3ADB86;        /* the one signal colour */
-  --mint-deep: #23B76A;
-  --mint-soft: rgba(58, 219, 134, 0.12);
-
-  --warn: #E8C56A;
-  --bad: #E07A6A;
-
-  --display: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
-  --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-
-  --radius: 6px;
-  --tabbar-h: 60px;
-}
 
 * { box-sizing: border-box; }
 
@@ -67,7 +91,7 @@ html, body {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   padding: 13px 16px;
   padding-top: max(13px, env(safe-area-inset-top));
-  background: rgba(20, 44, 38, 0.95);
+  background: var(--chrome);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
 }
@@ -146,7 +170,7 @@ button { font: inherit; cursor: pointer; }
   text-transform: uppercase; letter-spacing: 0.07em;
 }
 .btn:active { transform: translateY(1px); }
-.btn.primary { background: var(--mint); border-color: var(--mint); color: #0B2019; }
+.btn.primary { background: var(--mint); border-color: var(--mint); color: var(--on-accent); }
 .btn.ghost { background: transparent; }
 .btn.danger { color: var(--bad); border-color: #5A3833; }
 .btn.block { width: 100%; }
@@ -158,7 +182,7 @@ button { font: inherit; cursor: pointer; }
   font-family: var(--mono); font-size: 11px; font-weight: 600;
   letter-spacing: 0.04em;
 }
-.chip.on { background: var(--mint); border-color: var(--mint); color: #0B2019; }
+.chip.on { background: var(--mint); border-color: var(--mint); color: var(--on-accent); }
 
 input, select, textarea {
   font-family: var(--mono); font-size: 14px;
@@ -182,7 +206,7 @@ label {
 .day-card .n {
   width: 38px; height: 38px; flex: none; border-radius: var(--radius);
   background: var(--mint-soft); color: var(--mint);
-  border: 1px solid rgba(58, 219, 134, 0.3);
+  border: 1px solid var(--accent-border);
   display: grid; place-items: center;
   font-family: var(--mono); font-weight: 700; font-size: 13px;
 }
@@ -219,7 +243,7 @@ label {
   border-left: 2px solid var(--mint);
   padding: 10px 12px; margin: 12px 0;
   font-family: var(--mono); font-size: 10.5px; line-height: 1.65;
-  text-transform: uppercase; letter-spacing: 0.04em; color: #C8E9D8;
+  text-transform: uppercase; letter-spacing: 0.04em; color: var(--hint-ink);
 }
 .hint strong { color: var(--mint); }
 .prev { font-family: var(--mono); font-size: 10.5px; color: var(--muted); margin: 12px 0 6px; text-transform: uppercase; letter-spacing: 0.04em; }
@@ -238,7 +262,7 @@ label {
   min-height: 42px; border-radius: var(--radius); border: 1px solid var(--line-bright);
   background: var(--bg); color: var(--dim); font-size: 16px; font-weight: 700;
 }
-.setrow .tick[aria-pressed="true"] { background: var(--mint); border-color: var(--mint); color: #0B2019; }
+.setrow .tick[aria-pressed="true"] { background: var(--laurel); border-color: var(--laurel); color: var(--on-accent); }
 .setrow .kill {
   min-height: 42px; border-radius: var(--radius); border: 1px solid var(--line);
   background: transparent; color: var(--dim); padding: 0; font-size: 15px;
@@ -272,7 +296,7 @@ label {
 .pill.ok { background: var(--mint-soft); color: var(--mint); }
 .pill.low { background: rgba(232, 197, 106, 0.14); color: var(--warn); }
 .pill.high { background: rgba(224, 122, 106, 0.16); color: var(--bad); }
-.pill.pr { background: var(--mint); color: #0B2019; }
+.pill.pr { background: var(--mint); color: var(--on-accent); }
 
 .bar { height: 6px; background: var(--bg); border: 1px solid var(--line); border-radius: 999px; overflow: hidden; margin-top: 8px; }
 .bar > i { display: block; height: 100%; background: var(--mint); }
@@ -285,9 +309,9 @@ label {
   text-transform: uppercase; letter-spacing: 0.04em;
   border: 1px solid;
 }
-.banner.ok { background: var(--mint-soft); border-color: rgba(58, 219, 134, 0.35); color: #C8E9D8; }
-.banner.warn { background: rgba(232, 197, 106, 0.08); border-color: rgba(232, 197, 106, 0.35); color: #EBDDB0; }
-.banner.stop { background: rgba(224, 122, 106, 0.09); border-color: rgba(224, 122, 106, 0.4); color: #F0C4BB; }
+.banner.ok { background: rgba(0,0,0,0); border-color: var(--laurel); color: var(--ok-ink); }
+.banner.warn { background: rgba(0,0,0,0); border-color: var(--warn); color: var(--warn-ink); }
+.banner.stop { background: rgba(0,0,0,0); border-color: var(--bad); color: var(--bad-ink); }
 .banner b {
   display: block; margin-bottom: 5px;
   font-family: var(--display); font-size: 15px; font-weight: 800;
@@ -364,7 +388,7 @@ svg.chart .lbl { fill: var(--muted); font-size: 10px; font-family: var(--mono); 
 .cal-day.empty { visibility: hidden; }
 .cal-day.rest { color: var(--muted); border-color: var(--line); }
 .cal-day.future { color: var(--dim); opacity: 0.4; }
-.cal-day.trained { background: var(--mint); border-color: var(--mint); color: #0B2019; font-weight: 700; }
+.cal-day.trained { background: var(--mint); border-color: var(--mint); color: var(--on-accent); font-weight: 700; }
 .cal-day.today { box-shadow: inset 0 0 0 1px var(--cream); }
 
 .cal-legend {
@@ -383,7 +407,7 @@ svg.chart .lbl { fill: var(--muted); font-size: 10px; font-family: var(--mono); 
   position: fixed; left: 12px; right: 12px;
   bottom: calc(var(--tabbar-h) + 10px + env(safe-area-inset-bottom));
   z-index: 30; display: flex; align-items: center; gap: 10px;
-  background: var(--mint); color: #0B2019;
+  background: var(--mint); color: var(--on-accent);
   border-radius: var(--radius); padding: 11px 13px;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
   max-width: 696px; margin: 0 auto;
@@ -397,13 +421,13 @@ svg.chart .lbl { fill: var(--muted); font-size: 10px; font-family: var(--mono); 
   font-family: var(--display); font-size: 22px; font-weight: 800;
   font-variant-numeric: tabular-nums; margin-left: auto; letter-spacing: -0.02em;
 }
-.rest-bar .chip { background: rgba(11, 32, 25, 0.14); border-color: transparent; color: #0B2019; font-weight: 700; }
+.rest-bar .chip { background: rgba(0, 0, 0, 0.14); border-color: transparent; color: var(--on-accent); font-weight: 700; }
 
 /* --- tabbar --- */
 .tabbar {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 25;
   display: grid; grid-template-columns: repeat(5, 1fr);
-  background: rgba(20, 44, 38, 0.97);
+  background: var(--chrome);
   backdrop-filter: blur(10px);
   border-top: 1px solid var(--line);
   padding-bottom: env(safe-area-inset-bottom);
@@ -524,11 +548,24 @@ body.has-finish-bar .rest-bar { bottom: calc(var(--tabbar-h) + 76px + env(safe-a
 }
 .cal-legend i.pending { border-color: var(--mint); border-style: dashed; background: transparent; }
 
+/* --- which block is live, and when it changes --- */
+.rotation {
+  display: flex; align-items: center; gap: 9px;
+  border: 1px solid var(--line); border-left: 2px solid var(--mint);
+  border-radius: var(--radius); padding: 10px 13px; margin-bottom: 14px;
+  font-family: var(--mono); font-size: 10.5px;
+  text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);
+}
+.rotation-dot {
+  width: 7px; height: 7px; flex: none; border-radius: 50%;
+  background: var(--mint);
+}
+
 </style>
 
 <div id="app" class="app">
   <header class="topbar">
-    <div class="brand">ZOLF<span>LIFT</span></div>
+    <div class="brand">AMORE<span>SPLITS</span></div>
     <div id="topbar-right" class="topbar-right"></div>
   </header>
 
@@ -552,15 +589,219 @@ body.has-finish-bar .rest-bar { bottom: calc(var(--tabbar-h) + 76px + env(safe-a
   <nav class="tabbar" role="tablist">
     <button class="tab" data-tab="today" role="tab">Today</button>
     <button class="tab" data-tab="history" role="tab">Log</button>
-    <button class="tab" data-tab="progress" role="tab">Trials</button>
-    <button class="tab" data-tab="body" role="tab">Temple</button>
-    <button class="tab" data-tab="settings" role="tab">Forge</button>
+    <button class="tab" data-tab="progress" role="tab">Progress</button>
+    <button class="tab" data-tab="body" role="tab">Body</button>
+    <button class="tab" data-tab="settings" role="tab">Settings</button>
   </nav>
 </div>
 
 <div id="toast" class="toast" hidden></div>
 
 <script type="module">
+// ---------- src/core/profile.js ----------
+// Which profile this build is for. scripts/bundle.js rewrites this line when
+// building each app, so one codebase produces both.
+const PROFILE_ID = 'amore';
+
+// ---------- src/core/profiles.js ----------
+// Who each build of the app is for.
+//
+// Everything that differs between people lives here: the wordmark, the sex the
+// body-composition maths is calibrated for, and which set of programs is
+// loaded. The rest of the app reads the active profile and is otherwise
+// identical, so a new person is a new entry rather than a fork.
+
+const PROFILES = {
+  zolf: {
+    id: 'zolf',
+    word: 'ZOLF',
+    mark: 'LIFT',
+    title: 'ZOLF Lift',
+    sex: 'male',
+    /** Where a lean bulk stops being worth the fat that comes with it. */
+    bodyFatCeiling: 20,
+    activityId: 'moderate',
+    tabs: { today: 'Today', history: 'Log', progress: 'Trials', body: 'Temple', settings: 'Forge' },
+  },
+  amore: {
+    id: 'amore',
+    word: 'AMORE',
+    mark: 'SPLITS',
+    title: 'Amore’s Splits',
+    sex: 'female',
+    // Women carry more essential fat, so the same judgement sits ~8 points
+    // higher. Bulking past this buys fat, not muscle.
+    bodyFatCeiling: 28,
+    activityId: 'moderate',
+    tabs: { today: 'Today', history: 'Log', progress: 'Progress', body: 'Body', settings: 'Settings' },
+  },
+};
+
+const DEFAULT_PROFILE_ID = 'zolf';
+
+function getProfile(id) {
+  return PROFILES[id] || PROFILES[DEFAULT_PROFILE_ID];
+}
+
+// ---------- src/core/programs-amore.js ----------
+// Amore's split: Push (Tue) / Quads (Wed) / Pull (Thu) / Glutes & Hams (Fri).
+//
+// Standard hypertrophy prescription — 3 working sets, rep ranges chosen per
+// exercise rather than one number across the board. Block B keeps the same
+// four days and muscle groups with different lifts, for rotating.
+
+const aEx = (id, name, muscle, sets, low, high, role, rest, opts = {}) => ({
+  id,
+  name,
+  muscle,
+  sets,
+  repRange: [low, high],
+  role,
+  rest,
+  cue: opts.cue || '',
+  unit: opts.unit || 'reps',
+  perSide: !!opts.perSide,
+  type: role === 'isolation' || role === 'finisher' ? 'isolation' : 'compound',
+});
+
+const AMORE_PROGRAMS = {
+  'block-a': {
+    id: 'block-a',
+    name: 'Block A — current',
+    note: 'Push Tue / Quads Wed / Pull Thu / Glutes Fri',
+    days: [
+      {
+        id: 'push',
+        name: 'Push',
+        schedule: 'Tue',
+        focus: 'Chest · Shoulders · Triceps',
+        exercises: [
+          aEx('db-bench', 'Dumbbell bench press', 'chest', 3, 8, 10, 'primary', 120, { cue: 'Full stretch at the bottom' }),
+          aEx('incline-db-press', 'Incline dumbbell press', 'chest', 3, 10, 12, 'volume', 90, { cue: 'Upper chest' }),
+          aEx('seated-db-ohp', 'Seated dumbbell shoulder press', 'shoulders', 3, 8, 10, 'primary', 90),
+          aEx('cable-lateral', 'Cable lateral raise', 'shoulders', 3, 12, 15, 'isolation', 60, { cue: 'Lead with the elbow' }),
+          aEx('cable-fly', 'Cable chest fly', 'chest', 3, 12, 15, 'volume', 60, { cue: 'Squeeze at the middle' }),
+          aEx('rope-pushdown', 'Rope pushdown', 'triceps', 3, 12, 15, 'isolation', 60, { cue: 'Elbows pinned' }),
+          aEx('overhead-ext', 'Overhead cable extension', 'triceps', 3, 12, 15, 'isolation', 60, { cue: 'Long head stretch' }),
+        ],
+      },
+      {
+        id: 'quads',
+        name: 'Quads',
+        schedule: 'Wed',
+        focus: 'Quads · Calves · Core',
+        exercises: [
+          aEx('back-squat', 'Back squat', 'quads', 3, 6, 8, 'primary', 180, { cue: 'Below parallel, chest up' }),
+          aEx('leg-press', 'Leg press (feet low and narrow)', 'quads', 3, 10, 12, 'volume', 120, { cue: 'Quad bias, full range' }),
+          aEx('bulgarian-split', 'Bulgarian split squat', 'quads', 3, 10, 12, 'volume', 90, { cue: 'Upright torso', perSide: true }),
+          aEx('leg-extension', 'Leg extension', 'quads', 3, 12, 15, 'isolation', 60, { cue: 'Pause at the top' }),
+          aEx('walking-lunge', 'Walking dumbbell lunge', 'glutes', 3, 12, 12, 'volume', 90, { perSide: true }),
+          aEx('standing-calf', 'Standing calf raise', 'calves', 4, 12, 15, 'isolation', 60, { cue: 'Full stretch at the bottom' }),
+          aEx('hanging-knee-raise', 'Hanging knee raise', 'core', 3, 12, 15, 'core', 60, { cue: 'No swinging' }),
+        ],
+      },
+      {
+        id: 'pull',
+        name: 'Pull',
+        schedule: 'Thu',
+        focus: 'Back · Biceps · Rear delts',
+        exercises: [
+          aEx('lat-pulldown', 'Lat pulldown', 'back', 3, 8, 10, 'primary', 120, { cue: 'Pull elbows to hips' }),
+          aEx('chest-supported-row', 'Chest-supported row', 'back', 3, 10, 12, 'volume', 90, { cue: 'No body english' }),
+          aEx('seated-row', 'Seated cable row', 'back', 3, 10, 12, 'volume', 90, { cue: 'Full stretch, controlled pull' }),
+          aEx('single-arm-row', 'Single-arm dumbbell row', 'back', 3, 10, 12, 'volume', 90, { cue: 'Drive the elbow past the ribs', perSide: true }),
+          aEx('reverse-pec-deck', 'Reverse pec deck', 'shoulders', 3, 15, 15, 'health', 60, { cue: 'Rear delts and posture' }),
+          aEx('incline-db-curl', 'Incline dumbbell curl', 'biceps', 3, 10, 12, 'isolation', 60, { cue: 'Long-head stretch' }),
+          aEx('hammer-curl', 'Cable hammer curl', 'biceps', 3, 12, 15, 'isolation', 60),
+        ],
+      },
+      {
+        id: 'glutes',
+        name: 'Glutes & Hamstrings',
+        schedule: 'Fri',
+        focus: 'Glutes · Hamstrings',
+        exercises: [
+          aEx('hip-thrust', 'Barbell hip thrust', 'glutes', 4, 8, 10, 'primary', 120, { cue: 'Pause and squeeze at the top' }),
+          aEx('rdl', 'Romanian deadlift', 'hamstrings', 3, 8, 10, 'primary', 120, { cue: 'Hinge at the hips, soft knees' }),
+          aEx('cable-kickback', 'Cable kickback', 'glutes', 3, 12, 15, 'isolation', 60, { cue: 'Squeeze, do not swing', perSide: true }),
+          aEx('seated-leg-curl', 'Seated leg curl', 'hamstrings', 3, 12, 15, 'isolation', 60, { cue: '3-second lowering' }),
+          aEx('sumo-deadlift', 'Sumo deadlift', 'glutes', 3, 8, 10, 'volume', 120, { cue: 'Wide stance, knees out' }),
+          aEx('hip-abduction', 'Hip abduction machine', 'glutes', 3, 15, 20, 'isolation', 60, { cue: 'Lean forward slightly' }),
+          aEx('back-extension', 'Back extension', 'hamstrings', 3, 12, 15, 'volume', 60, { cue: 'Glutes and hamstrings, not lower back' }),
+        ],
+      },
+    ],
+  },
+
+  'block-b': {
+    id: 'block-b',
+    name: 'Block B — variation',
+    note: 'Same four days, same muscles, different lifts',
+    days: [
+      {
+        id: 'push',
+        name: 'Push',
+        schedule: 'Tue',
+        focus: 'Chest · Shoulders · Triceps',
+        exercises: [
+          aEx('incline-bb-press', 'Incline barbell press', 'chest', 3, 8, 10, 'primary', 120, { cue: 'Upper chest bias' }),
+          aEx('machine-chest-press', 'Machine chest press', 'chest', 3, 10, 12, 'volume', 90, { cue: 'Constant tension' }),
+          aEx('arnold-press', 'Arnold press', 'shoulders', 3, 10, 12, 'primary', 90, { cue: 'Rotate through the whole range' }),
+          aEx('machine-lateral', 'Machine lateral raise', 'shoulders', 3, 12, 15, 'isolation', 60, { cue: 'No swing' }),
+          aEx('pec-deck', 'Pec deck', 'chest', 3, 12, 15, 'volume', 60, { cue: 'Hold the squeeze' }),
+          aEx('skullcrusher', 'EZ-bar skullcrusher', 'triceps', 3, 10, 12, 'isolation', 60, { cue: 'Bar behind the head' }),
+          aEx('bench-dip', 'Bench dip', 'triceps', 3, 12, 15, 'isolation', 60, { cue: 'Elbows back, not flared' }),
+        ],
+      },
+      {
+        id: 'quads',
+        name: 'Quads',
+        schedule: 'Wed',
+        focus: 'Quads · Calves · Core',
+        exercises: [
+          aEx('hack-squat', 'Hack squat', 'quads', 3, 8, 10, 'primary', 180, { cue: 'Full depth, controlled' }),
+          aEx('front-squat', 'Goblet or front squat', 'quads', 3, 10, 12, 'volume', 120, { cue: 'Elbows high, torso upright' }),
+          aEx('step-up', 'Dumbbell step-up', 'quads', 3, 10, 12, 'volume', 90, { cue: 'Drive through the front heel', perSide: true }),
+          aEx('sissy-squat', 'Sissy squat', 'quads', 3, 12, 15, 'isolation', 60, { cue: 'Knees travel forward' }),
+          aEx('reverse-lunge', 'Reverse lunge', 'glutes', 3, 12, 12, 'volume', 90, { perSide: true }),
+          aEx('seated-calf', 'Seated calf raise', 'calves', 4, 12, 15, 'isolation', 60, { cue: 'Soleus — the standing raise misses it' }),
+          aEx('cable-crunch', 'Cable crunch', 'core', 3, 15, 15, 'core', 60, { cue: 'Round the spine, do not hip-hinge' }),
+        ],
+      },
+      {
+        id: 'pull',
+        name: 'Pull',
+        schedule: 'Thu',
+        focus: 'Back · Biceps · Rear delts',
+        exercises: [
+          aEx('assisted-pullup', 'Assisted pull-up', 'back', 3, 6, 10, 'primary', 120, { cue: 'Full hang each rep' }),
+          aEx('t-bar-row', 'T-bar row', 'back', 3, 10, 12, 'volume', 90, { cue: 'Mid-back thickness' }),
+          aEx('straight-arm-pulldown', 'Straight-arm pulldown', 'back', 3, 12, 15, 'volume', 60, { cue: 'Lats, arms stay straight' }),
+          aEx('neutral-grip-pulldown', 'Neutral-grip pulldown', 'back', 3, 10, 12, 'volume', 90),
+          aEx('face-pull', 'Cable face pull', 'shoulders', 3, 15, 15, 'health', 60, { cue: 'Rear delt and rotator cuff' }),
+          aEx('preacher-curl', 'Preacher curl', 'biceps', 3, 10, 12, 'isolation', 60, { cue: 'No bouncing off the bottom' }),
+          aEx('reverse-curl', 'Reverse curl', 'biceps', 3, 12, 15, 'isolation', 60, { cue: 'Forearms and brachialis' }),
+        ],
+      },
+      {
+        id: 'glutes',
+        name: 'Glutes & Hamstrings',
+        schedule: 'Fri',
+        focus: 'Glutes · Hamstrings',
+        exercises: [
+          aEx('single-leg-hip-thrust', 'Single-leg hip thrust', 'glutes', 3, 10, 12, 'primary', 120, { cue: 'Ribs down, squeeze at the top', perSide: true }),
+          aEx('stiff-leg-deadlift', 'Stiff-leg deadlift', 'hamstrings', 3, 8, 10, 'primary', 120, { cue: 'Straighter knees than an RDL' }),
+          aEx('nordic-curl', 'Nordic curl', 'hamstrings', 3, 6, 10, 'isolation', 90, { cue: 'Fight the lowering' }),
+          aEx('cable-pull-through', 'Cable pull-through', 'glutes', 3, 12, 15, 'volume', 60, { cue: 'Hinge, then squeeze' }),
+          aEx('curtsy-lunge', 'Curtsy lunge', 'glutes', 3, 12, 12, 'volume', 90, { cue: 'Glute medius', perSide: true }),
+          aEx('frog-pump', 'Frog pump', 'glutes', 3, 15, 20, 'isolation', 60, { cue: 'Heels together, knees out' }),
+          aEx('good-morning', 'Good morning', 'hamstrings', 3, 10, 12, 'volume', 90, { cue: 'Light — this is a hinge drill' }),
+        ],
+      },
+    ],
+  },
+};
+
 // ---------- src/core/programs.js ----------
 // Training programs.
 //
@@ -610,7 +851,7 @@ const ROLES = {
   core: { label: 'Core', tone: 'accent' },
 };
 
-const PROGRAMS = {
+const ZOLF_PROGRAMS = {
   'block-a': {
     id: 'block-a',
     name: 'Block A — current',
@@ -756,7 +997,15 @@ const PROGRAMS = {
   },
 };
 
-const DEFAULT_PROGRAM_ID = 'block-a';
+/** Program sets by profile. The active one is chosen at build time. */
+const PROGRAM_SETS = { zolf: ZOLF_PROGRAMS, amore: AMORE_PROGRAMS };
+
+const PROGRAMS = PROGRAM_SETS[PROFILE_ID] || ZOLF_PROGRAMS;
+
+/** Block ids in rotation order — the rotation walks these in turn. */
+const BLOCK_IDS = Object.keys(PROGRAMS);
+
+const DEFAULT_PROGRAM_ID = BLOCK_IDS[0];
 
 function getProgram(id) {
   return PROGRAMS[id] || PROGRAMS[DEFAULT_PROGRAM_ID];
@@ -782,6 +1031,68 @@ function prescription(e) {
   const unit = e.unit === 'sec' ? ' sec' : '';
   const side = e.perSide ? ' each side' : '';
   return `${e.sets} × ${range}${unit}${side}`;
+}
+
+// ---------- src/core/rotation.js ----------
+// Automatic block rotation.
+//
+// The blocks train the same muscles with different exercises, and swapping
+// them is meant to happen on a schedule rather than when someone remembers to
+// change a setting. Which block is live is derived from the calendar, so both
+// phones agree without syncing a flag, and looking at an old date tells you
+// which block you were on then.
+
+const DAY = 86400000;
+
+const parse = (iso) => {
+  const [y, m, d] = String(iso).split('-').map(Number);
+  return Date.UTC(y, m - 1, d);
+};
+
+/** Whole days from `startIso` to `todayIso`; negative before the start. */
+function daysSince(startIso, todayIso) {
+  return Math.floor((parse(todayIso) - parse(startIso)) / DAY);
+}
+
+/**
+ * Which block is live today.
+ * Blocks alternate every `weeks` weeks from `startIso`. Dates before the start
+ * sit in the first block rather than counting backwards into nonsense.
+ */
+function activeBlockId(startIso, todayIso, blockIds, weeks = 2) {
+  if (!blockIds?.length) return null;
+  const elapsed = daysSince(startIso, todayIso);
+  if (!Number.isFinite(elapsed) || elapsed < 0) return blockIds[0];
+  const period = Math.floor(elapsed / (weeks * 7));
+  return blockIds[period % blockIds.length];
+}
+
+/** Days remaining on the current block, 0 meaning it switches today. */
+function daysUntilSwitch(startIso, todayIso, weeks = 2) {
+  const span = weeks * 7;
+  const elapsed = daysSince(startIso, todayIso);
+  if (!Number.isFinite(elapsed)) return null;
+  if (elapsed < 0) return -elapsed;
+  return span - (elapsed % span);
+}
+
+/** The date the current block gives way to the next. */
+function nextSwitchDate(startIso, todayIso, weeks = 2) {
+  const left = daysUntilSwitch(startIso, todayIso, weeks);
+  if (left == null) return null;
+  return new Date(parse(todayIso) + left * DAY).toISOString().slice(0, 10);
+}
+
+/** Everything the UI needs to explain the rotation in one line. */
+function rotationStatus({ startIso, todayIso, blockIds, weeks = 2, enabled = true }) {
+  if (!enabled) return { enabled: false, blockId: null, daysLeft: null, switchesOn: null };
+  return {
+    enabled: true,
+    blockId: activeBlockId(startIso, todayIso, blockIds, weeks),
+    daysLeft: daysUntilSwitch(startIso, todayIso, weeks),
+    switchesOn: nextSwitchDate(startIso, todayIso, weeks),
+    weeks,
+  };
 }
 
 // ---------- src/core/training.js ----------
@@ -1099,20 +1410,44 @@ function bulkCheck({ rateLbPerWeek, bodyFatPct, ceilingPct = 20, phaseId = 'bulk
   return { status, messages: msgs };
 }
 
-/** Where a given body fat % sits for a male. */
-function bodyFatBand(pct) {
+/**
+ * Where a body fat percentage sits.
+ *
+ * Women carry substantially more essential fat than men — the same judgement
+ * sits roughly eight points higher — so reading a woman's scan against male
+ * bands would tell her she is overweight when she is athletic.
+ */
+const BF_BANDS = {
+  male: [
+    [6, 'essential', 'Essential fat — not sustainable'],
+    [11, 'lean', 'Lean / stage-ready'],
+    [15, 'athletic', 'Athletic'],
+    [20, 'fit', 'Fit — good place to bulk from'],
+    [25, 'average', 'Average — cut before bulking further'],
+  ],
+  female: [
+    [14, 'essential', 'Essential fat — not sustainable'],
+    [18, 'lean', 'Lean / stage-ready'],
+    [23, 'athletic', 'Athletic'],
+    [28, 'fit', 'Fit — good place to build from'],
+    [33, 'average', 'Average — cut before bulking further'],
+  ],
+};
+
+function bodyFatBand(pct, sex = 'male') {
   if (!Number.isFinite(pct)) return null;
-  if (pct < 6) return { band: 'essential', label: 'Essential fat — not sustainable' };
-  if (pct < 11) return { band: 'lean', label: 'Lean / stage-ready' };
-  if (pct < 15) return { band: 'athletic', label: 'Athletic' };
-  if (pct < 20) return { band: 'fit', label: 'Fit — good place to bulk from' };
-  if (pct < 25) return { band: 'average', label: 'Average — cut before bulking further' };
+  const bands = BF_BANDS[sex] || BF_BANDS.male;
+  for (const [ceiling, band, label] of bands) {
+    if (pct < ceiling) return { band, label };
+  }
   return { band: 'high', label: 'High — prioritise a cut' };
 }
 
 // ---------- src/core/store.js ----------
 // Persistence. Backed by localStorage in the browser; any object with the
 // getItem/setItem shape works, which is what makes it unit-testable in node.
+
+
 
 const STORAGE_KEY = 'zolf-lift:v1';
 const SCHEMA_VERSION = 1;
@@ -1187,16 +1522,23 @@ function memoryBackend(initial = {}) {
 }
 
 function defaultState() {
+  const profile = getProfile(PROFILE_ID);
   return {
     version: SCHEMA_VERSION,
     updatedAt: 0,
     settings: {
       programId: DEFAULT_PROGRAM_ID,
-      activityId: 'moderate',
+      activityId: profile.activityId,
       phaseId: 'bulk',
-      bodyFatCeiling: 20,
+      // Calibrated to the profile: a woman's ceiling sits higher than a man's.
+      bodyFatCeiling: profile.bodyFatCeiling,
       restSeconds: 150,
       units: 'lb',
+      // Blocks alternate on a fixed cadence from the day the app is first
+      // opened, so nobody has to remember to change programme.
+      autoRotate: true,
+      rotationWeeks: 2,
+      rotationStart: today(),
     },
     sessions: [],
     metrics: [],
@@ -2150,7 +2492,28 @@ function restLabel(seconds) {
   const rem = seconds % 60;
   return rem ? `${m}:${String(rem).padStart(2, '0')} min` : `${m} min`;
 }
-const program = () => getProgram(store.state.settings.programId);
+const profile = getProfile(PROFILE_ID);
+
+/** How the blocks are currently cycling, if they are. */
+function rotation() {
+  const s = store.state.settings;
+  return rotationStatus({
+    startIso: s.rotationStart || today(),
+    todayIso: today(),
+    blockIds: BLOCK_IDS,
+    weeks: s.rotationWeeks || 2,
+    enabled: s.autoRotate !== false,
+  });
+}
+
+/**
+ * The live program. With rotation on, the calendar decides which block you are
+ * in rather than a setting somebody has to remember to change.
+ */
+const program = () => {
+  const r = rotation();
+  return getProgram(r.enabled && r.blockId ? r.blockId : store.state.settings.programId);
+};
 const exIndex = () => buildExerciseIndex(program());
 const num = (v) => (v === '' || v === null || v === undefined ? NaN : Number(v));
 
@@ -2179,6 +2542,16 @@ function viewDayPicker() {
   const wrap = el('div');
   wrap.append(el('h1', { text: 'Pick today’s session' }));
   wrap.append(el('p', { class: 'sub', text: `${p.name} — ${p.note}` }));
+
+  const r = rotation();
+  if (r.enabled) {
+    wrap.append(
+      el('div', { class: 'rotation', 'data-rotation': '1' }, [
+        el('span', { class: 'rotation-dot', 'aria-hidden': 'true' }),
+        `${p.name.replace(' — current', '').replace(' — variation', '')} · new exercises in ${r.daysLeft} ${r.daysLeft === 1 ? 'day' : 'days'}`,
+      ])
+    );
+  }
 
   const last = [...store.state.sessions].sort((a, b) => b.date.localeCompare(a.date))[0];
   const nextIdx = last ? (p.days.findIndex((d) => d.id === last.dayId) + 1) % p.days.length : 0;
@@ -3112,7 +3485,7 @@ function viewBody() {
       ])
     );
 
-    const band = bodyFatBand(bodyFatPct);
+    const band = bodyFatBand(bodyFatPct, profile.sex);
     if (band) wrap.append(el('p', { class: 'small muted mt', text: `${bodyFatPct}% body fat — ${band.label}` }));
 
     const phaseRow = el('div', { class: 'row mt' });
@@ -3318,8 +3691,47 @@ function viewSettings() {
   wrap.append(el('h1', { text: 'The forge' }));
 
   wrap.append(el('h2', { text: 'Program' }));
+  const r = rotation();
+  const rotCard = el('div', { class: 'card', 'data-rotation-card': '1' });
+  rotCard.append(
+    el('div', { class: 'spread' }, [
+      el('div', {}, [
+        el('span', { class: 'eyebrow', text: 'Auto-rotate blocks' }),
+        el('div', {
+          class: 'small muted',
+          'data-rotation-state': s.autoRotate !== false ? 'on' : 'off',
+          text:
+            s.autoRotate !== false
+              ? `On — every ${s.rotationWeeks || 2} weeks. Next change ${r.switchesOn}.`
+              : 'Off — you pick the block yourself below.',
+        }),
+      ]),
+      el('button', {
+        class: `chip${s.autoRotate !== false ? ' on' : ''}`,
+        type: 'button',
+        'data-action': 'toggle-rotation',
+        text: s.autoRotate !== false ? 'On' : 'Off',
+        onclick: () => {
+          const next = !(s.autoRotate !== false);
+          store.setSetting('autoRotate', next);
+          // Freeze on whatever block is live, so turning it off changes nothing today.
+          if (!next && r.blockId) store.setSetting('programId', r.blockId);
+          if (next) store.setSetting('rotationStart', store.state.settings.rotationStart || today());
+          render();
+        },
+      }),
+    ])
+  );
+  rotCard.append(
+    el('p', {
+      class: 'small muted mt',
+      text: 'Both blocks train the same muscles on the same days. Only the exercises change.',
+    })
+  );
+  wrap.append(rotCard);
   const progSelect = el('select', {
     'data-select': 'program',
+    disabled: s.autoRotate !== false,
     onchange: (e) => {
       if (store.state.active && !confirm('Switching programs ends the workout in progress. Continue?')) {
         return render();

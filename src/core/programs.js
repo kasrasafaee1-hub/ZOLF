@@ -1,3 +1,6 @@
+import { AMORE_PROGRAMS } from './programs-amore.js';
+import { PROFILE_ID } from './profile.js';
+
 // Training programs.
 //
 // Block A is the split as it is actually run: Push / Pull / Legs / Full, with
@@ -46,7 +49,7 @@ export const ROLES = {
   core: { label: 'Core', tone: 'accent' },
 };
 
-export const PROGRAMS = {
+const ZOLF_PROGRAMS = {
   'block-a': {
     id: 'block-a',
     name: 'Block A — current',
@@ -192,7 +195,15 @@ export const PROGRAMS = {
   },
 };
 
-export const DEFAULT_PROGRAM_ID = 'block-a';
+/** Program sets by profile. The active one is chosen at build time. */
+export const PROGRAM_SETS = { zolf: ZOLF_PROGRAMS, amore: AMORE_PROGRAMS };
+
+export const PROGRAMS = PROGRAM_SETS[PROFILE_ID] || ZOLF_PROGRAMS;
+
+/** Block ids in rotation order — the rotation walks these in turn. */
+export const BLOCK_IDS = Object.keys(PROGRAMS);
+
+export const DEFAULT_PROGRAM_ID = BLOCK_IDS[0];
 
 export function getProgram(id) {
   return PROGRAMS[id] || PROGRAMS[DEFAULT_PROGRAM_ID];

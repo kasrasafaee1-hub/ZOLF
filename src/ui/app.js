@@ -1,6 +1,9 @@
 import { $, $$, el, fmtDate, fmtDateLong, mmss, lineChart } from './dom.js';
 import { Store, today, safeBackend } from '../core/store.js';
-import { getProgram, PROGRAMS, plannedWeeklyVolume, ROLES, prescription } from '../core/programs.js';
+import { getProgram, PROGRAMS, BLOCK_IDS, plannedWeeklyVolume, ROLES, prescription } from '../core/programs.js';
+import { PROFILE_ID } from '../core/profile.js';
+import { getProfile } from '../core/profiles.js';
+import { rotationStatus } from '../core/rotation.js';
 import {
   estimated1RM,
   sessionVolume,
@@ -112,7 +115,28 @@ function restLabel(seconds) {
   const rem = seconds % 60;
   return rem ? `${m}:${String(rem).padStart(2, '0')} min` : `${m} min`;
 }
-const program = () => getProgram(store.state.settings.programId);
+const profile = getProfile(PROFILE_ID);
+
+/** How the blocks are currently cycling, if they are. */
+function rotation() {
+  const s = store.state.settings;
+  return rotationStatus({
+    startIso: s.rotationStart || today(),
+    todayIso: today(),
+    blockIds: BLOCK_IDS,
+    weeks: s.rotationWeeks || 2,
+    enabled: s.autoRotate !== false,
+  });
+}
+
+/**
+ * The live program. With rotation on, the calendar decides which block you are
+ * in rather than a setting somebody has to remember to change.
+ */
+const program = () => {
+  const r = rotation();
+  return getProgram(r.enabled && r.blockId ? r.blockId : store.state.settings.programId);
+};
 const exIndex = () => buildExerciseIndex(program());
 const num = (v) => (v === '' || v === null || v === undefined ? NaN : Number(v));
 
@@ -141,6 +165,16 @@ function viewDayPicker() {
   const wrap = el('div');
   wrap.append(el('h1', { text: 'Pick today’s session' }));
   wrap.append(el('p', { class: 'sub', text: `${p.name} — ${p.note}` }));
+
+  const r = rotation();
+  if (r.enabled) {
+    wrap.append(
+      el('div', { class: 'rotation', 'data-rotation': '1' }, [
+        el('span', { class: 'rotation-dot', 'aria-hidden': 'true' }),
+        `${p.name.replace(' — current', '').replace(' — variation', '')} · new exercises in ${r.daysLeft} ${r.daysLeft === 1 ? 'day' : 'days'}`,
+      ])
+    );
+  }
 
   const last = [...store.state.sessions].sort((a, b) => b.date.localeCompare(a.date))[0];
   const nextIdx = last ? (p.days.findIndex((d) => d.id === last.dayId) + 1) % p.days.length : 0;
@@ -1074,7 +1108,7 @@ function viewBody() {
       ])
     );
 
-    const band = bodyFatBand(bodyFatPct);
+    const band = bodyFatBand(bodyFatPct, profile.sex);
     if (band) wrap.append(el('p', { class: 'small muted mt', text: `${bodyFatPct}% body fat — ${band.label}` }));
 
     const phaseRow = el('div', { class: 'row mt' });
@@ -1280,8 +1314,47 @@ function viewSettings() {
   wrap.append(el('h1', { text: 'The forge' }));
 
   wrap.append(el('h2', { text: 'Program' }));
+  const r = rotation();
+  const rotCard = el('div', { class: 'card', 'data-rotation-card': '1' });
+  rotCard.append(
+    el('div', { class: 'spread' }, [
+      el('div', {}, [
+        el('span', { class: 'eyebrow', text: 'Auto-rotate blocks' }),
+        el('div', {
+          class: 'small muted',
+          'data-rotation-state': s.autoRotate !== false ? 'on' : 'off',
+          text:
+            s.autoRotate !== false
+              ? `On — every ${s.rotationWeeks || 2} weeks. Next change ${r.switchesOn}.`
+              : 'Off — you pick the block yourself below.',
+        }),
+      ]),
+      el('button', {
+        class: `chip${s.autoRotate !== false ? ' on' : ''}`,
+        type: 'button',
+        'data-action': 'toggle-rotation',
+        text: s.autoRotate !== false ? 'On' : 'Off',
+        onclick: () => {
+          const next = !(s.autoRotate !== false);
+          store.setSetting('autoRotate', next);
+          // Freeze on whatever block is live, so turning it off changes nothing today.
+          if (!next && r.blockId) store.setSetting('programId', r.blockId);
+          if (next) store.setSetting('rotationStart', store.state.settings.rotationStart || today());
+          render();
+        },
+      }),
+    ])
+  );
+  rotCard.append(
+    el('p', {
+      class: 'small muted mt',
+      text: 'Both blocks train the same muscles on the same days. Only the exercises change.',
+    })
+  );
+  wrap.append(rotCard);
   const progSelect = el('select', {
     'data-select': 'program',
+    disabled: s.autoRotate !== false,
     onchange: (e) => {
       if (store.state.active && !confirm('Switching programs ends the workout in progress. Continue?')) {
         return render();

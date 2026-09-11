@@ -184,6 +184,7 @@ test('any past day opens with the exact numbers logged that day', async () => {
 test('switching to the variation block keeps every past workout', async () => {
   const before = await page.evaluate(() => window.__zolf.store.state.sessions.length);
   await tab(page, 'settings');
+  await page.locator('[data-action="toggle-rotation"]').click();
   await page.locator('[data-select="program"]').selectOption('block-b');
   await tab(page, 'history');
   await expect(page.locator('[data-session]')).toHaveCount(before);
@@ -196,6 +197,7 @@ test('switching to the variation block keeps every past workout', async () => {
   await page.locator('[data-action="discard"]').click();
   await tab(page, 'settings');
   await page.locator('[data-select="program"]').selectOption('block-a');
+  await page.locator('[data-action="toggle-rotation"]').click();
 });
 
 test('diagnostics tells the truth about what is stored', async () => {

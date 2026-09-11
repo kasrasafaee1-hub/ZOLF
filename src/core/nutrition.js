@@ -130,13 +130,35 @@ export function bulkCheck({ rateLbPerWeek, bodyFatPct, ceilingPct = 20, phaseId 
   return { status, messages: msgs };
 }
 
-/** Where a given body fat % sits for a male. */
-export function bodyFatBand(pct) {
+/**
+ * Where a body fat percentage sits.
+ *
+ * Women carry substantially more essential fat than men — the same judgement
+ * sits roughly eight points higher — so reading a woman's scan against male
+ * bands would tell her she is overweight when she is athletic.
+ */
+const BF_BANDS = {
+  male: [
+    [6, 'essential', 'Essential fat — not sustainable'],
+    [11, 'lean', 'Lean / stage-ready'],
+    [15, 'athletic', 'Athletic'],
+    [20, 'fit', 'Fit — good place to bulk from'],
+    [25, 'average', 'Average — cut before bulking further'],
+  ],
+  female: [
+    [14, 'essential', 'Essential fat — not sustainable'],
+    [18, 'lean', 'Lean / stage-ready'],
+    [23, 'athletic', 'Athletic'],
+    [28, 'fit', 'Fit — good place to build from'],
+    [33, 'average', 'Average — cut before bulking further'],
+  ],
+};
+
+export function bodyFatBand(pct, sex = 'male') {
   if (!Number.isFinite(pct)) return null;
-  if (pct < 6) return { band: 'essential', label: 'Essential fat — not sustainable' };
-  if (pct < 11) return { band: 'lean', label: 'Lean / stage-ready' };
-  if (pct < 15) return { band: 'athletic', label: 'Athletic' };
-  if (pct < 20) return { band: 'fit', label: 'Fit — good place to bulk from' };
-  if (pct < 25) return { band: 'average', label: 'Average — cut before bulking further' };
+  const bands = BF_BANDS[sex] || BF_BANDS.male;
+  for (const [ceiling, band, label] of bands) {
+    if (pct < ceiling) return { band, label };
+  }
   return { band: 'high', label: 'High — prioritise a cut' };
 }

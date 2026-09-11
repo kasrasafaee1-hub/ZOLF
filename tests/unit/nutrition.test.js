@@ -138,3 +138,37 @@ test('16.5% lands in the band worth bulking from', () => {
   assert.equal(bodyFatBand(28).band, 'high');
   assert.equal(bodyFatBand(NaN), null);
 });
+
+test('body fat bands are read against the right sex', () => {
+  // 22% is athletic for a woman and squarely average for a man. Reading a
+  // woman's scan against male bands would tell her to cut when she should not.
+  assert.equal(bodyFatBand(22, 'female').band, 'athletic');
+  assert.equal(bodyFatBand(22, 'male').band, 'average');
+
+  assert.equal(bodyFatBand(16.5, 'male').band, 'fit');
+  assert.equal(bodyFatBand(16.5, 'female').band, 'lean');
+
+  assert.equal(bodyFatBand(12, 'female').band, 'essential');
+  assert.equal(bodyFatBand(12, 'male').band, 'athletic');
+
+  assert.equal(bodyFatBand(35, 'female').band, 'high');
+  assert.equal(bodyFatBand(26, 'male').band, 'high');
+});
+
+test('an unknown sex falls back to male bands rather than throwing', () => {
+  assert.equal(bodyFatBand(16.5, 'unspecified').band, bodyFatBand(16.5, 'male').band);
+  assert.equal(bodyFatBand(16.5).band, 'fit');
+  assert.equal(bodyFatBand(NaN, 'female'), null);
+});
+
+test('every band is reachable for both sexes', () => {
+  for (const sex of ['male', 'female']) {
+    const seen = new Set();
+    for (let pct = 3; pct <= 45; pct += 0.5) seen.add(bodyFatBand(pct, sex).band);
+    assert.deepEqual(
+      [...seen].sort(),
+      ['athletic', 'average', 'essential', 'fit', 'high', 'lean'],
+      `${sex} bands`
+    );
+  }
+});

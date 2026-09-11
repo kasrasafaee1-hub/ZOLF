@@ -1,0 +1,37 @@
+/* ZOLF — deep forest green and cream with a mint signal colour. */
+:root {
+  color-scheme: dark;
+
+  --bg: #142C26;          /* deepest forest, the page ground */
+  --surface: #1D3B33;     /* panel */
+  --surface-2: #26493F;   /* raised control */
+  --line: #33594B;        /* hairline, green-biased so it is chosen not grey */
+  --line-bright: #47705F;
+
+  --cream: #F4F0E0;
+  --text: #F4F0E0;
+  --muted: #9DBAAC;
+  --dim: #6E9384;
+
+  --mint: #3ADB86;        /* the one signal colour */
+  --mint-deep: #23B76A;
+  --mint-soft: rgba(58, 219, 134, 0.12);
+
+  --warn: #E8C56A;
+  --bad: #E07A6A;
+
+  --display: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --hint-ink: #C8E9D8;   /* text inside a tinted callout */
+  --ok-ink: #C8E9D8;
+  --warn-ink: #EBDDB0;
+  --bad-ink: #F0C4BB;
+
+  --chrome: rgba(20, 44, 38, 0.96);   /* sticky header and tab bar */
+  --on-accent: #0B2019;               /* text that sits on the accent */
+  --accent-border: rgba(58, 219, 134, 0.3);
+
+  --radius: 6px;
+  --tabbar-h: 60px;
+}

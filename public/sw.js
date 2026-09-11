@@ -2,10 +2,17 @@
 const CACHE = 'zolf-lift-v1';
 const ASSETS = [
   '../index.html',
+  '../src/ui/tokens-zolf.css',
   '../src/ui/styles.css',
   '../src/ui/app.js',
   '../src/ui/dom.js',
   '../src/core/store.js',
+  '../src/core/profile.js',
+  '../src/core/profiles.js',
+  '../src/core/programs-amore.js',
+  '../src/core/rotation.js',
+  '../src/core/calendar.js',
+  '../src/core/supplements.js',
   '../src/core/programs.js',
   '../src/core/training.js',
   '../src/core/nutrition.js',

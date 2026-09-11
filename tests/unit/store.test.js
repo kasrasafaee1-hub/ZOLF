@@ -400,3 +400,22 @@ test('a third set is one tap and inherits the row above it', () => {
   assert.equal(sets[2].reps, 8);
   assert.equal(sets[2].done, false);
 });
+
+test('no two modules declare the same top-level name', async () => {
+  // The bundle flattens every module into one scope, so a shared private
+  // helper name throws "already been declared" and ships a blank page. This
+  // actually happened: two program files both had a `const ex` helper.
+  const { assertNoNameCollisions } = await import('../../scripts/bundle.js');
+  assert.throws(
+    () =>
+      assertNoNameCollisions([
+        ['a.js', 'const ex = 1;'],
+        ['b.js', 'const ex = 2;'],
+      ]),
+    /declared in more than one module/
+  );
+  // The real build must be clean.
+  const { bundle } = await import('../../scripts/bundle.js');
+  await bundle('zolf');
+  await bundle('amore');
+});

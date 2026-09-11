@@ -1,41 +1,52 @@
-<title>ZOLF Lift</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;800&family=JetBrains+Mono:wght@600;700&display=swap" />
+<title>Amore’s Splits</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Karla:wght@400;500;600;700&display=swap" />
 <style>
-/* ZOLF — deep forest green and cream with a mint signal colour. */
+/* Amore — warm bone and ink, after Italian stationery rather than a gym app.
+   Light-committed: read in bright gym lighting, and quiet enough that the
+   numbers are the loudest thing on the page. */
+
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 
-  --bg: #142C26;          /* deepest forest, the page ground */
-  --surface: #1D3B33;     /* panel */
-  --surface-2: #26493F;   /* raised control */
-  --line: #33594B;        /* hairline, green-biased so it is chosen not grey */
-  --line-bright: #47705F;
+  --bg: #F6F2EA;          /* warm bone, the page ground */
+  --surface: #FFFDF8;     /* paper */
+  --surface-2: #EFE8DC;   /* raised */
+  --line: #DED3C2;        /* warm hairline, never a cold grey */
+  --line-bright: #C4B49C;
 
-  --cream: #F4F0E0;
-  --text: #F4F0E0;
-  --muted: #9DBAAC;
-  --dim: #6E9384;
+  --cream: #2E2028;       /* the "ink" role — deep aubergine, not black */
+  --text: #2E2028;
+  --muted: #7A6A72;
+  --dim: #A2929A;
 
-  --mint: #3ADB86;        /* the one signal colour */
-  --mint-deep: #23B76A;
-  --mint-soft: rgba(58, 219, 134, 0.12);
+  --mint: #9E2B4E;        /* the signal colour: deep rose, used sparingly */
+  --mint-deep: #7C1F3C;
+  --mint-soft: rgba(158, 43, 78, 0.09);
+  --aegean: #B08D57;      /* brass, for quiet secondary marks */
 
-  --warn: #E8C56A;
-  --bad: #E07A6A;
+  --laurel: #4F7A52;      /* semantic, kept apart from the accent */
+  --warn: #B8802A;
+  --amber: #B8802A;
+  --bad: #A33A2C;
+  --amphora: #A33A2C;
+  --gold: #B08D57;
+  --gold-bright: #C7A570;
+  --gold-soft: rgba(176, 141, 87, 0.14);
 
-  --display: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
-  --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --body: 'Karla', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --mono: 'Karla', ui-monospace, Menlo, monospace;
 
-  --hint-ink: #C8E9D8;   /* text inside a tinted callout */
-  --ok-ink: #C8E9D8;
-  --warn-ink: #EBDDB0;
-  --bad-ink: #F0C4BB;
+  --hint-ink: #7C1F3C;   /* text inside a tinted callout */
+  --ok-ink: #33513A;
+  --warn-ink: #6F4E14;
+  --bad-ink: #6E251A;
 
-  --chrome: rgba(20, 44, 38, 0.96);   /* sticky header and tab bar */
-  --on-accent: #0B2019;               /* text that sits on the accent */
-  --accent-border: rgba(58, 219, 134, 0.3);
+  --chrome: rgba(246, 242, 234, 0.96);  /* sticky header and tab bar */
+  --on-accent: #FFFDF8;                 /* text that sits on the accent */
+  --accent-border: rgba(158, 43, 78, 0.28);
 
-  --radius: 6px;
+  --radius: 10px;
   --tabbar-h: 60px;
 }
 
@@ -541,7 +552,7 @@ body.has-finish-bar .rest-bar { bottom: calc(var(--tabbar-h) + 76px + env(safe-a
 
 <div id="app" class="app">
   <header class="topbar">
-    <div class="brand">ZOLF<span>LIFT</span></div>
+    <div class="brand">AMORE<span>SPLITS</span></div>
     <div id="topbar-right" class="topbar-right"></div>
   </header>
 
@@ -565,9 +576,9 @@ body.has-finish-bar .rest-bar { bottom: calc(var(--tabbar-h) + 76px + env(safe-a
   <nav class="tabbar" role="tablist">
     <button class="tab" data-tab="today" role="tab">Today</button>
     <button class="tab" data-tab="history" role="tab">Log</button>
-    <button class="tab" data-tab="progress" role="tab">Trials</button>
-    <button class="tab" data-tab="body" role="tab">Temple</button>
-    <button class="tab" data-tab="settings" role="tab">Forge</button>
+    <button class="tab" data-tab="progress" role="tab">Progress</button>
+    <button class="tab" data-tab="body" role="tab">Body</button>
+    <button class="tab" data-tab="settings" role="tab">Settings</button>
   </nav>
 </div>
 
@@ -577,7 +588,7 @@ body.has-finish-bar .rest-bar { bottom: calc(var(--tabbar-h) + 76px + env(safe-a
 // ---------- src/core/profile.js ----------
 // Which profile this build is for. scripts/bundle.js rewrites this line when
 // building each app, so one codebase produces both.
-const PROFILE_ID = 'zolf';
+const PROFILE_ID = 'amore';
 
 // ---------- src/core/profiles.js ----------
 // Who each build of the app is for.

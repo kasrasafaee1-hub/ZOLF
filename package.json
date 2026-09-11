@@ -4,12 +4,13 @@
   "description": "Workout + body composition tracker",
   "type": "module",
   "scripts": {
-    "test": "npm run test:unit && npm run test:e2e && npm run test:bundle",
+    "test": "npm run test:unit && npm run test:e2e && npm run test:bundle && npm run test:amore",
     "test:unit": "node --test tests/unit/*.test.js",
     "test:e2e": "node --test --test-concurrency=1 tests/e2e/*.test.js",
-    "test:bundle": "node scripts/bundle.js && ZOLF_ENTRY=/dist/preview.html node --test --test-concurrency=1 tests/e2e/*.test.js",
+    "test:bundle": "node scripts/bundle.js && ZOLF_ENTRY=/dist/zolf-preview.html node --test --test-concurrency=1 tests/e2e/*.test.js",
     "build": "node scripts/bundle.js",
-    "serve": "node scripts/serve.js"
+    "serve": "node scripts/serve.js",
+    "test:amore": "node scripts/bundle.js amore && ZOLF_ENTRY=/dist/amore-preview.html node --test --test-concurrency=1 tests/profiles/*.test.js"
   },
   "devDependencies": {
     "@playwright/test": "^1.49.0"
