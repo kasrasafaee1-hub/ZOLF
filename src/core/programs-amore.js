@@ -143,7 +143,7 @@ export const AMORE_PROGRAMS = {
         schedule: 'Fri',
         focus: 'Glutes · Hamstrings',
         exercises: [
-          aEx('single-leg-hip-thrust', 'Single-leg hip thrust', 'glutes', 3, 10, 12, 'primary', 120, { cue: 'Ribs down, squeeze at the top', perSide: true }),
+          aEx('single-leg-hip-thrust', 'Single-leg hip thrust', 'glutes', 4, 10, 12, 'primary', 120, { cue: 'Ribs down, squeeze at the top', perSide: true }),
           aEx('stiff-leg-deadlift', 'Stiff-leg deadlift', 'hamstrings', 3, 8, 10, 'primary', 120, { cue: 'Straighter knees than an RDL' }),
           aEx('nordic-curl', 'Nordic curl', 'hamstrings', 3, 6, 10, 'isolation', 90, { cue: 'Fight the lowering' }),
           aEx('cable-pull-through', 'Cable pull-through', 'glutes', 3, 12, 15, 'volume', 60, { cue: 'Hinge, then squeeze' }),

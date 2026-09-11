@@ -233,3 +233,80 @@ test('a prescription reads the way the sheet does', () => {
   assert.equal(prescription({ sets: 2, repRange: [10, 10], unit: 'reps', perSide: true }), '2 × 10 each side');
 });
 
+
+// ------------------------------------- the rotation promise, held to the letter
+import { AMORE_PROGRAMS } from '../../src/core/programs-amore.js';
+
+const ALL_SETS = { zolf: PROGRAMS, amore: AMORE_PROGRAMS };
+
+const muscleSets = (day) => {
+  const out = {};
+  for (const e of day.exercises) out[e.muscle] = (out[e.muscle] || 0) + e.sets;
+  return out;
+};
+const weekly = (program) => {
+  const out = {};
+  for (const day of program.days) for (const e of day.exercises) out[e.muscle] = (out[e.muscle] || 0) + e.sets;
+  return out;
+};
+
+test('the blocks run the same days in the same order', () => {
+  for (const [who, set] of Object.entries(ALL_SETS)) {
+    const a = set['block-a'].days.map((d) => `${d.id}:${d.schedule}`);
+    const b = set['block-b'].days.map((d) => `${d.id}:${d.schedule}`);
+    assert.deepEqual(a, b, `${who} — rotating must not move a session to a different day`);
+  }
+});
+
+test('each day trains exactly the same muscles in both blocks', () => {
+  for (const [who, set] of Object.entries(ALL_SETS)) {
+    set['block-a'].days.forEach((dayA, i) => {
+      const dayB = set['block-b'].days[i];
+      assert.deepEqual(
+        Object.keys(muscleSets(dayA)).sort(),
+        Object.keys(muscleSets(dayB)).sort(),
+        `${who} ${dayA.name} — a muscle is trained in one block but not the other`
+      );
+    });
+  }
+});
+
+test('each day carries the same number of sets per muscle in both blocks', () => {
+  // The whole point of rotating is a like-for-like swap. If block B gives a
+  // muscle fewer sets, that muscle quietly detrains every other fortnight.
+  for (const [who, set] of Object.entries(ALL_SETS)) {
+    set['block-a'].days.forEach((dayA, i) => {
+      const dayB = set['block-b'].days[i];
+      assert.deepEqual(muscleSets(dayA), muscleSets(dayB), `${who} ${dayA.name} — set counts drifted between blocks`);
+    });
+  }
+});
+
+test('the whole training week is identical in volume across blocks', () => {
+  for (const [who, set] of Object.entries(ALL_SETS)) {
+    assert.deepEqual(weekly(set['block-a']), weekly(set['block-b']), `${who} — weekly volume differs between blocks`);
+  }
+});
+
+test('no exercise appears in both blocks — rotating must actually change the work', () => {
+  for (const [who, set] of Object.entries(ALL_SETS)) {
+    set['block-a'].days.forEach((dayA, i) => {
+      const dayB = set['block-b'].days[i];
+      const idsB = new Set(dayB.exercises.map((e) => e.id));
+      const repeated = dayA.exercises.filter((e) => idsB.has(e.id)).map((e) => e.name);
+      assert.deepEqual(repeated, [], `${who} ${dayA.name} — these carry over unchanged: ${repeated.join(', ')}`);
+    });
+  }
+});
+
+test('both blocks read the same on the volume audit', () => {
+  for (const [who, set] of Object.entries(ALL_SETS)) {
+    const statuses = (p) =>
+      Object.fromEntries(volumeAudit(weekly(p)).map((r) => [r.muscle, r.status]));
+    assert.deepEqual(
+      statuses(set['block-a']),
+      statuses(set['block-b']),
+      `${who} — one block would be flagged differently from the other`
+    );
+  }
+});
