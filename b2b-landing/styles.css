@@ -1,15 +1,17 @@
 :root {
-  --bg: #0B0E1A;
-  --bg-alt: #10142A;
-  --panel: #161B33;
-  --panel-border: #262C4C;
-  --text: #F2F3F9;
-  --text-dim: #A7ACC7;
-  --accent: #6C63FF;
-  --accent-light: #9B94FF;
-  --accent-glow: rgba(108, 99, 255, 0.35);
+  --bg: #000000;
+  --bg-alt: #0C0C0D;
+  --panel: #131312;
+  --panel-border: #2B2924;
+  --text: #F1ECE0;
+  --text-dim: #A69F8D;
+  --accent: #C9AF7A;
+  --accent-light: #E3D2A6;
+  --accent-glow: rgba(201, 175, 122, 0.28);
+  --accent-ink: #171307;
   --radius: 14px;
   --max-width: 1080px;
+  --font-serif: "Playfair Display", "Georgia", serif;
 }
 
 * { box-sizing: border-box; }
@@ -42,7 +44,7 @@ a { color: inherit; }
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(11, 14, 26, 0.85);
+  background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--panel-border);
 }
@@ -51,24 +53,26 @@ a { color: inherit; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 68px;
+  height: 72px;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-weight: 700;
-  font-size: 15px;
-  letter-spacing: 0.01em;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
 }
 
-.brand-mark {
-  width: 20px;
-  height: 20px;
-  border-radius: 6px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-light));
-  display: inline-block;
+.hero-logo {
+  display: block;
+  margin: 0 auto 28px;
+  max-width: 220px;
+  width: 100%;
+  height: auto;
 }
 
 /* Buttons */
@@ -89,8 +93,8 @@ a { color: inherit; }
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent), #5A50E6);
-  color: #fff;
+  background: linear-gradient(135deg, var(--accent-light), var(--accent));
+  color: var(--accent-ink);
   box-shadow: 0 0 0 1px rgba(255,255,255,0.06) inset, 0 8px 24px var(--accent-glow);
 }
 
@@ -133,12 +137,13 @@ a { color: inherit; }
 }
 
 h1 {
+  font-family: var(--font-serif);
   font-size: clamp(28px, 5vw, 46px);
-  line-height: 1.15;
-  font-weight: 800;
+  line-height: 1.2;
+  font-weight: 700;
   max-width: 900px;
   margin: 0 auto 20px;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.005em;
 }
 
 .accent {
@@ -184,7 +189,7 @@ h1 {
   height: 18px;
   border-radius: 50%;
   background: var(--accent);
-  color: #fff;
+  color: var(--accent-ink);
   font-style: normal;
   font-size: 11px;
   font-weight: 800;
@@ -252,10 +257,11 @@ h1 {
 }
 
 .section h2 {
+  font-family: var(--font-serif);
   font-size: clamp(24px, 3.5vw, 34px);
-  font-weight: 800;
+  font-weight: 700;
   margin: 0 0 12px;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.005em;
 }
 
 .section-sub {
@@ -334,7 +340,7 @@ h1 {
 
 .proof-badge {
   background: var(--accent);
-  color: #fff;
+  color: var(--accent-ink);
   font-weight: 700;
   font-size: 13px;
   padding: 6px 12px;
@@ -426,7 +432,7 @@ h1 {
 .fit-card li:last-child { margin-bottom: 0; }
 
 .fit-yes {
-  background: rgba(108, 99, 255, 0.08);
+  background: rgba(201, 175, 122, 0.08);
   border-color: var(--accent);
 }
 

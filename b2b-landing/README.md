@@ -1,4 +1,4 @@
-# The Operating Standard — Landing Page
+# Operating Standard — Landing Page
 
 Single-page static site, no build step, no dependencies. Built to catch traffic
 from short-form content and send it to one action: apply for a strategy call.
@@ -25,12 +25,13 @@ Then open http://localhost:8080
   ticket ≥ $125,000, med spas / aesthetic clinics / high-end salons / physio /
   dental / PT / trades. This should reduce unqualified Typeform submissions,
   not just filter them after the fact.
+- **Brand** — real logo (`assets/logo.png`) used as favicon and as the hero
+  mark; theme reworked to black/cream/gold with serif headings (Playfair
+  Display) to match it, replacing the earlier generic purple SaaS look.
 
 ## What's still a placeholder
 
-1. **Brand name / wordmark** — "The Operating Standard" in `index.html`
-   (`.brand` and `<title>`). Confirm this is the right name before launch.
-2. **VSL video** — find `data-video-id="REPLACE_WITH_YOUTUBE_ID"` on the
+1. **VSL video** — find `data-video-id="REPLACE_WITH_YOUTUBE_ID"` on the
    `#video-embed` div in `index.html` and swap in your YouTube video ID (the
    part after `v=` in a YouTube URL).
 3. **Case studies** — the four placeholder cards under "Results you can
