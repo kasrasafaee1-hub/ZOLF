@@ -3,8 +3,9 @@
 Single-page static site, no build step, no dependencies. Built to catch traffic
 from short-form content and send it to one action: apply for a strategy call.
 
-Funnel: land → watch VSL → apply via the embedded Typeform (qualifies on
-client-list size × average ticket) → get booked.
+Current funnel (no VSL yet): land → read the offer and who it's for →
+apply via the embedded Typeform (qualifies on client-list size × average
+ticket) → get booked.
 
 ## Running it locally
 
@@ -15,36 +16,40 @@ python3 -m http.server 8080
 
 Then open http://localhost:8080
 
-## Already wired in
+## What's live
 
+- **Copy** — matches the real offer from the client-journey roadmap:
+  bottleneck diagnosis across sales/marketing/team/systems, cash recovered
+  from an existing client list before any ad spend, a 6-month roadmap.
 - **Application form** — the real Typeform (`form.typeform.com/to/PWaKaqFW`)
   is embedded live in the `#apply` section. All CTAs scroll there instead of
   linking out, so the applicant never leaves the page.
-- **Qualification copy** — the "Who this is actually for" section mirrors the
-  real screening math from the client-journey doc: client list × average
-  ticket ≥ $125,000, med spas / aesthetic clinics / high-end salons / physio /
-  dental / PT / trades. This should reduce unqualified Typeform submissions,
-  not just filter them after the fact.
-- **Brand** — real logo (`assets/logo.png`) used as favicon and as the hero
-  mark; theme reworked to black/cream/gold with serif headings (Playfair
-  Display) to match it, replacing the earlier generic purple SaaS look.
+- **Qualification section** — "Who this is actually for" mirrors the real
+  screening math: client list × average ticket ≥ $125,000, med spas /
+  aesthetic clinics / high-end salons / physio / dental / PT / trades.
+- **Brand** — real logo (`assets/logo.png`) used as favicon and hero mark;
+  black/cream/gold theme with serif headings (Playfair Display) to match it.
 
-## What's still a placeholder
+## Deliberately left out for now
 
-1. **VSL video** — find `data-video-id="REPLACE_WITH_YOUTUBE_ID"` on the
-   `#video-embed` div in `index.html` and swap in your YouTube video ID (the
-   part after `v=` in a YouTube URL).
-3. **Case studies** — the four placeholder cards under "Results you can
-   actually verify" need real thumbnails, numbers, and links to the YouTube
-   breakdowns. Replace the `<a class="proof-card">` blocks. Don't publish
-   with fake-looking placeholder numbers — no proof section beats a fake one.
-4. **Analytics** — no tracking pixel is wired up yet. Add your Meta Pixel /
-   TikTok Pixel / GA4 snippet in `<head>` so you can tell which short-form
-   videos are actually driving Typeform completions.
-5. **Typeform → booking handoff** — this page only embeds the application
-   form. Whether a completed application redirects to a calendar, or you
-   review applications manually before booking, is configured inside
-   Typeform itself (Connect panel), not in this repo.
+No VSL and no case studies are on the page — none exist yet, and a
+placeholder video or fake result numbers would undercut a page whose whole
+pitch is "we can verify this." When real ones exist:
+
+1. **VSL** — add a video section back into the hero in `index.html`
+   (a 16:9 embed pointed at the real YouTube video), plus an "Apply" CTA
+   underneath it.
+2. **Case studies** — add a "Results you can verify" section with real
+   thumbnails, numbers, and links to the YouTube breakdowns.
+3. **Analytics** — add a Meta Pixel / TikTok Pixel / GA4 snippet in `<head>`
+   once you're actually running short-form traffic to this page, so you can
+   tell which videos drive Typeform completions.
+
+## Typeform → booking handoff
+
+This page only embeds the application form. Whether a completed application
+redirects to a calendar, or you review applications manually before booking,
+is configured inside Typeform itself (Connect panel), not in this repo.
 
 ## Deploying
 
@@ -57,5 +62,6 @@ directory is the folder itself.
 ```
 index.html   all page content and sections
 styles.css   dark theme, layout, responsive rules
-script.js    swaps the VSL placeholder for a real YouTube embed at runtime
+script.js    sets the footer's copyright year
+assets/      logo.png (favicon + hero mark)
 ```
