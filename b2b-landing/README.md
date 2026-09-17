@@ -29,18 +29,24 @@ Then open http://localhost:8080
   aesthetic clinics / high-end salons / physio / dental / PT / trades.
 - **Brand** — real logo (`assets/logo.png`) used as favicon and hero mark;
   black/cream/gold theme with serif headings (Playfair Display) to match it.
+- **Proof section** — since there are no client testimonials yet (the
+  business just started), proof is the founder's own track record instead:
+  building ZOLF from an empty 6-chair salon alone, ~$100K invested, going
+  from solo operator to a systemized business, ~100K followers documenting
+  it in real time. Pulled from the real Founder's Profile doc, not invented
+  numbers — links out to the real Instagram so it's checkable.
 
 ## Deliberately left out for now
 
-No VSL and no case studies are on the page — none exist yet, and a
-placeholder video or fake result numbers would undercut a page whose whole
-pitch is "we can verify this." When real ones exist:
+No VSL is on the page — none exists yet, and a placeholder video would
+undercut a page that's otherwise built on real, checkable specifics. When
+one exists:
 
 1. **VSL** — add a video section back into the hero in `index.html`
    (a 16:9 embed pointed at the real YouTube video), plus an "Apply" CTA
    underneath it.
-2. **Case studies** — add a "Results you can verify" section with real
-   thumbnails, numbers, and links to the YouTube breakdowns.
+2. **Client case studies** — once real clients exist, add a second proof
+   section alongside the founder-story one with their results.
 3. **Analytics** — add a Meta Pixel / TikTok Pixel / GA4 snippet in `<head>`
    once you're actually running short-form traffic to this page, so you can
    tell which videos drive Typeform completions.

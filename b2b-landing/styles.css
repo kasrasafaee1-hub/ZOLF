@@ -220,6 +220,57 @@ h1 {
   margin: 0;
 }
 
+/* Founder proof */
+.proof-body {
+  text-align: left;
+  color: var(--text-dim);
+  font-size: 15px;
+  line-height: 1.7;
+  margin: 0 auto 20px;
+}
+
+.proof-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin: 32px 0 20px;
+  text-align: left;
+}
+
+.proof-stat {
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  padding: 20px 18px;
+}
+
+.proof-num {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--accent-light);
+  margin-bottom: 8px;
+}
+
+.proof-label {
+  display: block;
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+.proof-note {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin: 0;
+}
+
+.proof-note a {
+  color: var(--accent-light);
+  text-decoration: underline;
+}
+
 /* FAQ */
 .faq {
   text-align: left;
@@ -356,6 +407,7 @@ h1 {
 @media (max-width: 720px) {
   .cards { grid-template-columns: 1fr; }
   .fit-grid { grid-template-columns: 1fr; }
+  .proof-stats { grid-template-columns: 1fr; }
   .typeform-embed iframe { height: 560px; }
   .mobile-cta { display: block; }
   .footer { padding-bottom: 96px; }
