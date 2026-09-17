@@ -260,6 +260,19 @@ h1 {
   line-height: 1.5;
 }
 
+.proof-quote {
+  margin: 24px 0;
+  padding: 20px 24px;
+  border-left: 2px solid var(--accent);
+  background: var(--panel);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-family: var(--font-serif);
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--text);
+  font-style: italic;
+}
+
 .proof-note {
   font-size: 13px;
   color: var(--text-dim);
