@@ -247,10 +247,11 @@ h1 {
 .proof-num {
   display: block;
   font-family: var(--font-serif);
-  font-size: 26px;
+  font-size: clamp(18px, 4vw, 26px);
   font-weight: 700;
   color: var(--accent-light);
   margin-bottom: 8px;
+  line-height: 1.25;
 }
 
 .proof-label {
