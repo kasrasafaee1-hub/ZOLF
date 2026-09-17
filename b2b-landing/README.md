@@ -33,11 +33,14 @@ Then open http://localhost:8080
   business just started), proof is the founder's own track record instead:
   building ZOLF from an empty 6-chair salon alone, ~$100K invested, going
   from solo operator to a systemized business, ~100K followers documenting
-  it in real time, and real Square revenue — $104,266 for all of 2025 vs.
-  $300,107 for Jan–Sep 2026 alone (Q4 not even in that number yet). No
-  forward-looking projection is stated on the page — only verified,
-  already-happened numbers, from the real Founder's Profile doc and Square
-  dashboard, not invented. Links out to the real Instagram so it's checkable.
+  it in real time, and real Square gross sales: $104,266.11 for Jan 1–Sep 16
+  2025 vs. $234,725.36 for the identical Jan 1–Sep 16 window in 2026 — a true
+  apples-to-apples +125% YoY, straight from Square's own year-over-year
+  comparison (not an extrapolation, not a projection). Note: Square's
+  separate "Total Collected" figure ($300,107.40) is a different metric
+  (likely includes tips/tax on top of gross sales) and isn't used here since
+  it isn't comparable to the prior-year gross sales figure. Links out to the
+  real Instagram so it's checkable.
 
 ## Deliberately left out for now
 
